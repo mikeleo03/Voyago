@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
-import { AuthService } from '../../../services/auth/auth.service';
+// import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -17,7 +17,7 @@ import { AuthService } from '../../../services/auth/auth.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   providers: [
-    AuthService
+    // AuthService
   ], // Services can be provided directly in the component
 })
 export class HeaderComponent implements OnInit {
@@ -26,10 +26,10 @@ export class HeaderComponent implements OnInit {
   showLogout = false;
   isOpen = false;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router/* , private authService: AuthService */) {}
 
   ngOnInit(): void {
-    this.username = this.authService.getToken() != null ? jwtDecode(this.authService.getToken() as string).sub as string : "Mr. Lorem Ipsum";
+    this.username = "Mr. Lorem Ipsum"; // this.authService.getToken() != null ? jwtDecode(this.authService.getToken() as string).sub as string : "Mr. Lorem Ipsum";
   }
 
   toggleMenu() {
@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit {
   }
 
   handleLogout() {
-    this.authService.logout();
+    // this.authService.logout();
     this.router.navigate(['/login']); // Redirect to login page after logout
   }
 }
