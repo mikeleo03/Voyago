@@ -1,18 +1,25 @@
 package com.group4.authentication.controller;
 
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.group4.authentication.dto.LoginRequest;
 import com.group4.authentication.dto.SignupRequest;
 import com.group4.authentication.services.AuthService;
 
-import java.util.Map;
-
-import javax.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -28,19 +35,19 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@Valid @RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<String> signup(@RequestBody @Valid SignupRequest signupRequest) {
         log.info("Signup request received for username: {}", signupRequest.getUsername());
         authService.signup(signupRequest);
         log.info("Signup successful for username: {}", signupRequest.getUsername());
-        return ResponseEntity.ok("Sign up success");
+        return ResponseEntity.status(HttpStatus.OK).body("Sign up success");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody @Valid LoginRequest loginRequest) {
         log.info("Login request received for username: {}", loginRequest.getUsername());
         String token = authService.login(loginRequest);
         log.info("Login successful for username: {}", loginRequest.getUsername());
-        return ResponseEntity.ok(Map.of("token", token));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("token", token));
     }
 
     @GetMapping("/validateToken")
@@ -48,6 +55,6 @@ public class AuthController {
         log.info("Token validation request received");
         boolean isValid = authService.validateToken(token);
         log.info("Token validation result: {}", isValid);
-        return ResponseEntity.ok(isValid);
+        return ResponseEntity.status(HttpStatus.OK).body(isValid);
     }
 }
