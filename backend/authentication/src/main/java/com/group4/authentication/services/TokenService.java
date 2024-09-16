@@ -5,13 +5,16 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,8 +23,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class TokenService {
 
-    // Generate a secure key for HS512
-    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    @Value("${jwt.secret}")
+    private String secret;
+
+    // Generate the secret key from the configured secret value
+    private SecretKey getSecretKey() {
+        byte[] secretBytes = Base64.getDecoder().decode(secret);
+        return Keys.hmacShaKeyFor(secretBytes);
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -38,7 +47,7 @@ public class TokenService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                   .setSigningKey(SECRET_KEY)
+                   .setSigningKey(getSecretKey())
                    .build()
                    .parseClaimsJws(token)
                    .getBody();
@@ -63,7 +72,7 @@ public class TokenService {
             .setSubject(email)
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)) // 10 mins expiration
-            .signWith(SECRET_KEY, SignatureAlgorithm.HS512)
+            .signWith(getSecretKey(), SignatureAlgorithm.HS512)
             .compact();
     }
 
