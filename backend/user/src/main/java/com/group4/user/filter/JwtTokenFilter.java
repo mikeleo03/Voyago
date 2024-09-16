@@ -1,10 +1,12 @@
 package com.group4.user.filter;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,7 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final TokenService tokenService; // Custom JWT service for decoding the token
+    private final TokenService tokenService;
 
     @Autowired
     public JwtTokenFilter(TokenService tokenService) {
@@ -35,10 +37,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         if (token != null && token.startsWith("Bearer ")) {
             String jwt = token.substring(7);
             
-            // Decode JWT and store the username in the SecurityContextHolder
+            // Decode JWT and store the username and roles in the SecurityContextHolder
             String username = tokenService.extractUsername(jwt);
+            List<String> roles = tokenService.extractRoles(jwt);
+            
+            // Convert roles to granted authorities
+            List<SimpleGrantedAuthority> authorities = roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
             UsernamePasswordAuthenticationToken authentication = 
-                new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+                new UsernamePasswordAuthenticationToken(username, null, authorities);
             
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
@@ -46,4 +55,3 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-
