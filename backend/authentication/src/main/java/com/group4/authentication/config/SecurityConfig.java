@@ -33,8 +33,8 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private RsaKeyConfigProperties rsaKeyConfigProperties;
-    private JpaUserDetailsService jpaUserDetailsService;
+    private final RsaKeyConfigProperties rsaKeyConfigProperties;
+    private final JpaUserDetailsService jpaUserDetailsService;
 
     @Autowired
     public SecurityConfig(RsaKeyConfigProperties rsaKeyConfigProperties, JpaUserDetailsService jpaUserDetailsService) {
