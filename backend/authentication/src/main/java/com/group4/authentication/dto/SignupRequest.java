@@ -1,20 +1,31 @@
 package com.group4.authentication.dto;
 
-import com.group4.authentication.data.model.Role;
-import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@Validated
+@NoArgsConstructor
+@AllArgsConstructor
 public class SignupRequest {
 
     @NotBlank(message = "Username is required")
+    @NotNull(message = "Username can't be NULL")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Username can only contain letters and spaces")
     private String username;
 
     @NotBlank(message = "Email is required")
+    @NotNull(message = "Email can't be NULL")
     @Email(message = "Email should be valid")
     private String email;
 
@@ -23,8 +34,5 @@ public class SignupRequest {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).+$",
              message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
     private String password;
-
-    // For signup, role is fixed to CUSTOMER
-    private String role = Role.CUSTOMER.toString();
 }
 

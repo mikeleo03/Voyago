@@ -1,8 +1,7 @@
 package com.group4.authentication.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 
 @Data
 public class LoginRequest {

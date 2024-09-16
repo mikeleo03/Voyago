@@ -1,17 +1,5 @@
 package com.group4.authentication.services.impl;
 
-import com.group4.authentication.data.model.Role;
-import com.group4.authentication.data.model.User;
-import com.group4.authentication.data.repository.UserRepository;
-import com.group4.authentication.dto.LoginRequest;
-import com.group4.authentication.dto.SignupRequest;
-import com.group4.authentication.services.AuthService;
-import com.group4.authentication.services.TokenService;
-
-import jakarta.validation.Valid;
-
-import java.util.Objects;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +12,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.group4.authentication.data.model.User;
+import com.group4.authentication.data.repository.UserRepository;
+import com.group4.authentication.dto.LoginRequest;
+import com.group4.authentication.dto.SignupRequest;
+import com.group4.authentication.mapper.UserMapper;
+import com.group4.authentication.services.AuthService;
+import com.group4.authentication.services.TokenService;
+
+import jakarta.validation.Valid;
+
 @Service
 @Validated
 public class AuthServiceImpl implements AuthService {
@@ -32,40 +30,36 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
+    private final UserMapper userMapper;
 
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     @Autowired
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, AuthenticationManager authenticationManager) {
+    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, AuthenticationManager authenticationManager, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
         this.authenticationManager = authenticationManager;
+        this.userMapper = userMapper;
     }
 
+    @Override
     public void signup(@Valid SignupRequest signupRequest) {
         log.info("Processing signup for username: {}", signupRequest.getUsername());
-
-        if (Objects.equals(signupRequest.getRole(), Role.ADMIN.toString())) {
-            log.error("Attempted signup with ADMIN role.");
-            throw new IllegalArgumentException("Admins cannot sign up.");
-        }
 
         if (userRepository.existsByUsername(signupRequest.getUsername())) {
             log.error("Signup failed: Username already taken for {}", signupRequest.getUsername());
             throw new IllegalArgumentException("Username is already taken.");
         }
 
-        User user = new User();
-        user.setUsername(signupRequest.getUsername());
-        user.setEmail(signupRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        user.setRole(Role.CUSTOMER.toString());
+        User user = userMapper.toUser(signupRequest);
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // Ensure password is encoded
         userRepository.save(user);
 
         log.info("Signup successful for username: {}", signupRequest.getUsername());
     }
 
+    @Override
     public String login(LoginRequest loginRequest) {
         log.info("Attempting login for username: {}", loginRequest.getUsername());
 
@@ -79,6 +73,7 @@ public class AuthServiceImpl implements AuthService {
         return tokenService.generateToken(authentication);
     }
 
+    @Override
     public boolean validateToken(String token) {
         log.info("Validating token: {}", token);
 
