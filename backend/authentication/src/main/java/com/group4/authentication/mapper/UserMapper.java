@@ -15,5 +15,6 @@ public interface UserMapper {
     // Mapping SignupRequest to User entity
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "role", ignore = true)
     User toUser(SignupRequest signupRequest);
 }
