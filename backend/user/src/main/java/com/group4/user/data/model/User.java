@@ -1,4 +1,4 @@
-package com.group4.user.model;
+package com.group4.user.data.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
