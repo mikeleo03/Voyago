@@ -46,7 +46,7 @@ public class User extends AuditorBase {
     @JsonIgnore
     private String password;
 
-    @Column(name = "picture", nullable = false)
+    @Column(name = "picture")
     private String picture;
 
     @NotBlank(message = "Phone is mandatory")
