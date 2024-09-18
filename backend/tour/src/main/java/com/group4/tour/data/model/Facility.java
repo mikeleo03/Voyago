@@ -1,11 +1,10 @@
-package com.group4.tour.model;
+package com.group4.tour.data.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Range;
 
 import java.time.LocalDateTime;
 
@@ -13,28 +12,20 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Review")
-public class Review {
+@Table(name = "Facility")
+public class Facility {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID", length = 36, updatable = false, nullable = false)
+    @Column(length = 36)
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tourID", nullable = false)
     private Tour tour;
 
-    @NotBlank(message = "User ID is mandatory")
-    @Column(name = "userID", nullable = false)
-    private String userId;
-
-    @NotBlank(message = "Review is mandatory")
-    @Column(name = "review", nullable = false)
-    private String review;
-
-    @Range(min = 0, max = 5, message = "Rating must be between 0 and 5")
-    @Column(name = "rating", nullable = false)
-    private int rating;
+    @NotBlank(message = "Name is mandatory")
+    @Column(name = "name", nullable = false)
+    private String name;
 
     private LocalDateTime createdTime;
 

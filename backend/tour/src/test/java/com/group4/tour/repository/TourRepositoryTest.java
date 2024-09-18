@@ -1,6 +1,7 @@
 package com.group4.tour.repository;
 
-import com.group4.tour.model.Tour;
+import com.group4.tour.data.model.Tour;
+import com.group4.tour.data.repository.TourRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

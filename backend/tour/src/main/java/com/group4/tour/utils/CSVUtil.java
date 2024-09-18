@@ -1,6 +1,6 @@
 package com.group4.tour.utils;
 
-import com.group4.tour.model.Tour;
+import com.group4.tour.data.model.Tour;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;

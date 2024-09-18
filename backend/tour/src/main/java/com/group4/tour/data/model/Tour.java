@@ -1,5 +1,6 @@
-package com.group4.tour.model;
+package com.group4.tour.data.model;
 
+import com.group4.tour.auditor.AuditorBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Tour")
-public class Tour {
+public class Tour extends AuditorBase {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID", length = 36, updatable = false, nullable = false)

@@ -1,8 +1,8 @@
 package com.group4.tour.service;
 
 import com.group4.tour.exception.ResourceNotFoundException;
-import com.group4.tour.model.Tour;
-import com.group4.tour.repository.TourRepository;
+import com.group4.tour.data.model.Tour;
+import com.group4.tour.data.repository.TourRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

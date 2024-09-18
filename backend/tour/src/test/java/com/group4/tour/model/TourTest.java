@@ -1,5 +1,6 @@
 package com.group4.tour.model;
 
+import com.group4.tour.data.model.Tour;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
