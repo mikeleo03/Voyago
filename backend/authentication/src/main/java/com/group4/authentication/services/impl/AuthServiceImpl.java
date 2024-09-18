@@ -55,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
                 existingUser.setUsername(signupRequest.getUsername());
                 existingUser.setEmail(signupRequest.getEmail());
                 existingUser.setPassword(signupRequest.getPassword());
+                existingUser.setStatus(signupRequest.getStatus());
 
                 userRepository.save(existingUser);
                 log.info("User updated successfully for ID: {}", signupRequest.getId());
@@ -80,13 +81,27 @@ public class AuthServiceImpl implements AuthService {
     public String login(LoginRequest loginRequest) {
         log.info("Attempting login for username: {}", loginRequest.getUsername());
 
+        // Check if the user exists and get the user's status
+        User user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+
+        // Check if the user's status is ACTIVE
+        if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
+            log.warn("Login failed for username: {}. User is inactive.", loginRequest.getUsername());
+            throw new IllegalArgumentException("Your account has been deactivated by the admin. Please contact support.");
+        }
+
+        // Proceed with authentication if the user is ACTIVE
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+        // Set the authentication context
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        log.info("Login successful. Token requested for user with roles: {}", authentication.getAuthorities());
+        log.info("Login successful for username: {}. Token requested for user with roles: {}", 
+                loginRequest.getUsername(), authentication.getAuthorities());
 
+        // Generate and return the JWT token
         return tokenService.generateToken(authentication);
     }
 

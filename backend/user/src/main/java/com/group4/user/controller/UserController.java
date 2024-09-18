@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.group4.user.data.model.User;
+import com.group4.user.dto.UpdatePasswordDTO;
 import com.group4.user.dto.UserDTO;
 import com.group4.user.dto.UserSaveDTO;
 import com.group4.user.dto.UserUpdateDTO;
@@ -76,7 +77,7 @@ public class UserController {
     // [Customer, Admin] Update user password.
     // [PATCH] /:id/password
     @PatchMapping("/{id}/password")
-    public ResponseEntity<UserDTO> updatePassword(@PathVariable String id, @RequestBody String newPassword) {
+    public ResponseEntity<UserDTO> updatePassword(@PathVariable String id, @RequestBody @Valid UpdatePasswordDTO newPassword) {
         UserDTO updatedUser = userService.updatePassword(id, newPassword);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }

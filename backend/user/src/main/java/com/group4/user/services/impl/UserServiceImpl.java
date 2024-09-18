@@ -23,6 +23,7 @@ import com.group4.user.client.AuthClient;
 import com.group4.user.data.model.User;
 import com.group4.user.data.repository.UserRepository;
 import com.group4.user.dto.SignupRequest;
+import com.group4.user.dto.UpdatePasswordDTO;
 import com.group4.user.dto.UserDTO;
 import com.group4.user.dto.UserSaveDTO;
 import com.group4.user.dto.UserUpdateDTO;
@@ -168,7 +169,7 @@ public class UserServiceImpl implements UserService {
     // [Customer, Admin] Update existing user's password.
     @Override
     @Transactional
-    public UserDTO updatePassword(String id, String newPassword) {
+    public UserDTO updatePassword(String id, @Valid UpdatePasswordDTO newPassword) {
         log.info("Fetching user with ID: {}", id);
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
@@ -178,7 +179,7 @@ public class UserServiceImpl implements UserService {
         }
 
         log.info("Updating password for username: {}", existingUser.getUsername());
-        existingUser.setPassword(passwordEncoder.encode(newPassword));
+        existingUser.setPassword(passwordEncoder.encode(newPassword.getPassword()));
         userRepository.save(existingUser);
 
         // Propagate changes using the new method
@@ -195,6 +196,8 @@ public class UserServiceImpl implements UserService {
         SignupRequest signupRequest = userMapper.toSignupRequest(userMapper.toUserSaveDTO(user));
         signupRequest.setId(user.getId());
         signupRequest.setStatus(user.getStatus());
+
+        log.info("Propagating....: {}", signupRequest);
 
         // Propagate data to the AuthClient
         authClient.sendUpdateData(signupRequest)
