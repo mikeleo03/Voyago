@@ -1,5 +1,7 @@
 package com.group4.user.services.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,18 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import com.group4.user.data.model.Status;
 import com.group4.user.data.model.User;
 import com.group4.user.data.repository.UserRepository;
 import com.group4.user.dto.UserDTO;
 import com.group4.user.dto.UserSaveDTO;
 import com.group4.user.dto.UserUpdateDTO;
+import com.group4.user.exceptions.ResourceNotFoundException;
 import com.group4.user.mapper.UserMapper;
 import com.group4.user.services.UserService;
 
 import jakarta.validation.Valid;
-
-import com.group4.user.exceptions.ResourceNotFoundException;
 
 @Service
 @Validated
@@ -29,6 +29,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private static final String USER_NOT_FOUND = "User not found";
+
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     public UserServiceImpl(UserMapper userMapper, UserRepository userRepository) {
@@ -44,8 +46,8 @@ public class UserServiceImpl implements UserService {
                              .map(userMapper::toUserDTO);
     }
 
-    // [-][Indirect] Create a new user.
-    // Assumption : password sent to this service is already encrypted.
+    // [Indirect] Create a new user.
+    // Assumption: password sent to this service is already encrypted.
     @Override
     @Transactional
     public UserDTO createUser(@Valid UserSaveDTO userSaveDTO) {
@@ -54,7 +56,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserDTO(user);
     }
 
-    // [User, Admin] Update existing user.
+    // [Customer, Admin] Update existing user.
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     @Transactional
@@ -72,29 +74,43 @@ public class UserServiceImpl implements UserService {
     }
 
     // [Admin] Updates the status of an existing user.
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @Transactional
-    public UserDTO updateUserStatus(String id, Status status) {
+    public UserDTO updateUserStatus(String id, String status) {
+        log.info("Validating status: {}", status);
+        if (!"ACTIVE".equalsIgnoreCase(status) && !"INACTIVE".equalsIgnoreCase(status)) {
+            log.error("Invalid status value: {}", status);
+            throw new IllegalArgumentException("Invalid status. Allowed values are 'ACTIVE' and 'INACTIVE'.");
+        }
+    
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
-
-        existingUser.setStatus(status.toString());
+        log.info("Fetched user: {}", existingUser.getUsername());
+    
+        if (status.equalsIgnoreCase(existingUser.getStatus())) {
+            log.error("Status is already {}", existingUser.getStatus());
+            throw new IllegalArgumentException("The status is already " + existingUser.getStatus() + ".");
+        }
+    
+        existingUser.setStatus(status.toUpperCase());
+        log.info("Saving user with updated status");
         userRepository.save(existingUser);
-
+        log.info("User saved successfully");
+    
         return userMapper.toUserDTO(existingUser);
-    }
+    }    
 
-    // [-][Indirect] Update existing user's password.
-    // Assumption : password sent to this service is already encrypted.
+    // [Customer, Admin] Update existing user's password.
+    // Assumption: password sent to this service is already encrypted.
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     @Transactional
     public UserDTO updatePassword(String id, String newPassword) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
 
+        // Assumption: password is already encrypted before this point.
+        existingUser.setPassword(newPassword);
         userRepository.save(existingUser);
-        
+
         return userMapper.toUserDTO(existingUser);
     }
 }

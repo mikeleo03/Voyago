@@ -1,6 +1,5 @@
 package com.group4.user.services;
 
-import com.group4.user.data.model.Status;
 import com.group4.user.dto.UserDTO;
 import com.group4.user.dto.UserSaveDTO;
 import com.group4.user.dto.UserUpdateDTO;
@@ -22,7 +21,7 @@ public interface UserService {
     UserDTO updateUser(String id, @Valid UserUpdateDTO userUpdateDTO);
 
     // [Admin] Updates the status of an existing user.
-    UserDTO updateUserStatus(String id, Status status);
+    UserDTO updateUserStatus(String id, String status);
 
     // [-][Indirect] Update existing user's password.
     UserDTO updatePassword(String id, String newPassword);
