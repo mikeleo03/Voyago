@@ -30,28 +30,29 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
-        
+            throws ServletException, IOException {
+
         String token = request.getHeader("Authorization");
-        
+
         if (token != null && token.startsWith("Bearer ")) {
             String jwt = token.substring(7);
-            
-            // Decode JWT and store the username and roles in the SecurityContextHolder
+
+            // Use TokenService to extract details from the token
             String username = tokenService.extractUsername(jwt);
             List<String> roles = tokenService.extractRoles(jwt);
-            
-            // Convert roles to granted authorities
+
+            // Convert roles to granted authorities (prefixing with "ROLE_")
             List<SimpleGrantedAuthority> authorities = roles.stream()
-                .map(SimpleGrantedAuthority::new)
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role)) // Prefix roles with "ROLE_"
                 .collect(Collectors.toList());
 
+            // Set authentication in the context
             UsernamePasswordAuthenticationToken authentication = 
                 new UsernamePasswordAuthenticationToken(username, null, authorities);
-            
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        
+
         filterChain.doFilter(request, response);
     }
 }
