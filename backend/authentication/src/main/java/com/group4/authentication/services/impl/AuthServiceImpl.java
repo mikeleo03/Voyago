@@ -8,7 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -27,7 +26,6 @@ import jakarta.validation.Valid;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
@@ -35,28 +33,25 @@ public class AuthServiceImpl implements AuthService {
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     @Autowired
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, AuthenticationManager authenticationManager, UserMapper userMapper) {
+    public AuthServiceImpl(UserRepository userRepository, TokenService tokenService, AuthenticationManager authenticationManager, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
         this.authenticationManager = authenticationManager;
         this.userMapper = userMapper;
     }
 
     @Override
-    public void signup(@Valid SignupRequest signupRequest) {
-        log.info("Processing signup for username: {}", signupRequest.getUsername());
-
-        if (userRepository.existsByUsername(signupRequest.getUsername())) {
-            log.error("Signup failed: Username already taken for {}", signupRequest.getUsername());
-            throw new IllegalArgumentException("Username is already taken.");
+    public boolean signup(@Valid SignupRequest signupRequest) {
+        try {
+            log.info("Sent data: {}", signupRequest);
+            User user = userMapper.toUser(signupRequest);
+            log.info("Mapped data: {}", user);
+            userRepository.save(user);
+            return true;
+        } catch (Exception e) {
+            log.error("Signup failed: {}", e.getMessage());
+            return false;
         }
-
-        User user = userMapper.toUser(signupRequest);
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // Ensure password is encoded
-        userRepository.save(user);
-
-        log.info("Signup successful for username: {}", signupRequest.getUsername());
     }
 
     @Override
