@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.group4.user.data.model.User;
 import com.group4.user.dto.UserDTO;
 import com.group4.user.dto.UserSaveDTO;
 import com.group4.user.dto.UserUpdateDTO;
@@ -43,8 +44,8 @@ public class UserController {
     // [GET] /
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserDTO>> getAllUsers(Pageable pageable) {
-        Page<UserDTO> users = userService.getAllUsers(pageable);
+    public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
+        Page<User> users = userService.getAllUsers(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 

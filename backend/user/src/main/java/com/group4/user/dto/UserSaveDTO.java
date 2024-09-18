@@ -30,7 +30,6 @@ public class UserSaveDTO {
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @NotBlank(message = "Password is required")
     @Column(name = "password", nullable = false)
     @Size(min = 12, message = "Password must be at least 12 characters long")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).+$",

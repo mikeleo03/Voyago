@@ -41,9 +41,8 @@ public class UserServiceImpl implements UserService {
     // [Admin] Retrieves a paginated list of all Users.
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<UserDTO> getAllUsers(Pageable pageable) {
-        return userRepository.findAll(pageable)
-                             .map(userMapper::toUserDTO);
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     // [Indirect] Create a new user.
@@ -52,6 +51,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDTO createUser(@Valid UserSaveDTO userSaveDTO) {
         User user = userMapper.toUser(userSaveDTO);
+        log.info("User data: {}", user);
         userRepository.save(user);
         return userMapper.toUserDTO(user);
     }
@@ -92,6 +92,7 @@ public class UserServiceImpl implements UserService {
     
         existingUser.setStatus(status.toUpperCase());
         log.info("Saving user with updated status");
+        log.info("User data: {}", existingUser);
         userRepository.save(existingUser);
         log.info("User saved successfully");
     
