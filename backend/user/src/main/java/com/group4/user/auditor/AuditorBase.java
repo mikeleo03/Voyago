@@ -15,19 +15,19 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AuditorBase {
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private LocalDateTime createdAt;
-
     @CreatedBy
-    @Column(name = "created_by", updatable = false, length = 50)
+    @Column(name = "created_by", nullable = false, length = 255)
     private String createdBy;
 
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    @CreatedDate
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
     @LastModifiedBy
-    @Column(name = "updated_by", length = 50)
+    @Column(name = "updated_by", length = 255)
     private String updatedBy;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

@@ -32,4 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
+# Ignore actual private and public keys in certs/ directory
+private-key.pem
+public-key.pem
 env.properties

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.group4</groupId>
 	<artifactId>user</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<name>User Service</name>
 	<description>User Service Final Project</description>
 	<url/>
@@ -155,6 +155,13 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<!-- Nimbus JOSE + JWT -->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>9.40</version>
 		</dependency>
 
 		<!-- JWT support -->
