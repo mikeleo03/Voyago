@@ -1,5 +1,6 @@
 <!-- Navigation Bar -->
-<div class="flex items-center justify-between px-16 py-4 sticky top-0 z-50 text-white backdrop-blur-sm bg-black/60">
+<div [ngClass]="{'bg-black/80 backdrop-blur-sm': isScrolled, 'bg-transparent': !isScrolled}" 
+     class="flex items-center justify-between px-16 py-4 sticky top-0 z-50 text-white transition-all duration-300">
 
     <!-- Left side (Logo) -->
     <div class="flex items-center">
@@ -18,7 +19,7 @@
     <!-- Right side (Login & Register) -->
     <div class="flex items-center space-x-12">
         <a href="/login" class="text-white text-lg hover:underline">Login</a>
-        <a href="/register" class="bg-yellow-500 text-white px-10 py-1.5 rounded-full hover:bg-yellow-600 transition-colors">Register</a>
+        <a href="/register" class="bg-yellow-500 text-white px-10 py-1.5 rounded-full transition-transform transform ease-in-out hover:scale-105">Register</a>
     </div>
   
     <!-- Hamburger Menu for Mobile -->
