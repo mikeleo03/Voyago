@@ -9,7 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group4.user.auditor.AuditorBase;
@@ -18,9 +19,9 @@ import com.group4.user.auditor.AuditorBase;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
 @Table(name = "User")
+@EqualsAndHashCode(callSuper = true)
+@EntityListeners(AuditingEntityListener.class)
 public class User extends AuditorBase {
 
     @Id

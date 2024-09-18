@@ -1,5 +1,6 @@
 package com.group4.user.services;
 
+import com.group4.user.data.model.User;
 import com.group4.user.dto.UserDTO;
 import com.group4.user.dto.UserSaveDTO;
 import com.group4.user.dto.UserUpdateDTO;
@@ -12,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 public interface UserService {
 
     // [Admin] Retrieves a paginated list of all Users.
-    Page<UserDTO> getAllUsers(Pageable pageable);
+    Page<User> getAllUsers(Pageable pageable);
 
     // [-][Indirect] Create a new user.
     UserDTO createUser(@Valid UserSaveDTO userSaveDTO);
