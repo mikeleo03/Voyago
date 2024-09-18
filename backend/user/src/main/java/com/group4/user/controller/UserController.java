@@ -5,10 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -63,12 +60,6 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public ResponseEntity<UserDTO> updateUser(@PathVariable String id, @RequestBody @Valid UserUpdateDTO userUpdateDTO) {
-        String currentUserId = getCurrentUserId();
-
-        if (!id.equals(currentUserId) && !hasRoleAdmin()) {
-            throw new AccessDeniedException("You are not authorized to update this user.");
-        }
-
         UserDTO updatedUser = userService.updateUser(id, userUpdateDTO);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
@@ -85,31 +76,8 @@ public class UserController {
     // [Customer, Admin] Update user password.
     // [PATCH] /:id/password
     @PatchMapping("/{id}/password")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
-    public ResponseEntity<UserDTO> updatePassword(@PathVariable String id, @RequestParam String newPassword) {
-        String currentUserId = getCurrentUserId();
-
-        if (!id.equals(currentUserId) && !hasRoleAdmin()) {
-            throw new AccessDeniedException("You are not authorized to update this password.");
-        }
-
+    public ResponseEntity<UserDTO> updatePassword(@PathVariable String id, @RequestBody String newPassword) {
         UserDTO updatedUser = userService.updatePassword(id, newPassword);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
-    }
-
-    // Helper method to get the current authenticated user's ID (username from JWT)
-    private String getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            return authentication.getName();  // Extract the `sub` field (username) from the JWT
-        }
-        throw new IllegalStateException("User not authenticated");
-    }
-
-    // Helper method to check if the current user has the role ADMIN
-    private boolean hasRoleAdmin() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
     }
 }

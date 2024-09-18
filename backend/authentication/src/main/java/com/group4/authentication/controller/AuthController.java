@@ -34,11 +34,11 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<Boolean> signup(@RequestBody @Valid SignupRequest signupRequest) {
-        log.info("Signup request received for username: {}", signupRequest.getUsername());
-        boolean isSuccess = authService.signup(signupRequest);
-        log.info("Signup successful for username: {}", signupRequest.getUsername());
+    @PostMapping("/update")
+    public ResponseEntity<Boolean> update(@RequestBody @Valid SignupRequest signupRequest) {
+        log.info("Update request received for ID: {}", signupRequest.getId());
+        boolean isSuccess = authService.update(signupRequest);
+        log.info("Update successful for ID: {}", signupRequest.getId());
         return ResponseEntity.status(HttpStatus.OK).body(isSuccess);
     }
 

@@ -55,13 +55,13 @@ public class AuthClient {
     }
 
     // Send some user data to AuthService after signup
-    public Mono<Boolean> sendSignInData(SignupRequest signupRequest) {
+    public Mono<Boolean> sendUpdateData(SignupRequest signupRequest) {
         log.debug("Sending request to the Auth Service: {}", signupRequest);
 
         WebClient webClient = getWebClientForAuthService();
         
         return webClient.post()
-                .uri("/signup")
+                .uri("/update")
                 .body(Mono.just(signupRequest), SignupRequest.class)  // Passing the signupRequest as the request body
                 .retrieve()
                 .bodyToMono(Boolean.class)
