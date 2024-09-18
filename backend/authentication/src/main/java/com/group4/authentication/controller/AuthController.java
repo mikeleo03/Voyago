@@ -35,11 +35,11 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody @Valid SignupRequest signupRequest) {
+    public ResponseEntity<Boolean> signup(@RequestBody @Valid SignupRequest signupRequest) {
         log.info("Signup request received for username: {}", signupRequest.getUsername());
-        authService.signup(signupRequest);
+        boolean isSuccess = authService.signup(signupRequest);
         log.info("Signup successful for username: {}", signupRequest.getUsername());
-        return ResponseEntity.status(HttpStatus.OK).body("Sign up success");
+        return ResponseEntity.status(HttpStatus.OK).body(isSuccess);
     }
 
     @PostMapping("/login")

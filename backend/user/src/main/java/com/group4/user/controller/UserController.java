@@ -27,6 +27,8 @@ import com.group4.user.dto.UserUpdateDTO;
 import com.group4.user.services.UserService;
 
 import jakarta.validation.Valid;
+import reactor.core.publisher.Mono;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -49,13 +51,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
-    // [Indirect] Create a new user.
-    // Assumption: password sent to this service is already encrypted.
-    // [POST] /
-    @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserSaveDTO userSaveDTO) {
-        UserDTO createdUser = userService.createUser(userSaveDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    // [-] Create a new user, For signup purpose
+    // [POST] /signup
+    @PostMapping("/signup")
+    public Mono<ResponseEntity<Map<String, String>>> signup(@RequestBody @Valid UserSaveDTO userSaveDTO) {
+        return userService.signup(userSaveDTO);
     }
 
     // [Customer, Admin] Update an existing user.

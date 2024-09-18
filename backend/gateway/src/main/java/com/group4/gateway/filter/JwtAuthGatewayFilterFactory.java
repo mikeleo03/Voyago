@@ -27,7 +27,7 @@ public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Ob
             logger.info("Request Path: {}", path);
 
             // Skip JWT validation for specific paths
-            if ("/api/v1/auth/login".equals(path) || "/api/v1/auth/signup".equals(path)) {
+            if ("/api/v1/auth/login".equals(path) || "/api/v1/users/signup".equals(path)) {
                 logger.info("Skipping JWT validation for path: {}", path);
                 return chain.filter(exchange);
             }
