@@ -1,6 +1,13 @@
 package com.group4.gateway.config;
 
-import com.group4.gateway.exceptions.JwtDecodingException;
+import java.io.IOException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,10 +19,7 @@ import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import java.security.KeyFactory;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
+import com.group4.gateway.exceptions.JwtDecodingException;
 
 @Configuration
 public class GatewaySecurityConfig {
@@ -29,18 +33,10 @@ public class GatewaySecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) throws JwtDecodingException {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(exchange -> exchange
-                    .pathMatchers("/api/v1/auth/**").permitAll()
+                .authorizeExchange((var exchange) -> exchange
+                    .pathMatchers("/api/v1/**").permitAll()
                     .anyExchange().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2
-                    .jwt(jwt -> {
-                        try {
-                            jwt.jwtDecoder(jwtDecoder());
-                        } catch (Exception e) {
-                            throw new JwtDecodingException("Failed to decode JWT", e);
-                        }
-                    }))
                 .build();
     }
 
@@ -49,7 +45,7 @@ public class GatewaySecurityConfig {
         try {
             RSAPublicKey publicKey = loadPublicKey();
             return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
-        } catch (Exception e) {
+        } catch (JwtDecodingException e) {
             throw new JwtDecodingException("Error decoding JWT", e);
         }
     }
@@ -65,7 +61,7 @@ public class GatewaySecurityConfig {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyContent));
             return (RSAPublicKey) keyFactory.generatePublic(keySpec);
-        } catch (Exception e) {
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new JwtDecodingException("Failed to load the public key", e);
         }
     }    

@@ -1,8 +1,11 @@
 package com.group4.authentication.config;
 
+import java.io.IOException;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
@@ -12,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.PostConstruct;
 
 import com.group4.authentication.exceptions.JwtDecodingException;
@@ -54,7 +58,7 @@ public class RsaKeyLoader {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyContent));
             return (RSAPublicKey) keyFactory.generatePublic(keySpec);
-        } catch (Exception e) {
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new JwtDecodingException("Failed to load the public key", e);
         }
     }
@@ -70,7 +74,7 @@ public class RsaKeyLoader {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyContent));
             return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
-        } catch (Exception e) {
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new JwtDecodingException("Failed to load the private key", e);
         }
     }

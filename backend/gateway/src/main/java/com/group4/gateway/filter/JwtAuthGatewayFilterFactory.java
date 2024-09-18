@@ -13,7 +13,7 @@ import com.group4.gateway.client.AuthClient;
 public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Object> {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthGatewayFilterFactory.class);
-    
+
     private final AuthClient authClient;
 
     public JwtAuthGatewayFilterFactory(AuthClient authClient) {
@@ -32,18 +32,29 @@ public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Ob
                 return chain.filter(exchange);
             }
 
-            String token = exchange.getRequest().getHeaders().getFirst("Authorization");
-            if (token != null && token.startsWith("Bearer ")) {
-                token = token.substring(7);
+            String authorizationHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
+            String token = null;
+
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                token = authorizationHeader.substring(7); // Strip "Bearer " from the token
             }
 
             logger.info("Validating JWT token: {}", token);
 
-            return authClient.validateJwt(token)
+            // Validate the JWT token with the AuthClient
+            String finalToken = token; // Define a final or effectively final variable to pass into the lambda
+            return authClient.validateJwt(finalToken)
                 .flatMap(valid -> {
                     if (Boolean.TRUE.equals(valid)) {
                         logger.info("JWT validation successful for token");
-                        return chain.filter(exchange);
+
+                        // Forward the validated JWT to the downstream service
+                        // Add the Authorization header with the Bearer token
+                        return chain.filter(exchange.mutate()
+                            .request(exchange.getRequest().mutate()
+                                .header("Authorization", "Bearer " + finalToken)
+                                .build())
+                            .build());
                     } else {
                         logger.warn("JWT validation failed for token");
                         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);

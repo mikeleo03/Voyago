@@ -12,6 +12,14 @@ spring:
           filters:
             - name: ApiKey
             - name: JwtAuth
+            
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - name: ApiKey
+            - name: JwtAuth
 
 management:
   endpoints:
