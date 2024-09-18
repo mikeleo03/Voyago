@@ -41,15 +41,37 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean signup(@Valid SignupRequest signupRequest) {
+    public boolean update(@Valid SignupRequest signupRequest) {
         try {
-            log.info("Sent data: {}", signupRequest);
-            User user = userMapper.toUser(signupRequest);
-            log.info("Mapped data: {}", user);
-            userRepository.save(user);
+            log.info("Processing update for username: {}", signupRequest.getUsername());
+
+            // Check if the user already exists by username
+            User existingUser = userRepository.findById(signupRequest.getId()).orElse(null);
+
+            if (existingUser != null) {
+                log.info("User found with ID: {}. Updating existing user.", signupRequest.getId());
+
+                // Update existing user fields
+                existingUser.setUsername(signupRequest.getUsername());
+                existingUser.setEmail(signupRequest.getEmail());
+                existingUser.setPassword(signupRequest.getPassword());
+
+                userRepository.save(existingUser);
+                log.info("User updated successfully for ID: {}", signupRequest.getId());
+            } else {
+                log.info("No user found with username: {}. Creating new user.", signupRequest.getUsername());
+
+                // Convert SignupRequest to User and create a new entry
+                log.info("Request: {}", signupRequest);
+                User newUser = userMapper.toUser(signupRequest);
+                log.info("Map Result: {}", newUser);
+                userRepository.save(newUser);
+                log.info("New user created successfully for username: {}", signupRequest.getUsername());
+            }
+
             return true;
         } catch (Exception e) {
-            log.error("Signup failed: {}", e.getMessage());
+            log.error("Failed to update/create user for username: {}. Error: {}", signupRequest.getUsername(), e.getMessage());
             return false;
         }
     }
