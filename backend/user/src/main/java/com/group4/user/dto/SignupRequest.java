@@ -1,4 +1,4 @@
-package com.group4.authentication.dto;
+package com.group4.user.dto;
 
 import org.springframework.validation.annotation.Validated;
 

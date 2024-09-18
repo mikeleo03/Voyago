@@ -12,8 +12,8 @@ import jakarta.validation.Valid;
 @Validated
 public interface AuthService {
 
-    // Doing signup
-    void signup(@Valid SignupRequest signupRequest);
+    // Doing update user data, passed from User service
+    boolean update(@Valid SignupRequest signupRequest);
 
     // Doing login
     String login(LoginRequest loginRequest);

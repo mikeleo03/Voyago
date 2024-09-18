@@ -1,6 +1,7 @@
 package com.group4.user.mapper;
 
 import com.group4.user.data.model.User;
+import com.group4.user.dto.SignupRequest;
 import com.group4.user.dto.UserDTO;
 import com.group4.user.dto.UserSaveDTO;
 import org.mapstruct.Mapper;
@@ -35,4 +36,7 @@ public interface UserMapper {
     @Mapping(target = "picture", ignore = true)
     @Mapping(target = "status", ignore = true)
     User toUser(UserSaveDTO userSaveDTO);
+
+    // UserSaveDTO - SignupRequest
+    SignupRequest toSignupRequest(UserSaveDTO userSaveDTO);
 }

@@ -8,7 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -27,7 +26,6 @@ import jakarta.validation.Valid;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
@@ -35,41 +33,75 @@ public class AuthServiceImpl implements AuthService {
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     @Autowired
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService, AuthenticationManager authenticationManager, UserMapper userMapper) {
+    public AuthServiceImpl(UserRepository userRepository, TokenService tokenService, AuthenticationManager authenticationManager, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
         this.authenticationManager = authenticationManager;
         this.userMapper = userMapper;
     }
 
     @Override
-    public void signup(@Valid SignupRequest signupRequest) {
-        log.info("Processing signup for username: {}", signupRequest.getUsername());
+    public boolean update(@Valid SignupRequest signupRequest) {
+        try {
+            log.info("Processing update for username: {}", signupRequest.getUsername());
 
-        if (userRepository.existsByUsername(signupRequest.getUsername())) {
-            log.error("Signup failed: Username already taken for {}", signupRequest.getUsername());
-            throw new IllegalArgumentException("Username is already taken.");
+            // Check if the user already exists by username
+            User existingUser = userRepository.findById(signupRequest.getId()).orElse(null);
+
+            if (existingUser != null) {
+                log.info("User found with ID: {}. Updating existing user.", signupRequest.getId());
+
+                // Update existing user fields
+                existingUser.setUsername(signupRequest.getUsername());
+                existingUser.setEmail(signupRequest.getEmail());
+                existingUser.setPassword(signupRequest.getPassword());
+                existingUser.setStatus(signupRequest.getStatus());
+
+                userRepository.save(existingUser);
+                log.info("User updated successfully for ID: {}", signupRequest.getId());
+            } else {
+                log.info("No user found with username: {}. Creating new user.", signupRequest.getUsername());
+
+                // Convert SignupRequest to User and create a new entry
+                log.info("Request: {}", signupRequest);
+                User newUser = userMapper.toUser(signupRequest);
+                log.info("Map Result: {}", newUser);
+                userRepository.save(newUser);
+                log.info("New user created successfully for username: {}", signupRequest.getUsername());
+            }
+
+            return true;
+        } catch (Exception e) {
+            log.error("Failed to update/create user for username: {}. Error: {}", signupRequest.getUsername(), e.getMessage());
+            return false;
         }
-
-        User user = userMapper.toUser(signupRequest);
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword())); // Ensure password is encoded
-        userRepository.save(user);
-
-        log.info("Signup successful for username: {}", signupRequest.getUsername());
     }
 
     @Override
     public String login(LoginRequest loginRequest) {
         log.info("Attempting login for username: {}", loginRequest.getUsername());
 
+        // Check if the user exists and get the user's status
+        User user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+
+        // Check if the user's status is ACTIVE
+        if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
+            log.warn("Login failed for username: {}. User is inactive.", loginRequest.getUsername());
+            throw new IllegalArgumentException("Your account has been deactivated by the admin. Please contact support.");
+        }
+
+        // Proceed with authentication if the user is ACTIVE
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+        // Set the authentication context
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        log.info("Login successful. Token requested for user with roles: {}", authentication.getAuthorities());
+        log.info("Login successful for username: {}. Token requested for user with roles: {}", 
+                loginRequest.getUsername(), authentication.getAuthorities());
 
+        // Generate and return the JWT token
         return tokenService.generateToken(authentication);
     }
 
