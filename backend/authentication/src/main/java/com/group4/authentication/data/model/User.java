@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
@@ -24,7 +22,6 @@ import lombok.NoArgsConstructor;
 public class User {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ID", length = 36, updatable = false, nullable = false)
     private String id;
 
@@ -47,5 +44,8 @@ public class User {
 
     @Column(name = "role", nullable = false)
     private String role = Role.CUSTOMER.toString();
+
+    @Column(name = "status", nullable = false)
+    private String status = Status.ACTIVE.toString();
 }
 

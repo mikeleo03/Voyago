@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SignupRequest {
 
+    private String id;
+    
     @NotBlank(message = "Username is required")
     @NotNull(message = "Username can't be NULL")
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Username can only contain letters and spaces")
@@ -34,5 +36,7 @@ public class SignupRequest {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).+$",
              message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
     private String password;
+
+    private String status;
 }
 
