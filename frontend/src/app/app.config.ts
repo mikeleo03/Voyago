@@ -6,6 +6,7 @@ import { provideToastr } from 'ngx-toastr';
 
 import { routes } from './app.routes';
 import { TokenInterceptor } from './main/guards/intercepts/token.interceptor';
+import { ApiKeyInterceptor } from './main/guards/intercepts/apiKey.interceptor';
 // import { AuthService } from './services/auth/auth.service';
 
 export const appConfig: ApplicationConfig = {
@@ -13,7 +14,10 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([TokenInterceptor.provideInterceptor()])
+      withInterceptors([
+        ApiKeyInterceptor.provideInterceptor(),
+        TokenInterceptor.provideInterceptor()
+      ])
     ),
     // AuthService,
     provideAnimations(),
