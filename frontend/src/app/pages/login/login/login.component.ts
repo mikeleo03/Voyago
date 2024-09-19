@@ -29,7 +29,6 @@ export class LoginComponent {
   ngOnInit() {
     this.toastrService.overlayContainer = this.toastContainer;
   }
-
   login() {
     this.authService.login(this.loginRequest).subscribe({
       next: (response) => {
@@ -42,10 +41,29 @@ export class LoginComponent {
         }
       },
       error: (error) => {
-        if (error.status === 401) {
-          this.toastrService.error(error.error.error);
+        // Check if error.status exists and act accordingly
+        if (error.status === 400) {
+          // Handle 400 Bad Request with multiple errors
+          if (error.error?.errors && Array.isArray(error.error.errors)) {
+            // Display each error as its own toast
+            error.error.errors.forEach((errMessage: string) => {
+              this.toastrService.error(errMessage);
+            });
+          } else if (error.error?.error) {
+            // Handle single error message
+            this.toastrService.error(error.error.error);
+          } else {
+            // Handle unexpected format of 400 errors
+            this.toastrService.error('Bad Request: Please check your inputs.');
+          }
+        } else if (error.status === 401) {
+          // Handle 401 Unauthorized errors
+          this.toastrService.error('Unauthorized: Invalid username or password.');
+        } else {
+          // Handle any other unexpected errors
+          this.toastrService.error(error.error.error + ", please check your username or password." || 'An unexpected error occurred. Please try again.');
         }
       }
     });
-  }  
+  }    
 }
