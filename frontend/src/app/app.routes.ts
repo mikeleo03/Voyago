@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { RouterConfig } from './config/app.constants';
-import { AuthGuard } from './main/guards/auth-guard.service';
+// import { AuthGuard } from './main/guards/auth-guard.service';
 
 export const routes: Routes = [
     {
@@ -12,7 +12,7 @@ export const routes: Routes = [
     },
     {
         path: '',
-        canActivate: [AuthGuard],
+        // canActivate: [AuthGuard],
         children: [
             {
                 path: RouterConfig['HOME'].path,
