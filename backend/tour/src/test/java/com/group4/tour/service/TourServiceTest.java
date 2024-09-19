@@ -1,104 +1,171 @@
-package com.group4.tour.service;
+package com.group4.tour.service.impl;
 
-import com.group4.tour.exception.ResourceNotFoundException;
 import com.group4.tour.data.model.Tour;
 import com.group4.tour.data.repository.TourRepository;
+import com.group4.tour.exception.ResourceNotFoundException;
+import com.group4.tour.utils.CSVUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Sort;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class TourServiceTest {
+class TourServiceImplTest {
 
     @Mock
     private TourRepository tourRepository;
 
     @InjectMocks
-    private TourService tourService;
+    private TourServiceImpl tourService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.openMocks(this); // Initialize mocks
     }
 
     @Test
-    void testGetAllToursWithPriceSortAsc() {
+    void testGetAllToursByTitle() {
         Tour tour = new Tour();
-        tour.setPrices(1000);
-        when(tourRepository.findAll(Sort.by(Sort.Direction.ASC, "prices"))).thenReturn(Collections.singletonList(tour));
+        tour.setTitle("Beach Tour");
 
-        List<Tour> tours = tourService.getAllTours(null, null, null, null, "asc");
-        assertFalse(tours.isEmpty());
-        assertEquals(1000, tours.get(0).getPrices());
-        verify(tourRepository, times(1)).findAll(Sort.by(Sort.Direction.ASC, "prices"));
+        when(tourRepository.findByTitleContaining("Beach")).thenReturn(List.of(tour));
+
+        List<Tour> result = tourService.getAllTours("Beach", null, null, null, null);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getTitle()).isEqualTo("Beach Tour");
+        verify(tourRepository, times(1)).findByTitleContaining("Beach");
+    }
+
+    @Test
+    void testGetAllToursByPrices() {
+        Tour tour = new Tour();
+        tour.setPrices(100);
+
+        when(tourRepository.findByPricesBetween(50, 150, Sort.by(Sort.Direction.ASC, "prices"))).thenReturn(List.of(tour));
+
+        List<Tour> result = tourService.getAllTours(null, 50, 150, null, null);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getPrices()).isEqualTo(100);
+        verify(tourRepository, times(1)).findByPricesBetween(50, 150, Sort.by(Sort.Direction.ASC, "prices"));
+    }
+
+    @Test
+    void testGetTourByIdSuccess() {
+        Tour tour = new Tour();
+        tour.setId("1");
+        tour.setTitle("Beach Tour");
+
+        when(tourRepository.findById("1")).thenReturn(Optional.of(tour));
+
+        Tour result = tourService.getTourById("1");
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTitle()).isEqualTo("Beach Tour");
+        verify(tourRepository, times(1)).findById("1");
     }
 
     @Test
     void testGetTourByIdNotFound() {
-        when(tourRepository.findById(anyString())).thenReturn(Optional.empty());
+        when(tourRepository.findById("1")).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
-            tourService.getTourById("nonexistent-id");
-        });
-
-        assertEquals("Tour not found for this id : nonexistent-id", exception.getMessage());
+        assertThrows(ResourceNotFoundException.class, () -> tourService.getTourById("1"));
+        verify(tourRepository, times(1)).findById("1");
     }
 
     @Test
     void testCreateTour() {
         Tour tour = new Tour();
-        when(tourRepository.save(tour)).thenReturn(tour);
+        tour.setId("1");
+        tour.setTitle("Beach Tour");
 
-        Tour createdTour = tourService.createTour(tour);
-        assertNotNull(createdTour);
+        when(tourRepository.save(any(Tour.class))).thenReturn(tour);
+
+        Tour result = tourService.createTour(tour);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo("1");
         verify(tourRepository, times(1)).save(tour);
     }
 
     @Test
-    void testUpdateTour() {
+    void testUpdateTourSuccess() {
         Tour existingTour = new Tour();
-        Tour updatedTour = new Tour();
-        when(tourRepository.findById(anyString())).thenReturn(Optional.of(existingTour));
-        when(tourRepository.save(existingTour)).thenReturn(existingTour);
+        existingTour.setId("1");
+        existingTour.setTitle("Old Tour");
 
-        Tour result = tourService.updateTour("some-id", updatedTour);
-        assertNotNull(result);
-        verify(tourRepository, times(1)).findById("some-id");
+        Tour updatedTour = new Tour();
+        updatedTour.setTitle("New Tour");
+
+        when(tourRepository.findById("1")).thenReturn(Optional.of(existingTour));
+        when(tourRepository.save(any(Tour.class))).thenReturn(existingTour);
+
+        Tour result = tourService.updateTour("1", updatedTour);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTitle()).isEqualTo("New Tour");
+        verify(tourRepository, times(1)).findById("1");
         verify(tourRepository, times(1)).save(existingTour);
     }
 
     @Test
-    void testReduceQuota() {
-        Tour tour = new Tour();
-        tour.setQuota(10);
-        when(tourRepository.findById(anyString())).thenReturn(Optional.of(tour));
-        when(tourRepository.save(tour)).thenReturn(tour);
+    void testUpdateTourNotFound() {
+        Tour updatedTour = new Tour();
+        updatedTour.setTitle("New Tour");
 
-        tourService.reduceQuota("some-id", 5);
-        assertEquals(5, tour.getQuota());
-        verify(tourRepository, times(1)).findById("some-id");
-        verify(tourRepository, times(1)).save(tour);
+        when(tourRepository.findById("1")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> tourService.updateTour("1", updatedTour));
+        verify(tourRepository, times(1)).findById("1");
     }
 
     @Test
-    void testUpdateTourStatus() {
-        Tour tour = new Tour();
-        tour.setStatus("ACTIVE");
-        when(tourRepository.findById(anyString())).thenReturn(Optional.of(tour));
-        when(tourRepository.save(tour)).thenReturn(tour);
+    void testReduceQuota() {
+        Tour existingTour = new Tour();
+        existingTour.setId("1");
+        existingTour.setQuota(10);
 
-        tourService.updateTourStatus("some-id");
-        assertEquals("INACTIVE", tour.getStatus());
-        verify(tourRepository, times(1)).findById("some-id");
-        verify(tourRepository, times(1)).save(tour);
+        when(tourRepository.findById("1")).thenReturn(Optional.of(existingTour));
+
+        tourService.reduceQuota("1", 2);
+
+        assertThat(existingTour.getQuota()).isEqualTo(8);
+        verify(tourRepository, times(1)).findById("1");
+        verify(tourRepository, times(1)).save(existingTour);
+    }
+
+    @Test
+    void testImportToursFromCsv() {
+        MultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv", "id,title,detail\n1,Test Tour,Detail".getBytes());
+
+        when(CSVUtil.isCSVFormat(file)).thenReturn(true);
+        when(CSVUtil.csvToTours(file)).thenReturn(List.of(new Tour()));
+
+        String result = tourService.importToursFromCsv(file);
+
+        assertThat(result).contains("CSV import successful");
+        verify(tourRepository, times(1)).saveAll(anyList());
+    }
+
+    @Test
+    void testImportToursFromCsvInvalidFormat() {
+        MultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "data".getBytes());
+
+        when(CSVUtil.isCSVFormat(file)).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, () -> tourService.importToursFromCsv(file));
     }
 }

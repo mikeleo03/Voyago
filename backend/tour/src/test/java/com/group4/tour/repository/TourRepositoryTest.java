@@ -1,71 +1,91 @@
 package com.group4.tour.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.group4.tour.data.model.Tour;
 import com.group4.tour.data.repository.TourRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
-import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+@DataJpaTest(excludeAutoConfiguration = {WebMvcAutoConfiguration.class})
 class TourRepositoryTest {
+
     @Autowired
     private TourRepository tourRepository;
 
     @BeforeEach
     void setUp() {
-        tourRepository.deleteAll();
-    }
+        Tour tour1 = new Tour();
+        tour1.setId("1");
+        tour1.setTitle("Beach Tour");
+        tour1.setDetail("Enjoy the sunny beach");
+        tour1.setQuota(20);
+        tour1.setPrices(100);
+        tour1.setLocation("California");
+        tour1.setStatus("Available");
 
-    @Test
-    void testSaveAndFindTourById() {
-        Tour tour = new Tour();
-        tour.setTitle("Mountain Trek");
-        tour.setDetail("A challenging mountain trek.");
-        tour.setPrices(300000);
-        tour.setQuota(10);
-        tour.setLocation("Himalaya");
-        tour.setStatus("ACTIVE");
+        Tour tour2 = new Tour();
+        tour2.setId("2");
+        tour2.setTitle("Mountain Hiking");
+        tour2.setDetail("Explore the mountains");
+        tour2.setQuota(15);
+        tour2.setPrices(200);
+        tour2.setLocation("Colorado");
+        tour2.setStatus("Available");
 
-        Tour savedTour = tourRepository.save(tour);
+        Tour tour3 = new Tour();
+        tour3.setId("3");
+        tour3.setTitle("City Tour");
+        tour3.setDetail("Discover the city landmarks");
+        tour3.setQuota(30);
+        tour3.setPrices(150);
+        tour3.setLocation("New York");
+        tour3.setStatus("Available");
 
-        Optional<Tour> foundTour = tourRepository.findById(savedTour.getId());
-
-        assertTrue(foundTour.isPresent());
-        assertEquals("Mountain Trek", foundTour.get().getTitle());
-        assertEquals("A challenging mountain trek.", foundTour.get().getDetail());
+        tourRepository.save(tour1);
+        tourRepository.save(tour2);
+        tourRepository.save(tour3);
     }
 
     @Test
     void testFindByTitleContaining() {
-        Tour tour1 = new Tour();
-        tour1.setTitle("Ocean Dive");
-        tour1.setDetail("Explore the ocean depths.");
-        tour1.setPrices(250000);
-        tour1.setQuota(20);
-        tour1.setLocation("Great Barrier Reef");
-        tour1.setStatus("ACTIVE");
+        List<Tour> tours = tourRepository.findByTitleContaining("Tour");
 
-        Tour tour2 = new Tour();
-        tour2.setTitle("Mountain Adventure");
-        tour2.setDetail("Experience the thrill of the mountains.");
-        tour2.setPrices(150000);
-        tour2.setQuota(15);
-        tour2.setLocation("Rockies");
-        tour2.setStatus("ACTIVE");
+        assertThat(tours).hasSize(3);
+        assertThat(tours).extracting(Tour::getTitle).containsExactlyInAnyOrder("Beach Tour", "Mountain Hiking", "City Tour");
 
-        tourRepository.save(tour1);
-        tourRepository.save(tour2);
+        tours = tourRepository.findByTitleContaining("Beach");
+        assertThat(tours).hasSize(1);
+        assertThat(tours.get(0).getTitle()).isEqualTo("Beach Tour");
+    }
 
-        List<Tour> tours = tourRepository.findByTitleContaining("Adventure");
+    @Test
+    void testFindByPricesBetween() {
+        List<Tour> tours = tourRepository.findByPricesBetween(100, 150, Sort.by(Sort.Direction.ASC, "prices"));
 
-        assertEquals(1, tours.size());
-        assertEquals("Mountain Adventure", tours.get(0).getTitle());
+        assertThat(tours).hasSize(2);
+        assertThat(tours).extracting(Tour::getPrices).containsExactly(100, 150); // Ascending order
+
+        tours = tourRepository.findByPricesBetween(150, 200, Sort.by(Sort.Direction.DESC, "prices"));
+        assertThat(tours).hasSize(2);
+        assertThat(tours).extracting(Tour::getPrices).containsExactly(200, 150); // Descending order
+    }
+
+    @Test
+    void testFindByLocationContaining() {
+        List<Tour> tours = tourRepository.findByLocationContaining("California");
+
+        assertThat(tours).hasSize(1);
+        assertThat(tours.get(0).getLocation()).isEqualTo("California");
+
+        tours = tourRepository.findByLocationContaining("New");
+        assertThat(tours).hasSize(1);
+        assertThat(tours.get(0).getLocation()).isEqualTo("New York");
     }
 }
