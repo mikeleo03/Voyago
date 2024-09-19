@@ -49,14 +49,6 @@ public class Tour extends AuditorBase {
     @Column(name = "status", nullable = false)
     private String status;
 
-    private LocalDateTime createdTime;
-
-    private LocalDateTime updatedTime;
-
-    private String createdBy;
-
-    private String updatedBy;
-
     @OneToMany(mappedBy = "tour", fetch = FetchType.LAZY)
     private Set<Facility> facilities;
 

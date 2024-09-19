@@ -62,8 +62,11 @@ public class TourServiceImpl implements TourService {
         existingTour.setQuota(updatedTour.getQuota());
         existingTour.setLocation(updatedTour.getLocation());
         existingTour.setImage(updatedTour.getImage());
-        existingTour.setUpdatedTime(updatedTour.getUpdatedTime());
+        existingTour.setStatus(updatedTour.getStatus());
         existingTour.setUpdatedBy(updatedTour.getUpdatedBy());
+        existingTour.setUpdatedAt(updatedTour.getUpdatedAt());
+        existingTour.setCreatedBy(updatedTour.getCreatedBy());
+        existingTour.setCreatedAt(updatedTour.getCreatedAt());
         return tourRepository.save(existingTour);
     }
 
