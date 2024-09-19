@@ -1,10 +1,8 @@
-import { jwtDecode } from "jwt-decode";
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
-// import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -13,23 +11,27 @@ import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
     CommonModule, 
     HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective,
     HlmButtonDirective
-  ], // Import necessary modules
+  ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  providers: [
-    // AuthService
-  ], // Services can be provided directly in the component
 })
 export class HeaderComponent implements OnInit {
   username = '';
   isMenuOpen = false;
   showLogout = false;
   isOpen = false;
+  isScrolled = false; // Track whether the page is scrolled
 
-  constructor(private router: Router/* , private authService: AuthService */) {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.username = "Mr. Lorem Ipsum"; // this.authService.getToken() != null ? jwtDecode(this.authService.getToken() as string).sub as string : "Mr. Lorem Ipsum";
+    this.username = "Mr. Lorem Ipsum"; // Replace with auth logic if necessary
+  }
+
+  @HostListener('window:scroll', [])
+  onScroll(): void {
+    const scrollPosition = window.scrollY;
+    this.isScrolled = scrollPosition > 50; // Adjust the threshold as needed
   }
 
   toggleMenu() {
@@ -37,7 +39,6 @@ export class HeaderComponent implements OnInit {
   }
 
   handleLogout() {
-    // this.authService.logout();
     this.router.navigate(['/login']); // Redirect to login page after logout
   }
 }
