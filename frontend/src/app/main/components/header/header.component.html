@@ -1,5 +1,5 @@
 <!-- Navigation Bar -->
-<div [ngClass]="{'bg-black/80 backdrop-blur-sm': isScrolled, 'bg-transparent': !isScrolled}" 
+<div [ngClass]="{'bg-black/[0.85] backdrop-blur-sm': isScrolled, 'bg-transparent': !isScrolled}" 
      class="flex items-center justify-between px-16 py-4 sticky top-0 z-50 text-white transition-all duration-300">
 
     <!-- Left side (Logo) -->
@@ -16,10 +16,35 @@
         <a href="/contact" class="text-white text-lg hover:underline">Contact</a>
     </div>
   
-    <!-- Right side (Login & Register) -->
+    <!-- Right side (Login & Register or Profile Dropdown) -->
     <div class="flex items-center space-x-12">
-        <a href="/login" class="text-white text-lg hover:underline">Login</a>
-        <a href="/register" class="bg-yellow-500 text-white px-10 py-1.5 rounded-full transition-transform transform ease-in-out hover:scale-105">Register</a>
+        <!-- If user is not logged in -->
+        <div *ngIf="!isLoggedIn()" class="flex items-center space-x-12">
+            <a href="/login" class="text-white text-lg hover:underline">Login</a>
+            <a href="/register" class="bg-yellow-500 text-white px-10 py-1.5 rounded-full transition-transform transform ease-in-out hover:scale-105">Register</a>
+        </div>
+
+        <!-- If user is logged in -->
+        <div *ngIf="isLoggedIn()" class="relative" (mouseenter)="showLogout = true" (mouseleave)="showLogout = false">
+            <button class="flex space-x-3 p-3 py-1 rounded-xl text-white items-center">
+                <hlm-avatar>
+                    <img src='/assets/img/default.png' alt='profile' hlmAvatarImage />
+                    <span class='text-white bg-destructive' hlmAvatarFallback>{{ username }}</span>
+                </hlm-avatar>
+                <div class="flex flex-col text-start md:block hidden">
+                    <div class="text-white text-base font-semibold">{{ username }}</div>
+                    <div class="text-slate-300 text-xs">{{ role }}</div>
+                </div>
+            </button>
+            
+            <!-- Dropdown menu -->
+            <div *ngIf="showLogout" class="absolute bg-[#0A5185] rounded-lg text-white right-0 py-2 w-48"
+                (mouseenter)="showLogout = true" (mouseleave)="showLogout = false">
+                <a href="/profile" class="block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-black/[.2]">Profile</a>
+                <button (click)="handleLogout()"
+                    class="block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-red-900/[.4]">Logout</button>
+            </div>
+        </div>
     </div>
   
     <!-- Hamburger Menu for Mobile -->
@@ -38,6 +63,15 @@
     <a href="/tours" class="text-lg hover:underline">Tours</a>
     <a href="/history" class="text-lg hover:underline">History</a>
     <a href="/contact" class="text-lg hover:underline">Contact</a>
-    <a href="/login" class="text-lg hover:underline">Login</a>
-    <a href="/register" class="text-lg bg-yellow-500 text-black p-2 rounded-full hover:bg-yellow-600 transition-colors">Register</a>
+    
+    <!-- Conditionally display login/register or profile/logout in mobile menu -->
+    <div *ngIf="!isLoggedIn()">
+        <a href="/login" class="text-lg hover:underline">Login</a>
+        <a href="/register" class="text-lg bg-yellow-500 text-black p-2 rounded-full hover:bg-yellow-600 transition-colors">Register</a>
+    </div>
+    
+    <div *ngIf="isLoggedIn()">
+        <a href="/profile" class="text-lg hover:underline">Profile</a>
+        <a (click)="handleLogout()" class="text-lg hover:underline cursor-pointer">Logout</a>
+    </div>
 </div>
