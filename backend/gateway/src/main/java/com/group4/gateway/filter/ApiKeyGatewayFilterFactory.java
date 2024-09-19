@@ -23,6 +23,15 @@ public class ApiKeyGatewayFilterFactory extends AbstractGatewayFilterFactory<Obj
     @Override
     public GatewayFilter apply(Object config) {
         return (exchange, chain) -> {
+            String path = exchange.getRequest().getURI().getPath();
+            log.info("Request Path: {} - {}", exchange.getRequest().getMethod(), path);
+
+            // Skip preflight request - OPTIONS
+            if (exchange.getRequest().getMethod().toString().equals("OPTIONS")) {
+                log.info("kip preflight request - OPTIONS");
+                return chain.filter(exchange);
+            }
+
             String apiKey = exchange.getRequest().getHeaders().getFirst("api-key");
             log.info("Processing API Key: {}", apiKey);
 
