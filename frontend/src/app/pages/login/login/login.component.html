@@ -1,1 +1,54 @@
-<p>login works!</p>
+<div class="flex h-screen bg-gray-100">
+    <div aria-live="polite" toastContainer></div>
+    
+    <!-- Left Side (Image) -->
+    <div
+        class="relative hidden h-full flex-col p-10 lg:flex lg:w-3/5"
+        [ngStyle]="{
+            'background-image': 'url(' + mainbg + ')',
+            'background-repeat': 'no-repeat',
+            'background-size': 'cover',
+            'background-position': 'center'
+        }"
+    >
+        <img src="/assets/icons/logo.png" alt="Logo" class="absolute top-10 left-20 z-20 h-16" />
+
+        <!-- Black overlay -->
+        <div class="absolute inset-0 bg-black bg-opacity-70"></div>
+        
+        <div class="relative flex items-end justify-start w-full h-full text-white">
+            <div class="py-8 p-10">
+                <h1 class="text-5xl font-bold mb-4">Voyago</h1>
+                <p class="text-2xl italic">Discover More, Travel Better.</p>
+            </div>
+        </div>
+    </div>
+  
+    <!-- Right Side (Form) -->
+    <div class="flex lg:p-8 lg:w-2/5 w-full items-center justify-center p-10 bg-white">
+        <div class="w-full max-w-md md:px-6">
+            <h2 class="text-3xl font-bold pb-1.5">Welcome Back!</h2>
+            <p class="text-lg text-muted-foreground mb-8">Enter your email and password to login</p>
+    
+            <!-- Login Form -->
+            <form (submit)="login()">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-lg font-semibold mb-1" for="username">Username</label>
+                    <input [(ngModel)]="loginRequest.username" type="text" id="username" name="username" class="appearance-none border rounded rounded-2xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter your username">
+                </div>
+                <div class="mb-10">
+                    <label class="block text-gray-700 text-lg font-semibold mb-1" for="password">Password</label>
+                    <input [(ngModel)]="loginRequest.password" type="password" id="password" name="password" class="appearance-none border rounded rounded-2xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter your password">
+                </div>
+        
+                <!-- Submit Button -->
+                <div class="flex items-center justify-end w-full">
+                    <button type="submit" class="bg-[#0A5185] w-full rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-6 rounded focus:outline-none focus:shadow-outline">Login</button>
+                </div>
+            </form>
+
+            <p class="text-gray-500 text-sm mt-6">Not registered yet? <a href="/login" class="text-green-2 font-semibold hover:underline hover:underline-offset-4">Create an account</a></p>
+            <p class="text-gray-500 text-sm mt-1"><a href="/login" class="text-green-2 font-semibold hover:underline hover:underline-offset-4">Forget password?</a></p>
+        </div>
+    </div>
+</div>

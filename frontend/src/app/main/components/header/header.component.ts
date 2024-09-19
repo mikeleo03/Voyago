@@ -1,10 +1,10 @@
 import { jwtDecode } from "jwt-decode";
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
-// import { AuthService } from '../../../services/auth/auth.service';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -13,31 +13,53 @@ import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
     CommonModule, 
     HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective,
     HlmButtonDirective
-  ], // Import necessary modules
+  ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  providers: [
-    // AuthService
-  ], // Services can be provided directly in the component
 })
 export class HeaderComponent implements OnInit {
   username = '';
+  role = '';
   isMenuOpen = false;
   showLogout = false;
   isOpen = false;
+  isScrolled = false; // Track whether the page is scrolled
 
-  constructor(private router: Router/* , private authService: AuthService */) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.username = "Mr. Lorem Ipsum"; // this.authService.getToken() != null ? jwtDecode(this.authService.getToken() as string).sub as string : "Mr. Lorem Ipsum";
+    const token = this.authService.getToken();
+    
+    if (token != null) {
+      const decodedToken: any = jwtDecode(token);
+      this.username = decodedToken.sub as string; // Get the 'sub' value for the username
+      // Capitalize the first letter of the role
+      if (decodedToken.roles && decodedToken.roles.length > 0) {
+        this.role = decodedToken.roles[0].toLowerCase();
+        this.role = this.role.charAt(0).toUpperCase() + this.role.slice(1);
+      }
+    } else {
+      this.username = "Mr. Lorem Ipsum";
+      this.role = "Guest"; // Default role if no token
+    }
+  }
+
+  @HostListener('window:scroll', [])
+  onScroll(): void {
+    const scrollPosition = window.scrollY;
+    this.isScrolled = scrollPosition > 50; // Adjust the threshold as needed
   }
 
   toggleMenu() {
     this.isOpen = !this.isOpen;
   }
 
+  isLoggedIn(): boolean {
+    return this.authService.getToken() != null;
+  }
+
   handleLogout() {
-    // this.authService.logout();
+    this.authService.logout();
     this.router.navigate(['/login']); // Redirect to login page after logout
   }
 }

@@ -24,10 +24,16 @@ public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Ob
     public GatewayFilter apply(Object config) {
         return (exchange, chain) -> {
             String path = exchange.getRequest().getURI().getPath();
-            logger.info("Request Path: {}", path);
+            logger.info("Request Path: {} - {}", exchange.getRequest().getMethod(), path);
+
+            // Skip preflight request - OPTIONS
+            if (exchange.getRequest().getMethod().toString().equals("OPTIONS")) {
+                logger.info("Skip preflight request - OPTIONS");
+                return chain.filter(exchange);
+            }
 
             // Skip JWT validation for specific paths
-            if ("/api/v1/auth/login".equals(path) || "/api/v1/auth/signup".equals(path)) {
+            if ("/api/v1/auth/login".equals(path) || "/api/v1/users/signup".equals(path)) {
                 logger.info("Skipping JWT validation for path: {}", path);
                 return chain.filter(exchange);
             }
