@@ -1,37 +1,57 @@
 <div class="flex h-screen bg-gray-100">
     <div aria-live="polite" toastContainer></div>
-    
+
     <!-- Left Side (Form) -->
-    <div class="flex lg:p-8 lg:w-2/5 w-full items-center justify-center p-10 bg-white">
-        <div class="w-full max-w-md md:px-6">
+    <div class="flex lg:p-8 lg:w-2/5 w-full items-start justify-center p-10 bg-white overflow-y-auto h-full py-20">
+        <div class="w-full max-w-md md:px-6 my-3">
             <h2 class="text-3xl font-bold pb-1.5">Create Your Account</h2>
             <p class="text-lg text-muted-foreground mb-8">Register to create your account!</p>
-    
+
             <!-- Signup Form -->
-            <form (submit)="signup()">
+            <form [formGroup]="signupForm" (ngSubmit)="signup()">
+                <!-- Username -->
                 <div class="mb-3">
-                    <input [(ngModel)]="signupRequest.username" type="text" id="username" name="username" class="appearance-none border rounded rounded-2xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Username">
+                    <input formControlName="username" type="text" id="username" class="appearance-none border rounded-2xl w-full py-3 px-4" placeholder="Username">
+                    <span *ngIf="signupForm.get('username')?.invalid && (signupForm.get('username')?.dirty || signupForm.get('username')?.touched)" class="text-red-500 text-sm mt-1">
+                        Username is required and must contain only letters and spaces.
+                    </span>
                 </div>
+                <!-- Email -->
                 <div class="mb-3">
-                    <input [(ngModel)]="signupRequest.email" type="email" id="email" name="email" class="appearance-none border rounded rounded-2xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Email">
+                    <input formControlName="email" type="email" id="email" class="appearance-none border rounded-2xl w-full py-3 px-4" placeholder="Email">
+                    <span *ngIf="signupForm.get('email')?.invalid && (signupForm.get('email')?.dirty || signupForm.get('email')?.touched)" class="text-red-500 text-sm mt-1">
+                        A valid email is required.
+                    </span>
                 </div>
+                <!-- Phone -->
                 <div class="mb-3">
-                    <input [(ngModel)]="signupRequest.phone" type="phone" id="phone" name="phone" class="appearance-none border rounded rounded-2xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Phone Number">
+                    <input formControlName="phone" type="text" id="phone" class="appearance-none border rounded-2xl w-full py-3 px-4" placeholder="Phone Number">
+                    <span *ngIf="signupForm.get('phone')?.invalid && (signupForm.get('phone')?.dirty || signupForm.get('phone')?.touched)" class="text-red-500 text-sm mt-1">
+                        Phone number must start with +62 and be 9 to 13 digits.
+                    </span>
                 </div>
+                <!-- Password -->
                 <div class="mb-3">
-                    <input [(ngModel)]="signupRequest.password" type="password" id="password" name="password" class="appearance-none border rounded rounded-2xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Password">
+                    <input formControlName="password" type="password" id="password" class="appearance-none border rounded-2xl w-full py-3 px-4" placeholder="Password">
+                    <span *ngIf="signupForm.get('password')?.invalid && (signupForm.get('password')?.dirty || signupForm.get('password')?.touched)" class="text-red-500 text-sm mt-1">
+                        Password must be at least 12 characters and contain uppercase, lowercase, number, and special character.
+                    </span>
                 </div>
+                <!-- Confirm Password -->
                 <div class="mb-10">
-                    <input [(ngModel)]="signupRequest.confirmPassword" type="password" id="confpassword" name="confpassword" class="appearance-none border rounded rounded-2xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Confirm Password">
+                    <input formControlName="confirmPassword" type="password" id="confpassword" class="appearance-none border rounded-2xl w-full py-3 px-4" placeholder="Confirm Password">
+                    <span *ngIf="signupForm.errors?.['mismatch'] && (signupForm.get('confirmPassword')?.dirty || signupForm.get('confirmPassword')?.touched)" class="text-red-500 text-sm mt-1">
+                        Passwords do not match.
+                    </span>
                 </div>
-        
+
                 <!-- Submit Button -->
                 <div class="flex items-center justify-end w-full">
                     <button 
                         type="submit"
-                        [disabled]="isLoading" 
+                        [disabled]="signupForm.invalid || isLoading"
                         class="bg-[#0A5185] w-full rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
-                        [ngClass]="{ 'opacity-50 cursor-not-allowed': isLoading }"
+                        [ngClass]="{ 'opacity-50 cursor-not-allowed': signupForm.invalid || isLoading, 'hover:cursor-pointer': !signupForm.invalid && !isLoading }"
                     >
                         <span *ngIf="!isLoading">Create an Account</span>
                         <span *ngIf="isLoading">
@@ -48,7 +68,7 @@
                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                 ></path>
                             </svg>
-                            Signing up...
+                            Signing in...
                         </span>
                     </button>
                 </div>
@@ -68,7 +88,7 @@
             'background-position': 'center'
         }"
     >
-        <img src="/assets/icons/logo.png" alt="Logo" class="absolute top-10 left-20 z-20 h-16" />
+        <img src="/assets/icons/logo.png" alt="Logo" class="absolute top-10 right-20 z-20 h-16" />
 
         <!-- Black overlay -->
         <div class="absolute inset-0 bg-black bg-opacity-70"></div>
