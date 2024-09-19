@@ -18,6 +18,7 @@ import { ToastContainerDirective, ToastrService } from 'ngx-toastr';
 })
 export class LoginComponent {
   // constants
+  isLoading: boolean = false;
   mainbg: string = '../assets/img/login.png';
   loginRequest: LoginRequest = { username: '', password: '' };
 
@@ -35,8 +36,10 @@ export class LoginComponent {
   }
 
   login() {
+    this.isLoading = true;
     this.authService.login(this.loginRequest).subscribe({
       next: (response) => {
+        this.isLoading = false;
         if (response.token) {
           this.authService.setToken(response.token);
           this.toastrService.success('Login successful!');
@@ -46,6 +49,7 @@ export class LoginComponent {
         }
       },
       error: (error) => {
+        this.isLoading = false;
         // Check if error.status exists and act accordingly
         if (error.status === 400) {
           // Handle 400 Bad Request with multiple errors
