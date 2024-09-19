@@ -6,7 +6,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@EnableWebMvc
+//@EnableWebMvc
 @SpringBootApplication
 @EnableSpringDataWebSupport
 @EnableMethodSecurity(prePostEnabled = true)
