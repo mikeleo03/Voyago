@@ -1,8 +1,10 @@
+import { jwtDecode } from "jwt-decode";
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -17,15 +19,29 @@ import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 })
 export class HeaderComponent implements OnInit {
   username = '';
+  role = '';
   isMenuOpen = false;
   showLogout = false;
   isOpen = false;
   isScrolled = false; // Track whether the page is scrolled
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.username = "Mr. Lorem Ipsum"; // Replace with auth logic if necessary
+    const token = this.authService.getToken();
+    
+    if (token != null) {
+      const decodedToken: any = jwtDecode(token);
+      this.username = decodedToken.sub as string; // Get the 'sub' value for the username
+      // Capitalize the first letter of the role
+      if (decodedToken.roles && decodedToken.roles.length > 0) {
+        this.role = decodedToken.roles[0].toLowerCase();
+        this.role = this.role.charAt(0).toUpperCase() + this.role.slice(1);
+      }
+    } else {
+      this.username = "Mr. Lorem Ipsum";
+      this.role = "Guest"; // Default role if no token
+    }
   }
 
   @HostListener('window:scroll', [])
@@ -38,7 +54,12 @@ export class HeaderComponent implements OnInit {
     this.isOpen = !this.isOpen;
   }
 
+  isLoggedIn(): boolean {
+    return this.authService.getToken() != null;
+  }
+
   handleLogout() {
+    this.authService.logout();
     this.router.navigate(['/login']); // Redirect to login page after logout
   }
 }
