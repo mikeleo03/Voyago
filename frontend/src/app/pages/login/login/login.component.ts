@@ -27,8 +27,13 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router, private toastrService: ToastrService) {}
 
   ngOnInit() {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/']);
+    }
+    
     this.toastrService.overlayContainer = this.toastContainer;
   }
+
   login() {
     this.authService.login(this.loginRequest).subscribe({
       next: (response) => {
