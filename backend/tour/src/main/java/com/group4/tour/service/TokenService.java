@@ -17,10 +17,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public abstract class TokenService {
+public class TokenService {
 
     @Value("${jwt.secret}")
-    String secret;
+    private String secret;
+
+    // Generate the secret key from the configured secret value
+    private SecretKey getSecretKey() {
+        byte[] secretBytes = Base64.getDecoder().decode(secret);
+        return Keys.hmacShaKeyFor(secretBytes);
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -55,6 +61,4 @@ public abstract class TokenService {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
-    protected abstract SecretKey getSecretKey();
 }
