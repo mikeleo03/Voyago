@@ -5,68 +5,60 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TokenServiceTest {
 
     private TokenService tokenService;
+
     private SecretKey secretKey;
-    private String secretKeyString;
 
     @BeforeEach
     void setUp() {
-        // Generate a secure key for testing
-        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-        secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+        tokenService = new TokenService();
 
-        tokenService = new TokenService() {
-            @Override
-            protected SecretKey getSecretKey() {
-                byte[] secretBytes = Base64.getDecoder().decode(secretKeyString);
-                return Keys.hmacShaKeyFor(secretBytes);
-            }
-        };
+        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+        String secretBase64 = java.util.Base64.getEncoder().encodeToString(secretKey.getEncoded());
+        ReflectionTestUtils.setField(tokenService, "secret", secretBase64);
     }
 
     @Test
     void testExtractUsername() {
-        String username = "testUser";
-        String token = generateMockToken(username, List.of("ROLE_USER"));
-
-        String extractedUsername = tokenService.extractUsername(token);
-
-        assertThat(extractedUsername).isEqualTo(username);
+        String token = generateToken("testuser", List.of("ROLE_USER", "ROLE_ADMIN"));
+        String username = tokenService.extractUsername(token);
+        assertEquals("testuser", username, "Username should be 'testuser'");
     }
 
     @Test
     void testExtractRoles() {
-        String username = "testUser";
-        List<String> roles = List.of("ROLE_USER", "ROLE_ADMIN");
-        String token = generateMockToken(username, roles);
-
-        List<String> extractedRoles = tokenService.extractRoles(token);
-
-        assertThat(extractedRoles).containsExactlyInAnyOrderElementsOf(roles);
+        String token = generateToken("testuser", List.of("ROLE_USER", "ROLE_ADMIN"));
+        List<String> roles = tokenService.extractRoles(token);
+        assertNotNull(roles, "Roles should not be null");
+        assertEquals(2, roles.size(), "There should be 2 roles");
+        assertTrue(roles.contains("ROLE_USER"), "Roles should contain 'ROLE_USER'");
+        assertTrue(roles.contains("ROLE_ADMIN"), "Roles should contain 'ROLE_ADMIN'");
     }
 
     @Test
     void testExtractExpiration() {
-        String username = "testUser";
-        Date expirationDate = new Date(System.currentTimeMillis() + 10000); // 10 seconds from now
-        String token = generateMockTokenWithExpiration(username, expirationDate);
-
+        Date expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
+        String token = generateTokenWithExpiration("testuser", expirationDate);
         Date extractedExpiration = tokenService.extractExpiration(token);
 
-        assertThat(extractedExpiration).isCloseTo(expirationDate, 1000); // Tolerance of 1 second
+        assertNotNull(extractedExpiration, "Expiration date should not be null");
+
+        long timeDifference = Math.abs(expirationDate.getTime() - extractedExpiration.getTime());
+        assertTrue(timeDifference < 1000, "Expiration date should match within 1 second");
     }
 
-    private String generateMockToken(String username, List<String> roles) {
+    private String generateToken(String username, List<String> roles) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("roles", roles)
@@ -74,7 +66,7 @@ class TokenServiceTest {
                 .compact();
     }
 
-    private String generateMockTokenWithExpiration(String username, Date expiration) {
+    private String generateTokenWithExpiration(String username, Date expiration) {
         return Jwts.builder()
                 .setSubject(username)
                 .setExpiration(expiration)
