@@ -20,4 +20,3 @@ public class WebClientConfig {
         return new AuthClient(eurekaClient, webClientBuilder);
     }
 }
-
