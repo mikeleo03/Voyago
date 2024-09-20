@@ -7,7 +7,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +18,6 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.web.cors.reactive.CorsWebFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import com.group4.gateway.exceptions.JwtDecodingException;
 
@@ -38,8 +34,8 @@ public class GatewaySecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange((var exchange) -> exchange
-                    .pathMatchers("/api/v1/**").permitAll()  // Public API
-                    .anyExchange().authenticated()           // Secured routes
+                        .pathMatchers("/api/v1/**").permitAll()
+                        .anyExchange().authenticated()
                 )
                 .build();
     }
@@ -68,19 +64,5 @@ public class GatewaySecurityConfig {
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new JwtDecodingException("Failed to load the public key", e);
         }
-    }
-
-    @Bean
-    public CorsWebFilter corsWebFilter() {
-        CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(List.of("http://localhost:3000"));  // Define allowed origins
-        corsConfig.setAllowedMethods(List.of("PUT", "GET", "POST", "DELETE"));
-        corsConfig.setAllowedHeaders(List.of("Content-Type", "Authorization", "api-key"));
-        corsConfig.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);  // Apply CORS globally
-
-        return new CorsWebFilter(source);
     }
 }
