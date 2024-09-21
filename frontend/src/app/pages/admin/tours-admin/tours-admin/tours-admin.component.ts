@@ -2,18 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TourService } from '../../../services/tour/tour.service';
-import { AuthService } from '../../../services/auth/auth.service';
-import { Tour } from '../../../models/tour.model';
+import { TourService } from '../../../../services/tour/tour.service';
+import { AuthService } from '../../../../services/auth/auth.service';
+import { Tour } from '../../../../models/tour.model';
 
 @Component({
-  selector: 'app-tours',
+  selector: 'app-tours-admin',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './tours.component.html',
-  styleUrl: './tours.component.css'
+  templateUrl: './tours-admin.component.html',
+  styleUrl: './tours-admin.component.css'
 })
-export class ToursComponent implements OnInit {
+export class ToursAdminComponent implements OnInit {
   tours: Tour[] = [];
 
   title: string = '';
