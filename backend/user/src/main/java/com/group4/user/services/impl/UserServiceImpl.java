@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,7 +60,16 @@ public class UserServiceImpl implements UserService {
     // [Admin] Retrieves a paginated list of all Users.
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<User> getAllUsers(Pageable pageable) {
+    public Page<User> getAllUsers(String name, int page, int size) {
+
+        // Create a pageable object with the specified page, size, and sort
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Apply filters and pagination
+        if (name != null) {
+            return userRepository.findByUsernameContaining(name, pageable);
+        }
+
         return userRepository.findAll(pageable);
     }
 
