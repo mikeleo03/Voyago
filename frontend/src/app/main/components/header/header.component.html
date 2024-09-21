@@ -11,11 +11,13 @@
   
     <!-- Center side (Navigation Links) -->
     <div class="hidden md:flex space-x-20">
-        <!-- Call navigateToTours when clicking Tours -->
         <a (click)="navigateToTours()" class="text-white text-lg hover:underline cursor-pointer">Tours</a>
-        <!-- Call navigateToHistory when clicking History -->
         <a (click)="navigateToHistory()" class="text-white text-lg hover:underline cursor-pointer">History</a>
-        <a href="/contact" class="text-white text-lg hover:underline">Contact</a>
+        <!-- Conditionally render "Customer" or "Contact" -->
+        <a *ngIf="role === 'Admin'; else contactLink" (click)="navigateToCustomers()" class="text-white text-lg hover:underline cursor-pointer">Customer</a>
+        <ng-template #contactLink>
+            <a href="/contact" class="text-white text-lg hover:underline">Contact</a>
+        </ng-template>
     </div>
   
     <!-- Right side (Login & Register or Profile Dropdown) -->
