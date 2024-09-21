@@ -3,8 +3,8 @@ import { ChangeUsernameComponent } from './change-username/change-username.compo
 import { ChangeConfirmedComponent } from './change-confirmed/change-confirmed.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 
-export const homeRoutes: Routes = [
-    { path: '/email', component: ChangeUsernameComponent },
-    { path: '/email/confirmed', component: ChangeConfirmedComponent },
-    { path: '/password/:id', component: ChangePasswordComponent }
+export const changeRoutes: Routes = [
+    { path: 'email', component: ChangeUsernameComponent },
+    { path: 'email/confirmed', component: ChangeConfirmedComponent },
+    { path: 'password/:id', component: ChangePasswordComponent }
 ];
