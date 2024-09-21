@@ -13,6 +13,7 @@
                 class="w-36 h-36 mb-4 bg-gray-300 rounded-full object-cover border-4 border-white"
                 [src]="userImgUrl"
                 alt="{{ userName }}"
+                draggable="false"
             />
             <h2 class="text-3xl font-semibold">{{ userName }}</h2>
             <p class="text-lg text-gray-600">{{ userEmail }}</p>
@@ -48,6 +49,7 @@
                             class="w-1/5 h-32 bg-gray-300 rounded-md mr-4 object-cover"
                             [src]="item.imageUrl"
                             alt="{{ item.title }}"
+                            draggable="false"
                         />
                         <div class="w-4/5">
                             <p class="text-gray-600">{{ item.description }}</p>
