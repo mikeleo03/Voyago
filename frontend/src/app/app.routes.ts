@@ -38,6 +38,13 @@ export const routes: Routes = [
         ],
     },
     {
+        path: RouterConfig['DASHBOARD'].path,
+        loadChildren: () =>
+            import('./pages/dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
+        title: RouterConfig['DASHBOARD'].title,
+        data: RouterConfig['DASHBOARD'].data,
+    },
+    {
         path: RouterConfig['TOURS'].path,
         loadChildren: () =>
             import('./pages/tours/tours.routes').then((m) => m.toursRoutes),
