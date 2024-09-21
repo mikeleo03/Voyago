@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angula
 import { UserService } from '../../../services/user/user.service';
 import { ToastContainerDirective, ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { environment } from '../../../../environment/environment.prod';
 
 @Component({
   selector: 'app-change-username',
@@ -13,6 +14,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./change-username.component.css']
 })
 export class ChangeUsernameComponent {
+  private clientUrl = `${environment.clientUrl}/change/password`;
   mainbg: string = '../assets/img/login.png';
   logo: string = '../assets/icons/logo-color.png';
   isLoading: boolean = false;
@@ -50,7 +52,7 @@ export class ChangeUsernameComponent {
               <p>Dear <strong>${response.username}</strong>,</p>
               <p>We received a request to change your password.</p>
               <p>Please confirm your request by clicking the button below:</p>
-              <a href="http://your-app-url/confirm-change" 
+              <a href="${this.clientUrl}/${response.id}"
                 style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block;">
                 Confirm Password Change
               </a>

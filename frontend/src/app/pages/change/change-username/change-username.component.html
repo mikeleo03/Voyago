@@ -21,7 +21,7 @@
                     placeholder="Email"
                     class="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <div *ngIf="emailForm.controls['email'].invalid && emailForm.controls['email'].touched" class="error">
+                <div *ngIf="emailForm.controls['email'].invalid && emailForm.controls['email'].touched" class="text-red-500 text-sm mt-1">
                     Please enter a valid email address.
                 </div>
             </div>
