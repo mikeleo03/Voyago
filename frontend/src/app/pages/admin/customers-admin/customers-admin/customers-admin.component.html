@@ -23,64 +23,94 @@
 </div>
 
 <!-- Customer List -->
-<div class="customer-list p-8">
-    <div *ngFor="let user of users" class="customer-item flex items-start p-6 border-b border-gray-300">
-      
-      <!-- Customer Avatar -->
-      <div class="customer-image">
-        <img
-          [src]="user.picture ? user.picture : '/assets/img/default.png'"
-          alt="Customer avatar"
-          class="w-full h-auto rounded-lg shadow"
-        />
-      </div>
-      
-      <!-- Customer Details -->
-      <div class="customer-details w-2/5 pl-10">
-        <h2 class="text-2xl font-bold mb-2">{{ user.username }}</h2>
-        <p class="text-gray-600 mb-2">{{ user.email }}</p>
-        <p class="text-gray-400">📞 {{ user.phone }}</p>
-      </div>
-      
-      <!-- Customer Status -->
-      <div class="customer-status w-1/5 flex items-center justify-center">
-        <p class="text-lg font-medium">{{ user.status }}</p>
-      </div>
+<div class="customer-list p-8 overflow-y-auto w-[100vw]">
+    <div *ngFor="let user of users" class="customer-item flex items-start justify-between p-6 border-b border-gray-300">
+        <div class="flex">
+            <!-- Customer Avatar -->
+            <div class="customer-image w-[6rem]">
+                <img
+                    [src]="user.picture ? user.picture : '/assets/img/default.png'"
+                    alt="Customer avatar"
+                    class="w-[8rem] h-auto rounded-lg shadow"
+                />
+            </div>
+        
+            <!-- Customer Details -->
+            <div class="customer-details w-[18rem] pl-10">
+                <h2 class="text-2xl font-bold mb-2">{{ user.username }}</h2>
+                <p class="text-gray-600 mb-2">{{ user.email }}</p>
+                <p class="text-gray-400">📞 {{ user.phone }}</p>
+            </div>
+        </div>
+        
+        <div *ngIf="user.username !== currentUsername" class="flex">
+            <!-- Customer Status -->
+            <div class="customer-status w-full flex items-center justify-center pr-10">
+                <div 
+                    [ngClass]="{
+                        'bg-green-100 text-green-600': user.status === 'ACTIVE',
+                        'bg-red-100 text-red-600': user.status === 'INACTIVE'
+                    }"
+                    class="flex items-center px-4 py-2 rounded-full shadow-md transition-all"
+                >
+                    <span *ngIf="user.status === 'ACTIVE'" class="material-icons mr-2">check_circle</span>
+                    <span *ngIf="user.status === 'INACTIVE'" class="material-icons mr-2">cancel</span>
+                    <p class="text-lg font-medium">{{ user.status }}</p>
+                </div>
+            </div>
+            <!-- Customer Status with Toggle Switch -->
+            <div class="customer-status w-full flex items-center justify-center">
+                <label class="flex items-center cursor-pointer relative">
+                    <input
+                        type="checkbox"
+                        class="toggle-checkbox hidden"
+                        [checked]="user.status === 'ACTIVE'"
+                        (change)="toggleUserStatus(user.id, $event)"
+                    />
+                    <div class="toggle-switch w-14 h-7 bg-gray-300 rounded-full shadow-inner"></div>
+                    <div
+                        class="toggle-dot w-7 h-7 bg-white rounded-full shadow absolute transition-transform"
+                        [ngClass]="{ 'translate-x-full': user.status === 'ACTIVE' }"
+                    ></div>
+                    <div class="toggle-bg absolute inset-0 bg-gray-500 transition-all" [ngClass]="{ 'bg-gray-600': user.status === 'ACTIVE' }"></div>
+                </label>              
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Pagination Controls -->
-<div class="pagination flex justify-center items-center space-x-2 mt-6 mb-6">
-  <!-- Previous Button -->
-  <button 
-    class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
-    (click)="changePage(currentPage - 1)" 
-    [disabled]="currentPage === 1"
-    [ngClass]="{'opacity-50': currentPage === 1, 'hover:bg-yellow-600': currentPage !== 1}"
-  >
-    Previous
-  </button>
-
-  <!-- Page Numbers -->
-  <span *ngFor="let page of [].constructor(totalPages); let i = index">
+<div class="pagination flex justify-center items-center space-x-2 mt-6 mb-8">
+    <!-- Previous Button -->
     <button 
-      class="px-4 py-2 rounded-full text-center w-10 h-10 transition-transform transform ease-in-out hover:scale-105"
-      [ngClass]="{
-        'bg-yellow-500 text-white': currentPage === i + 1, 
-        'bg-gray-200 text-gray-700 hover:bg-gray-300': currentPage !== i + 1
-      }"
-      (click)="changePage(i + 1)">
-      {{ i + 1 }}
+        class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
+        (click)="changePage(currentPage - 1)" 
+        [disabled]="currentPage === 1"
+        [ngClass]="{'opacity-50': currentPage === 1, 'hover:bg-yellow-600': currentPage !== 1}"
+    >
+        Previous
     </button>
-  </span>
 
-  <!-- Next Button -->
-  <button 
-    class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
-    (click)="changePage(currentPage + 1)" 
-    [disabled]="currentPage === totalPages"
-    [ngClass]="{'opacity-50': currentPage === totalPages, 'hover:bg-yellow-600': currentPage !== totalPages}"
-  >
-    Next
-  </button>
+    <!-- Page Numbers -->
+    <span *ngFor="let page of [].constructor(totalPages); let i = index">
+        <button 
+            class="px-4 py-2 rounded-full text-center w-10 h-10 transition-transform transform ease-in-out hover:scale-105"
+            [ngClass]="{
+                'bg-yellow-500 text-white': currentPage === i + 1, 
+                'bg-gray-200 text-gray-700 hover:bg-gray-300': currentPage !== i + 1
+            }"
+            (click)="changePage(i + 1)">
+            {{ i + 1 }}
+        </button>
+    </span>
+
+    <!-- Next Button -->
+    <button 
+        class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
+        (click)="changePage(currentPage + 1)" 
+        [disabled]="currentPage === totalPages"
+        [ngClass]="{'opacity-50': currentPage === totalPages, 'hover:bg-yellow-600': currentPage !== totalPages}"
+    >
+        Next
+    </button>
 </div>
