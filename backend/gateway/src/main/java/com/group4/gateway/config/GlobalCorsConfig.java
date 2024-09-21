@@ -14,7 +14,7 @@ public class GlobalCorsConfig {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowedOriginPatterns(List.of("http://localhost:4200"));
         corsConfig.setAllowedMethods(List.of("PUT", "GET", "POST", "DELETE", "OPTIONS"));
-        corsConfig.setAllowedHeaders(List.of("Content-Type", "Authorization"));
+        corsConfig.setAllowedHeaders(List.of("Content-Type", "Authorization", "api-key"));
         corsConfig.setAllowCredentials(true);
         return new CorsWebFilter(exchange -> corsConfig);
     }

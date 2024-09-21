@@ -1,14 +1,34 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Import CommonModule
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule], // Add CommonModule to imports
+  imports: [CommonModule, FormsModule], // Add CommonModule to imports
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
+  location: string = '';
+  minPrice?: number;
+  maxPrice?: number;
+  sortPrice: string = '';
+
+  constructor(private router: Router) {}
+
+  searchTours() {
+    this.router.navigate(['/tours'], {
+      queryParams: {
+        location: this.location,
+        minPrice: this.minPrice,
+        maxPrice: this.maxPrice,
+        sortPrice: this.sortPrice
+      }
+    });
+  }
+
   // Define dummy data for the tour packages, which can be replaced with backend data later
   tours = [
     { title: 'Lorem Ipsum', days: 3, rating: 4.8, imageUrl: '/assets/img/tour1.png' },

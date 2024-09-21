@@ -24,6 +24,13 @@ export const routes: Routes = [
         ],
     },
     {
+        path: RouterConfig['TOURS'].path,
+        loadChildren: () =>
+            import('./pages/tours/tours.routes').then((m) => m.toursRoutes),
+        title: RouterConfig['TOURS'].title,
+        data: RouterConfig['TOURS'].data,
+    },
+    {
         path: RouterConfig['NOT_FOUND'].path,
         loadChildren: () =>
             import('./pages/not-found/not-found.routes').then((m) => m.notFoundRoutes),

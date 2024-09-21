@@ -27,16 +27,26 @@ public class TourServiceImpl implements TourService {
             sort = Sort.by(Sort.Direction.DESC, "prices");
         }
 
+        // Multiple conditions should be combined as per requirements
         if (title != null) {
             return tourRepository.findByTitleContaining(title);
-        } else if (minPrice != null && maxPrice != null) {
-            return tourRepository.findByPricesBetween(minPrice, maxPrice, sort);
-        } else if (location != null) {
-            return tourRepository.findByLocationContaining(location);
-        } else {
-            return tourRepository.findAll(sort);
         }
+
+        if (minPrice != null && maxPrice != null) {
+            return tourRepository.findByPricesBetween(minPrice, maxPrice, sort);
+        } else if (minPrice != null) {
+            return tourRepository.findByPricesGreaterThanEqual(minPrice, sort);
+        } else if (maxPrice != null) {
+            return tourRepository.findByPricesLessThanEqual(maxPrice, sort);
+        }
+
+        if (location != null) {
+            return tourRepository.findByLocationContaining(location);
+        }
+
+        return tourRepository.findAll(sort);
     }
+
 
     public Tour getTourById(String id) {
         Optional<Tour> tourOptional = tourRepository.findById(id);

@@ -14,4 +14,8 @@ public interface TourRepository extends JpaRepository<Tour, String> {
     List<Tour> findByPricesBetween(int minPrice, int maxPrice, Sort sort);
 
     List<Tour> findByLocationContaining(String location);
+
+    List<Tour> findByPricesGreaterThanEqual(int minPrice, Sort sort);
+
+    List<Tour> findByPricesLessThanEqual(int maxPrice, Sort sort);
 }
