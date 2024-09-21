@@ -27,6 +27,7 @@ import com.group4.user.services.UserService;
 import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -80,5 +81,14 @@ public class UserController {
     public ResponseEntity<UserDTO> updatePassword(@PathVariable String id, @RequestBody @Valid UpdatePasswordDTO newPassword) {
         UserDTO updatedUser = userService.updatePassword(id, newPassword);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
+    }
+
+    // [-] Get user by email
+    @GetMapping("/email")
+    public ResponseEntity<UserDTO> getUserByEmail(@RequestParam String email) {
+        Optional<UserDTO> user = userService.getUserByEmail(email);
+
+        return user.map(ResponseEntity::ok)
+                   .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }

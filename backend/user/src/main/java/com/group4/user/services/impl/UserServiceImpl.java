@@ -2,6 +2,7 @@ package com.group4.user.services.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,6 +187,15 @@ public class UserServiceImpl implements UserService {
         propagateUserData(existingUser);
 
         return userMapper.toUserDTO(existingUser);
+    }
+
+    @Override
+    public Optional<UserDTO> getUserByEmail(String email) {
+        log.info("Fetching user by email: {}", email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        return Optional.of(userMapper.toUserDTO(user));
     }
 
     // This method will handle data propagation to the AuthClient and logging.
