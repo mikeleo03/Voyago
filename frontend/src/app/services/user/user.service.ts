@@ -21,4 +21,14 @@ export class UserService {
   getUserByEmail(email: string): Observable<UserDTO> {
     return this.http.get<UserDTO>(`${this.authApiUrl}/email?email=${email}`);
   }
+
+  // Send email
+  sendEmail(to: string, subject: string, htmlContent: string): Observable<any> {
+    const emailData = {
+      to: to,
+      subject: subject,
+      htmlBody: htmlContent,
+    };
+    return this.http.post(`${this.authApiUrl}/send`, emailData);
+  }
 }
