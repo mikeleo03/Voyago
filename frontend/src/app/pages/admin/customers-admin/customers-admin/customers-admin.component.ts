@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { ToastContainerDirective, ToastrService } from 'ngx-toastr';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-customers-admin',
@@ -15,6 +16,7 @@ import { ToastContainerDirective, ToastrService } from 'ngx-toastr';
   styleUrls: ['./customers-admin.component.css']
 })
 export class CustomersAdminComponent implements OnInit {
+  currentUsername = '';
   users: User[] = [];
   currentPage: number = 1;
   totalPages: number = 1;
@@ -49,6 +51,15 @@ export class CustomersAdminComponent implements OnInit {
       
       this.toastrService.overlayContainer = this.toastContainer;
     });
+
+    const token = this.authService.getToken();
+    
+    if (token != null) {
+      const decodedToken: any = jwtDecode(token);
+      this.currentUsername = decodedToken.sub as string; // Get the 'sub' value for the username
+    } else {
+      this.currentUsername = "Mr. Lorem Ipsum";
+    }
   }
 
   searchUsers(page: number = this.currentPage): void {
@@ -81,4 +92,27 @@ export class CustomersAdminComponent implements OnInit {
   openModal() {
     this.isModalOpen = true;
   }
+
+  toggleUserStatus(userId: string, event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    const isChecked = inputElement.checked;
+    const newStatus = isChecked ? 'ACTIVE' : 'INACTIVE';
+  
+    // Update status in the backend
+    this.userService.updateUserStatus(userId, newStatus).subscribe(
+      (response) => {
+        // Successfully updated status, now update the local user array
+        const user = this.users.find(u => u.id === userId);
+        if (user) {
+          user.status = newStatus; // Update local status
+        }
+        console.log('User status updated:', response);
+      },
+      (error) => {
+        console.error('Failed to update user status:', error);
+        // Optionally revert the checkbox if the update failed
+        inputElement.checked = !isChecked; // Revert the checkbox
+      }
+    );
+  }  
 }

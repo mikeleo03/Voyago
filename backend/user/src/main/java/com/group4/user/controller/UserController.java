@@ -85,11 +85,12 @@ public class UserController {
 
     // [Admin] Update user status.
     // [PATCH] /:id/status
-    @PatchMapping("/{id}/status")
+    @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserDTO> updateUserStatus(@PathVariable String id, @RequestParam String status) {
-        UserDTO userDTO = userService.updateUserStatus(id, status);
-        return ResponseEntity.status(HttpStatus.OK).body(userDTO);
+    public ResponseEntity<UserDTO> updateUserStatus(@PathVariable String id, @RequestBody Map<String, String> requestBody) {
+        String newStatus = requestBody.get("status");
+        UserDTO updatedUser = userService.updateUserStatus(id, newStatus);
+        return ResponseEntity.ok(updatedUser);
     }
 
     // [Customer, Admin] Update user password.

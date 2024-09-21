@@ -50,4 +50,9 @@ export class UserService {
   updatePassword(userId: string, newPassword: { password: string }): Observable<UserDTO> {
     return this.http.patch<UserDTO>(`${this.authApiUrl}/${userId}/password`, newPassword);
   }
+
+  // Update user status
+  updateUserStatus(userId: string, status: string): Observable<UserDTO> {
+    return this.http.put<UserDTO>(`${this.authApiUrl}/${userId}/status`, { status });
+  }
 }
