@@ -1,0 +1,29 @@
+.tour-list {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tour-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tour-image img {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.tour-details {
+  padding-left: 24px;
+}
+
+.tour-price button {
+  width: 100%;
+  text-align: center;
+}

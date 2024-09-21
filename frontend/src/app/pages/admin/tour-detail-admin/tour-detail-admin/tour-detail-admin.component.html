@@ -1,0 +1,109 @@
+<!-- Hero Section -->
+<div class="relative bg-cover bg-center h-[60vh] rounded-b-[3rem] flex items-center justify-center mt-[-5rem]"
+     [ngStyle]="{'background-image': 'url(' + (tourDetails?.image || '/assets/img/main-bg.png') + ')', 'background-size': 'cover'}">
+    <div class="absolute inset-0 bg-black bg-opacity-20 rounded-b-[3rem]"></div>
+    <div class="text-center text-white z-10 mb-20">
+        <h1 class="text-5xl font-bold">{{ tourDetails?.title }}</h1>
+    </div>
+</div>
+
+<!-- Tour Detail Section -->
+<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-48 mb-8 mx-auto w-10/12 relative grid grid-cols-3 gap-8">
+    <!-- Left Side: Description and Facilities -->
+    <div class="col-span-2 flex flex-col">
+        <h2 class="text-3xl font-semibold mb-4">Description</h2>
+        <p class="text-gray-600">{{ tourDetails?.detail }}</p>
+
+        <!-- Facilities Section -->
+        <div class="mt-6 p-4 border rounded-lg shadow-sm">
+            <h3 class="text-2xl font-semibold mb-2">Facilities</h3>
+            <div class="facility-list">
+                <div *ngFor="let facility of facilities" class="facility-item">
+                    {{ facility }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side: Image, Seats, Price, and Book Button -->
+    <div class="flex flex-col items-end">
+        <img [src]="tourDetails?.image ? tourDetails.image : '/assets/img/empty-img.jpg'" 
+            alt="Tour Image" 
+            class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
+        <div class="flex flex-col items-end mt-10 space-y-4">
+            <p class="text-lg font-semibold">Seats Available: {{ tourDetails?.quota }}</p>
+            <p class="text-xl font-bold text-green-500">IDR {{ tourDetails?.prices | number }}</p>
+            <button class="bg-yellow-500 text-white p-2 rounded-xl transition-transform transform ease-in-out hover:scale-105" (click)="openEditModal()">
+                Edit
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-11/12 md:w-3/4 max-h-full overflow-y-auto">
+        <h2 class="text-2xl font-bold mb-4">Edit Tour</h2>
+        <div class="flex space-x-4">
+            <div class="flex flex-col w-1/2">
+                <div class="mb-4">
+                    <label class="block text-gray-600 mb-1">Title</label>
+                    <input type="text" [(ngModel)]="newTour.title" class="border p-2 rounded w-full" />
+                </div>
+  
+                <div class="mb-4">
+                    <label class="block text-gray-600 mb-1">Location</label>
+                    <input type="text" [(ngModel)]="newTour.location" class="border p-2 rounded w-full" />
+                </div>
+  
+                <div class="mb-4">
+                    <label class="block text-gray-600 mb-1">Price</label>
+                    <input type="number" [(ngModel)]="newTour.prices" class="border p-2 rounded w-full" />
+                </div>
+  
+                <div class="mb-4">
+                    <label class="block text-gray-600 mb-1">Quota</label>
+                    <input type="number" [(ngModel)]="newTour.quota" class="border p-2 rounded w-full" />
+                </div>
+            </div>
+  
+            <div class="flex flex-col w-1/2">
+                <div class="mb-4">
+                    <label class="block text-gray-600 mb-1">Detail</label>
+                    <textarea [(ngModel)]="newTour.detail" class="border p-2 rounded w-full h-24"></textarea>
+                </div>
+                
+                <!-- Facilities Section -->
+                <div class="mb-4">
+                  <h3 class="text-xl font-semibold mb-2">Facilities</h3>
+                  <div class="flex items-center mb-2">
+                      <input type="text" [(ngModel)]="newFacility" placeholder="Add Facility" class="border p-2 rounded w-3/4" />
+                      <button class="bg-green-500 text-white ml-4 px-4 py-2 rounded-3xl" (click)="addFacility()">
+                        Add
+                    </button>
+                  </div>
+                  <div [ngClass]="{'border border-gray-300 rounded p-2': facilities.length > 0}" class="facility-list max-h-48 overflow-y-auto">
+                      <div *ngFor="let facility of facilities" class="flex justify-between items-center py-2 border-b border-gray-300">
+                          <span>{{ facility }}</span>
+                          <button class="text-red-500" (click)="removeFacility(facility)">X</button>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+  
+        <div class="flex justify-between items-center mt-6">
+            <button class="bg-yellow-500 text-white px-4 py-2 rounded-3xl">
+                Add image
+            </button>
+            <div class="flex justify-end space-x-4">
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-3xl" (click)="saveTour()">
+                    Save
+                </button>
+                <button class="bg-red-500 text-white px-4 py-2 rounded-3xl" (click)="isModalOpen = false">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

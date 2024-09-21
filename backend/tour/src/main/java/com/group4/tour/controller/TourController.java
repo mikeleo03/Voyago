@@ -3,6 +3,7 @@ package com.group4.tour.controller;
 import com.group4.tour.data.model.Tour;
 import com.group4.tour.service.TourService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,7 +11,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/tour")
@@ -20,16 +23,27 @@ public class TourController {
     private final TourService tourService;
 
     @GetMapping
-    @PreAuthorize(("hasAnyRole('ADMIN', 'CUSTOMER')"))
-    public ResponseEntity<List<Tour>> getTours(
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
+    public ResponseEntity<Map<String, Object>> getTours(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) String location,
-            @RequestParam(required = false) String sortPrice) {
-        List<Tour> tours = tourService.getAllTours(title, minPrice, maxPrice, location, sortPrice);
-        return ResponseEntity.ok(tours);
+            @RequestParam(required = false) String sortPrice,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<Tour> tours = tourService.getAllTours(title, minPrice, maxPrice, location, sortPrice, page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("tours", tours.getContent());
+        response.put("currentPage", tours.getNumber());
+        response.put("totalItems", tours.getTotalElements());
+        response.put("totalPages", tours.getTotalPages());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     @GetMapping("/{id}")
     @PreAuthorize(("hasAnyRole('ADMIN', 'CUSTOMER')"))

@@ -10,6 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,13 +49,16 @@ class TourServiceImplTest {
         Tour tour = new Tour();
         tour.setTitle("Beach Tour");
 
-        when(tourRepository.findByTitleContaining("Beach")).thenReturn(List.of(tour));
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "prices"));
+        Page<Tour> tourPage = new PageImpl<>(List.of(tour));
 
-        List<Tour> result = tourService.getAllTours("Beach", null, null, null, null);
+        when(tourRepository.findByTitleContaining("Beach", pageable)).thenReturn(tourPage);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getTitle()).isEqualTo("Beach Tour");
-        verify(tourRepository, times(1)).findByTitleContaining("Beach");
+        Page<Tour> result = tourService.getAllTours("Beach", null, null, null, null, 0, 10);
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("Beach Tour");
+        verify(tourRepository, times(1)).findByTitleContaining("Beach", pageable);
     }
 
     @Test
@@ -59,13 +66,16 @@ class TourServiceImplTest {
         Tour tour = new Tour();
         tour.setPrices(100);
 
-        when(tourRepository.findByPricesBetween(50, 150, Sort.by(Sort.Direction.ASC, "prices"))).thenReturn(List.of(tour));
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "prices"));
+        Page<Tour> tourPage = new PageImpl<>(List.of(tour));
 
-        List<Tour> result = tourService.getAllTours(null, 50, 150, null, null);
+        when(tourRepository.findByPricesBetween(50, 150, pageable)).thenReturn(tourPage);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getPrices()).isEqualTo(100);
-        verify(tourRepository, times(1)).findByPricesBetween(50, 150, Sort.by(Sort.Direction.ASC, "prices"));
+        Page<Tour> result = tourService.getAllTours(null, 50, 150, null, null, 0, 10);
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getPrices()).isEqualTo(100);
+        verify(tourRepository, times(1)).findByPricesBetween(50, 150, pageable);
     }
 
     @Test

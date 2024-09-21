@@ -11,8 +11,10 @@
   
     <!-- Center side (Navigation Links) -->
     <div class="hidden md:flex space-x-20">
-        <a href="/tours" class="text-white text-lg hover:underline">Tours</a>
-        <a href="/history" class="text-white text-lg hover:underline">History</a>
+        <!-- Call navigateToTours when clicking Tours -->
+        <a (click)="navigateToTours()" class="text-white text-lg hover:underline cursor-pointer">Tours</a>
+        <!-- Call navigateToHistory when clicking History -->
+        <a (click)="navigateToHistory()" class="text-white text-lg hover:underline cursor-pointer">History</a>
         <a href="/contact" class="text-white text-lg hover:underline">Contact</a>
     </div>
   

@@ -6,6 +6,9 @@ import com.group4.tour.exception.ResourceNotFoundException;
 import com.group4.tour.service.TourService;
 import com.group4.tour.utils.CSVUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +21,7 @@ import java.util.Optional;
 public class TourServiceImpl implements TourService {
     public final TourRepository tourRepository;
 
-    public List<Tour> getAllTours(String title, Integer minPrice, Integer maxPrice, String location, String sortPrice) {
+    public Page<Tour> getAllTours(String title, Integer minPrice, Integer maxPrice, String location, String sortPrice, int page, int size) {
         // Default sorting is by prices ascending
         Sort sort = Sort.by(Sort.Direction.ASC, "prices");
 
@@ -27,16 +30,30 @@ public class TourServiceImpl implements TourService {
             sort = Sort.by(Sort.Direction.DESC, "prices");
         }
 
+        // Create a pageable object with the specified page, size, and sort
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // Apply filters and pagination
         if (title != null) {
-            return tourRepository.findByTitleContaining(title);
-        } else if (minPrice != null && maxPrice != null) {
-            return tourRepository.findByPricesBetween(minPrice, maxPrice, sort);
-        } else if (location != null) {
-            return tourRepository.findByLocationContaining(location);
-        } else {
-            return tourRepository.findAll(sort);
+            return tourRepository.findByTitleContaining(title, pageable);
         }
+
+        if (minPrice != null && maxPrice != null) {
+            return tourRepository.findByPricesBetween(minPrice, maxPrice, pageable);
+        } else if (minPrice != null) {
+            return tourRepository.findByPricesGreaterThanEqual(minPrice, pageable);
+        } else if (maxPrice != null) {
+            return tourRepository.findByPricesLessThanEqual(maxPrice, pageable);
+        }
+
+        if (location != null) {
+            return tourRepository.findByLocationContaining(location, pageable);
+        }
+
+        return tourRepository.findAll(pageable);
     }
+
+
 
     public Tour getTourById(String id) {
         Optional<Tour> tourOptional = tourRepository.findById(id);

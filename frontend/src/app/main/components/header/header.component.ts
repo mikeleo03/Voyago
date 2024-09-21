@@ -34,11 +34,7 @@ export class HeaderComponent implements OnInit {
     if (token != null) {
       const decodedToken: any = jwtDecode(token);
       this.username = decodedToken.sub as string; // Get the 'sub' value for the username
-      // Capitalize the first letter of the role
-      if (decodedToken.roles && decodedToken.roles.length > 0) {
-        this.role = decodedToken.roles[0].toLowerCase();
-        this.role = this.role.charAt(0).toUpperCase() + this.role.slice(1);
-      }
+      this.role = this.authService.getRole();
     } else {
       this.username = "Mr. Lorem Ipsum";
       this.role = "Guest"; // Default role if no token
@@ -77,5 +73,23 @@ export class HeaderComponent implements OnInit {
   handleLogout() {
     this.authService.logout();
     this.router.navigate(['/login']); // Redirect to login page after logout
+  }
+
+  // Navigate to tours based on user role
+  navigateToTours() {
+    if (this.role === 'Admin') {
+      this.router.navigate(['/admin/tours']);
+    } else {
+      this.router.navigate(['/tours']);
+    }
+  }
+
+  // Navigate to history based on user role
+  navigateToHistory() {
+    if (this.role === 'Admin') {
+      this.router.navigate(['/admin/history']);
+    } else {
+      this.router.navigate(['/history']);
+    }
   }
 }

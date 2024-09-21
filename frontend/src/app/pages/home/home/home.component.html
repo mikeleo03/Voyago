@@ -15,38 +15,46 @@
             <h2 class="text-2xl font-semibold">Bandung, Indonesia</h2>
         </div>
         <div class="items-end justify-end flex text-end">
-            <a href="/search" class="text-base text-blue-500 hover:underline">Go to search page</a> <!-- Added link here -->
+            <a href="/search" class="text-base text-blue-500 hover:underline">Go to search page</a>
         </div>
     </div>
-    <!-- Separator -->
     <hr class="my-6 border-gray-300" />
     <div class="flex flex-row justify-center w-full space-x-8 mx-2 mb-3">
         <!-- Icons for inputs -->
         <div class="flex w-full flex-col relative">
             <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">📍</span>
             <p class="pb-1 text-gray-600">Location</p>
-            <input type="text" placeholder="Location" class="border p-2 rounded-3xl w-full pl-12" />
+            <input type="text" placeholder="Location" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="location" />
         </div>
         <div class="flex w-full flex-col relative">
             <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
             <p class="pb-1 text-gray-600">Minimum Price</p>
-            <input type="number" placeholder="Minimum Price" class="border p-2 rounded-3xl w-full pl-12" />
+            <input type="number" placeholder="Minimum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="minPrice" />
         </div>
         <div class="flex w-full flex-col relative">
             <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
             <p class="pb-1 text-gray-600">Maximum Price</p>
-            <input type="number" placeholder="Maximum Price" class="border p-2 rounded-3xl w-full pl-12" />
-        </div>
+            <input type="number" placeholder="Maximum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="maxPrice" />
+          </div>
+          
+        <!-- Sort Price Dropdown -->
         <div class="flex w-full flex-col relative">
-            <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">👤</span>
-            <p class="pb-1 text-gray-600">Guests</p>
-            <input type="number" placeholder="Guests" class="border p-2 rounded-3xl w-full pl-12" />
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">⬆⬇</span>
+          <p class="pb-1 text-gray-600">Sort by Price</p>
+          <select class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="sortPrice">
+              <option value="">None</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+          </select>
         </div>
+  
         <div class="flex w-full flex-col items-end justify-end">
-            <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105">Search</button> <!-- Added hover effect -->
+            <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105" (click)="searchTours()">Search</button>
         </div>
+  
     </div>
-</div>
+  </div>
+
 
 <!-- Popular Tours Section -->
 <div class="my-12 mt-20 text-center">

@@ -1,0 +1,25 @@
+.container {
+    max-width: 1200px;
+}
+
+img {
+    border-radius: 1rem;
+}
+
+button:hover {
+    background-color: #fbbf24;
+}
+
+.facility-list {
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+.facility-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.facility-item:last-child {
+    border-bottom: none;
+}
