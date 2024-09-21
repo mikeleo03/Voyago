@@ -12,13 +12,13 @@ import { ToastContainerDirective, ToastrService } from 'ngx-toastr';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './tours-admin.component.html',
-  styleUrl: './tours-admin.component.css'
+  styleUrls: ['./tours-admin.component.css']
 })
 export class ToursAdminComponent implements OnInit {
   tours: Tour[] = [];
   currentPage: number = 1;
   totalPages: number = 1;
-  limit: number = 10; 
+  limit: number = 10;
 
   isModalOpen = false;
   newTour: TourSave = {
@@ -43,18 +43,13 @@ export class ToursAdminComponent implements OnInit {
   @ViewChild(ToastContainerDirective, { static: true })
   toastContainer!: ToastContainerDirective;
 
-  constructor(private route: ActivatedRoute, private router: Router, private tourService: TourService, private authService: AuthService, private toastrService: ToastrService) {}
-
-  addFacility() {
-      if (this.newFacility.trim()) {
-          this.facilities.push(this.newFacility.trim());
-          this.newFacility = '';
-      }
-  }
-
-  removeFacility(facility: string) {
-      this.facilities = this.facilities.filter(f => f !== facility);
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private tourService: TourService,
+    private authService: AuthService,
+    private toastrService: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -75,15 +70,12 @@ export class ToursAdminComponent implements OnInit {
     });
   }
 
-  openModal() {
-    this.isModalOpen = true;
-  }
-
   searchTours(page: number = this.currentPage): void {
     this.tourService.getTours(this.title, this.minPrice, this.maxPrice, this.location, this.sortPrice, page, this.limit).subscribe(
-      (result: any) => {
+      (result) => {
         this.tours = result.tours;
         this.totalPages = result.totalPages;
+        console.log('Fetched tours:', this.tours); // For debugging
       },
       (error) => {
         console.error('Error fetching tours:', error);
@@ -105,15 +97,19 @@ export class ToursAdminComponent implements OnInit {
     });
   }
 
-  loadTours(): void {
-    this.tourService.getTours().subscribe(
-      (data: Tour[]) => {
-        this.tours = data;
-      },
-      (error) => {
-        console.error('Error fetching tours', error);
-      }
-    );
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  addFacility() {
+    if (this.newFacility.trim()) {
+      this.facilities.push(this.newFacility.trim());
+      this.newFacility = '';
+    }
+  }
+
+  removeFacility(facility: string) {
+    this.facilities = this.facilities.filter(f => f !== facility);
   }
 
   saveTour() {
@@ -122,17 +118,7 @@ export class ToursAdminComponent implements OnInit {
     this.tourService.createTour(this.newTour).subscribe(
       () => {
         this.searchTours();
-  
-        this.newTour = {
-          title: '',
-          detail: '',
-          quota: 0,
-          prices: 0,
-          location: '',
-          image: '',
-          status: 'ACTIVE',
-        };
-  
+        this.resetNewTour();
         this.isModalOpen = false;
         this.toastrService.success('Tour added successfully!');
       },
@@ -141,7 +127,19 @@ export class ToursAdminComponent implements OnInit {
         this.toastrService.warning('Error saving tour:', error);
       }
     );
-  }  
+  }
+
+  resetNewTour() {
+    this.newTour = {
+      title: '',
+      detail: '',
+      quota: 0,
+      prices: 0,
+      location: '',
+      image: '',
+      status: 'ACTIVE',
+    };
+  }
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -154,7 +152,7 @@ export class ToursAdminComponent implements OnInit {
     this.tourService.importToursFromCsv(file).subscribe(
       response => {
         console.log('Tours imported successfully:', response);
-        this.loadTours();
+        this.searchTours(); // Refresh the list of tours
         this.toastrService.success('Tour imported successfully!');
       },
       error => {
@@ -166,5 +164,5 @@ export class ToursAdminComponent implements OnInit {
 
   goToTourDetails(id: string): void {
     this.router.navigate(['/admin/tour'], { queryParams: { id } });
-  } 
+  }
 }

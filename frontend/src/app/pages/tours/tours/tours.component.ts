@@ -11,7 +11,7 @@ import { Tour } from '../../../models/tour.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './tours.component.html',
-  styleUrl: './tours.component.css'
+  styleUrls: ['./tours.component.css']
 })
 export class ToursComponent implements OnInit {
   tours: Tour[] = [];
@@ -25,7 +25,12 @@ export class ToursComponent implements OnInit {
   location: string = '';
   sortPrice: string = '';
 
-  constructor(private route: ActivatedRoute, private router: Router, private tourService: TourService, private authService: AuthService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private tourService: TourService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -41,7 +46,7 @@ export class ToursComponent implements OnInit {
 
   searchTours(page: number = this.currentPage): void {
     this.tourService.getTours(this.title, this.minPrice, this.maxPrice, this.location, this.sortPrice, page, this.limit).subscribe(
-      (result: any) => {
+      (result) => {
         this.tours = result.tours;
         this.totalPages = result.totalPages;
       },
@@ -56,17 +61,6 @@ export class ToursComponent implements OnInit {
       this.currentPage = page;
       this.searchTours(page);
     }
-  }
-
-  loadTours(): void {
-    this.tourService.getTours().subscribe(
-      (data: Tour[]) => {
-        this.tours = data;
-      },
-      (error) => {
-        console.error('Error fetching tours', error);
-      }
-    );
   }
 
   clearQueryParams() {

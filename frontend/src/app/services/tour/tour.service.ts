@@ -20,18 +20,18 @@ export class TourService {
     sortPrice?: string,
     page: number = 1,
     limit: number = 10
-  ): Observable<Tour[]> {
+): Observable<{ tours: Tour[], currentPage: number, totalItems: number, totalPages: number }> {
     let params = new HttpParams();
     if (title) params = params.append('title', title);
-    if (minPrice) params = params.append('minPrice', minPrice.toString());
-    if (maxPrice) params = params.append('maxPrice', maxPrice.toString());
+    if (minPrice !== undefined) params = params.append('minPrice', minPrice.toString());
+    if (maxPrice !== undefined) params = params.append('maxPrice', maxPrice.toString());
     if (location) params = params.append('location', location);
     if (sortPrice) params = params.append('sortPrice', sortPrice);
-    params = params.append('page', page.toString());
-    params = params.append('limit', limit.toString());
-  
-    return this.http.get<Tour[]>(this.apiUrl, { params });
-  }  
+    params = params.append('page', (page - 1).toString());
+    params = params.append('size', limit.toString());
+
+    return this.http.get<{ tours: Tour[], currentPage: number, totalItems: number, totalPages: number }>(this.apiUrl, { params });
+} 
 
   getTourById(id: string): Observable<Tour> {
     return this.http.get<Tour>(`${this.apiUrl}/${id}`);
