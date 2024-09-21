@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { UserService } from '../../../services/user/user.service';  // Import your service
 import { ToastContainerDirective, ToastrService } from 'ngx-toastr'; // For toast notifications
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-change-username',
@@ -21,6 +22,7 @@ export class ChangeUsernameComponent {
   toastContainer!: ToastContainerDirective;
 
   constructor(
+    private router: Router,
     private fb: FormBuilder,
     private userService: UserService,
     private toastr: ToastrService
@@ -41,17 +43,13 @@ export class ChangeUsernameComponent {
       // Call UserService to check if the email exists
       this.userService.getUserByEmail(email).subscribe({
         next: (response) => {
-          // Handle success response
-          console.log('User found: ', response);
-          this.toastr.success('User found!', 'Success');
+          this.router.navigate(['/change/email/confirmed']);
           // Always stop loading after the request
           this.isLoading = false;
         },
         error: (err) => {
           // Handle error response
-          console.error('Error fetching user:', err);
           this.toastr.error(err.error.error, 'Error');
-          // Always stop loading after the request
           this.isLoading = false;
         }
       });
