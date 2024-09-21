@@ -1,122 +1,160 @@
 package com.group4.tour.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group4.tour.data.model.Tour;
 import com.group4.tour.service.TourService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@WebMvcTest(TourController.class)
-class TourControllerTest {
+public class TourControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private TourService tourService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private Tour tour;
+    @InjectMocks
+    private TourController tourController;
 
     @BeforeEach
     void setUp() {
-        tour = new Tour();
-        tour.setId("1");
-        tour.setTitle("Sample Tour");
-        tour.setPrices(1000);
-        tour.setLocation("Bali");
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(tourController).build();
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN", "CUSTOMER"})
     void testGetTours() throws Exception {
-        List<Tour> tours = Arrays.asList(tour);
-        Mockito.when(tourService.getAllTours(any(), any(), any(), any(), any())).thenReturn(tours);
+        Tour tour = new Tour();
+        tour.setTitle("Beach Tour");
+        tour.setLocation("California");
 
-        mockMvc.perform(get("/api/v1/tour")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value(tour.getTitle()))
-                .andExpect(jsonPath("$[0].location").value(tour.getLocation()));
+        when(tourService.getAllTours(any(), any(), any(), any(), any())).thenReturn(Collections.singletonList(tour));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/tour")
+                        .param("title", "Beach Tour"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("Beach Tour"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].location").value("California"))
+                .andDo(print());
+
+        verify(tourService, times(1)).getAllTours(any(), any(), any(), any(), any());
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN", "CUSTOMER"})
     void testGetTourById() throws Exception {
-        Mockito.when(tourService.getTourById(anyString())).thenReturn(tour);
+        String tourId = UUID.randomUUID().toString();
+        Tour tour = new Tour();
+        tour.setId(tourId);
+        tour.setTitle("City Tour");
 
-        mockMvc.perform(get("/api/v1/tour/{id}", "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(tour.getTitle()))
-                .andExpect(jsonPath("$.location").value(tour.getLocation()));
+        when(tourService.getTourById(tourId)).thenReturn(tour);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/tour/{id}", tourId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("City Tour"))
+                .andDo(print());
+
+        verify(tourService, times(1)).getTourById(tourId);
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void testCreateTour() throws Exception {
-        Mockito.when(tourService.createTour(any(Tour.class))).thenReturn(tour);
+        Tour tour = new Tour();
+        tour.setTitle("Adventure Tour");
+        when(tourService.createTour(any(Tour.class))).thenReturn(tour);
 
-        mockMvc.perform(post("/api/v1/tour")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tour)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(tour.getTitle()))
-                .andExpect(jsonPath("$.location").value(tour.getLocation()));
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/tour")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(tour)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Adventure Tour"))
+                .andDo(print());
+
+        verify(tourService, times(1)).createTour(any(Tour.class));
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void testUpdateTour() throws Exception {
-        Mockito.when(tourService.updateTour(anyString(), any(Tour.class))).thenReturn(tour);
+        String tourId = UUID.randomUUID().toString();
+        Tour updatedTour = new Tour();
+        updatedTour.setId(tourId);
+        updatedTour.setTitle("Updated Tour");
 
-        mockMvc.perform(put("/api/v1/tour/{id}", "1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tour)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(tour.getTitle()))
-                .andExpect(jsonPath("$.location").value(tour.getLocation()));
+        when(tourService.updateTour(eq(tourId), any(Tour.class))).thenReturn(updatedTour);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/tour/{id}", tourId)
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(updatedTour)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Updated Tour"))
+                .andDo(print());
+
+        verify(tourService, times(1)).updateTour(eq(tourId), any(Tour.class));
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void testImportToursFromCsv() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("file", "tours.csv", "text/csv", "content".getBytes());
-        Mockito.when(tourService.importToursFromCsv(file)).thenReturn("CSV import successful");
+        String csvContent = "title,detail,quota,prices,location\n" +
+                "Beach Tour,Enjoy the sunny beach,20,100,California\n";
 
-        mockMvc.perform(multipart("/api/v1/tour/import").file(file))
-                .andExpect(status().isOk())
-                .andExpect(content().string("CSV import successful"));
+        when(tourService.importToursFromCsv(any())).thenReturn("Import successful");
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/tour/import")
+                        .file("file", csvContent.getBytes()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Import successful"))
+                .andDo(print());
+
+        verify(tourService, times(1)).importToursFromCsv(any());
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void testReduceQuota() throws Exception {
-        mockMvc.perform(put("/api/v1/tour/reduce")
-                        .param("id", "1")
-                        .param("quantity", "2"))
-                .andExpect(status().isOk());
+        String tourId = UUID.randomUUID().toString();
+        int quantity = 5;
 
-        Mockito.verify(tourService, Mockito.times(1)).reduceQuota(anyString(), any(Integer.class));
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/tour/reduce")
+                        .param("id", tourId)
+                        .param("quantity", String.valueOf(quantity)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+
+        verify(tourService, times(1)).reduceQuota(tourId, quantity);
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     void testUpdateTourStatus() throws Exception {
-        mockMvc.perform(put("/api/v1/tour/status")
-                        .param("id", "1"))
-                .andExpect(status().isOk());
+        String tourId = UUID.randomUUID().toString();
 
-        Mockito.verify(tourService, Mockito.times(1)).updateTourStatus(anyString());
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/tour/status")
+                        .param("id", tourId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+
+        verify(tourService, times(1)).updateTourStatus(tourId);
     }
 }

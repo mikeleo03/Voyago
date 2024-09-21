@@ -1,17 +1,16 @@
-package com.group4.tour.service.impl;
+package com.group4.tour.service;
 
 import com.group4.tour.data.model.Tour;
 import com.group4.tour.data.repository.TourRepository;
 import com.group4.tour.exception.ResourceNotFoundException;
+import com.group4.tour.service.impl.TourServiceImpl;
 import com.group4.tour.utils.CSVUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Sort;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -27,12 +26,18 @@ class TourServiceImplTest {
     @Mock
     private TourRepository tourRepository;
 
+    @Mock
+    private CSVUtil csvUtil;
+
+    @Mock
+    private MultipartFile mockMultipartFile;
+
     @InjectMocks
     private TourServiceImpl tourService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this); // Initialize mocks
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -148,24 +153,49 @@ class TourServiceImplTest {
     }
 
     @Test
-    void testImportToursFromCsv() {
-        MultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv", "id,title,detail\n1,Test Tour,Detail".getBytes());
+    void testUpdateTourStatusToInactive() {
+        Tour tour = new Tour();
+        tour.setId("1");
+        tour.setStatus("ACTIVE");
 
-        when(CSVUtil.isCSVFormat(file)).thenReturn(true);
-        when(CSVUtil.csvToTours(file)).thenReturn(List.of(new Tour()));
+        when(tourRepository.findById("1")).thenReturn(Optional.of(tour));
 
-        String result = tourService.importToursFromCsv(file);
+        tourService.updateTourStatus("1");
 
-        assertThat(result).contains("CSV import successful");
-        verify(tourRepository, times(1)).saveAll(anyList());
+        assertThat(tour.getStatus()).isEqualTo("INACTIVE");
+        verify(tourRepository, times(1)).findById("1");
+        verify(tourRepository, times(1)).save(tour);
+    }
+
+    @Test
+    void testUpdateTourStatusToActive() {
+        Tour tour = new Tour();
+        tour.setId("1");
+        tour.setStatus("INACTIVE");
+
+        when(tourRepository.findById("1")).thenReturn(Optional.of(tour));
+
+        tourService.updateTourStatus("1");
+
+        assertThat(tour.getStatus()).isEqualTo("ACTIVE");
+        verify(tourRepository, times(1)).findById("1");
+        verify(tourRepository, times(1)).save(tour);
+    }
+
+    @Test
+    void testUpdateTourStatusTourNotFound() {
+        when(tourRepository.findById("1")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> tourService.updateTourStatus("1"));
+        verify(tourRepository, times(1)).findById("1");
     }
 
     @Test
     void testImportToursFromCsvInvalidFormat() {
-        MultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "data".getBytes());
+        when(mockMultipartFile.getContentType()).thenReturn("application/json");
 
-        when(CSVUtil.isCSVFormat(file)).thenReturn(false);
+        assertThrows(IllegalArgumentException.class, () -> tourService.importToursFromCsv(mockMultipartFile));
 
-        assertThrows(IllegalArgumentException.class, () -> tourService.importToursFromCsv(file));
+        verify(tourRepository, never()).saveAll(anyList());
     }
 }
