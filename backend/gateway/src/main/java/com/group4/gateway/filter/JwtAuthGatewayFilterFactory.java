@@ -9,12 +9,26 @@ import org.springframework.stereotype.Component;
 
 import com.group4.gateway.client.AuthClient;
 
+import java.util.List;
+import java.util.regex.Pattern;
+
 @Component
 public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Object> {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthGatewayFilterFactory.class);
 
     private final AuthClient authClient;
+
+    // List of exempted paths
+    private static final List<String> EXEMPTED_PATHS = List.of(
+            "/api/v1/auth/login",
+            "/api/v1/users/signup",
+            "/api/v1/users/email",
+            "/api/v1/users/send"
+    );
+
+    // Regular expression for dynamic paths (e.g., /api/v1/users/{id}/password)
+    private static final Pattern USER_PASSWORD_PATH_PATTERN = Pattern.compile("/api/v1/users/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/password$");
 
     public JwtAuthGatewayFilterFactory(AuthClient authClient) {
         this.authClient = authClient;
@@ -27,13 +41,13 @@ public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Ob
             logger.info("Request Path: {} - {}", exchange.getRequest().getMethod(), path);
 
             // Skip preflight request - OPTIONS
-            if (exchange.getRequest().getMethod().toString().equals("OPTIONS")) {
+            if ("OPTIONS".equals(exchange.getRequest().getMethod().toString())) {
                 logger.info("Skip preflight request - OPTIONS");
                 return chain.filter(exchange);
             }
 
-            // Skip JWT validation for specific paths
-            if ("/api/v1/auth/login".equals(path) || "/api/v1/users/signup".equals(path) || "/api/v1/users/email".equals(path) || "/api/v1/users/send".equals(path)) {
+            // Check if the path is in exempted paths or matches the dynamic user password path
+            if (EXEMPTED_PATHS.contains(path) || USER_PASSWORD_PATH_PATTERN.matcher(path).matches()) {
                 logger.info("Skipping JWT validation for path: {}", path);
                 return chain.filter(exchange);
             }
@@ -48,14 +62,13 @@ public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Ob
             logger.info("Validating JWT token: {}", token);
 
             // Validate the JWT token with the AuthClient
-            String finalToken = token; // Define a final or effectively final variable to pass into the lambda
+            String finalToken = token;
             return authClient.validateJwt(finalToken)
                 .flatMap(valid -> {
                     if (Boolean.TRUE.equals(valid)) {
                         logger.info("JWT validation successful for token");
 
                         // Forward the validated JWT to the downstream service
-                        // Add the Authorization header with the Bearer token
                         return chain.filter(exchange.mutate()
                             .request(exchange.getRequest().mutate()
                                 .header("Authorization", "Bearer " + finalToken)
