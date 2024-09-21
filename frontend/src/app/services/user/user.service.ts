@@ -36,6 +36,11 @@ export class UserService {
     return this.http.get<UserDTO>(`${this.authApiUrl}/email?email=${email}`);
   }
 
+  // Get user by username
+  getUserByUsername(username: string): Observable<UserDTO> {
+    return this.http.get<UserDTO>(`${this.authApiUrl}/username?username=${username}`);
+  }
+
   // Send email
   sendEmail(to: string, subject: string, htmlContent: string): Observable<any> {
     const emailData = {

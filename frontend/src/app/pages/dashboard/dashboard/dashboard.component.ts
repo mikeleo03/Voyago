@@ -1,5 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
+import { UserService } from '../../../services/user/user.service';
+import { AuthService } from '../../../services/auth/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,10 +13,10 @@ import { Component, Input } from '@angular/core';
   standalone: true
 })
 export class DashboardComponent {
-  @Input() userName: string = 'Lorem Ipsum';
-  @Input() userImgUrl: string = '/assets/img/default.png';
-  @Input() userEmail: string = 'loremipsum@gmail.com';
-  @Input() userPhone: string = '(+62) 812-3456-7890';
+  @Input() userName: string = '';
+  @Input() userImgUrl: string = '';
+  @Input() userEmail: string = '';
+  @Input() userPhone: string = '';
   @Input() historyItems: any[] = [
     {
       title: 'Lorem Ipsum 1',
@@ -31,4 +35,27 @@ export class DashboardComponent {
       imageUrl: '/assets/img/tour2.png'
     }
   ];
+
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private authService: AuthService,
+    private toastr: ToastrService
+  ) {}
+
+  ngOnInit() {
+    this.userName = this.authService.getCurrentUsername();
+    this.userService.getUserByUsername(this.userName).subscribe({
+      next: (response) => {
+        this.userEmail = response.email;
+        this.userPhone = response.phone;
+        this.userImgUrl = response.picture || "/assets/img/default.png";
+      },
+      error: () => {
+        this.toastr.error("You are unauthenticated, Please login first", 'Unauthenticated');
+        this.authService.logout();
+        this.router.navigate(['/login']);
+      }
+    });
+  }
 }
