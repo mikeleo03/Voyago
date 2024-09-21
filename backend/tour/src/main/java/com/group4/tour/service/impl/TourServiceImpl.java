@@ -13,6 +13,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,20 +24,17 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TourServiceImpl implements TourService {
     public final TourRepository tourRepository;
+    private final String uploadDir = "src/main/resources/static/assets/";
 
     public Page<Tour> getAllTours(String title, Integer minPrice, Integer maxPrice, String location, String sortPrice, int page, int size) {
-        // Default sorting is by prices ascending
         Sort sort = Sort.by(Sort.Direction.ASC, "prices");
 
-        // If sortPrice is "desc", change the sorting direction
         if (sortPrice != null && sortPrice.equalsIgnoreCase("desc")) {
             sort = Sort.by(Sort.Direction.DESC, "prices");
         }
 
-        // Create a pageable object with the specified page, size, and sort
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        // Apply filters and pagination
         if (title != null) {
             return tourRepository.findByTitleContaining(title, pageable);
         }
@@ -65,6 +66,23 @@ public class TourServiceImpl implements TourService {
 
     public Tour createTour(Tour tour) {
         return tourRepository.save(tour);
+    }
+
+
+    public String saveImage(MultipartFile file) {
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        Path path = Paths.get(uploadDir + fileName);
+        try {
+            Files.write(path, file.getBytes());
+            return fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("Could not save image: " + e.getMessage());
+        }
+    }
+
+    public String getTourImageNameById(String id) {
+        Tour tour = tourRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tour not found"));
+        return tour.getImage();
     }
 
     public Tour updateTour(String id, Tour updatedTour) {

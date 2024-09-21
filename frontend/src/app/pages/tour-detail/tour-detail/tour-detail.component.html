@@ -27,7 +27,7 @@
 
     <!-- Right Side: Image, Seats, Price, and Book Button -->
     <div class="flex flex-col items-end">
-        <img [src]="tourDetails?.image ? tourDetails.image : '/assets/img/empty-img.jpg'" 
+        <img [src]="tourImageUrl ? tourImageUrl : '/assets/img/empty-img.jpg'" 
             alt="Tour Image" 
             class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
         <div class="flex flex-col items-end mt-10 space-y-4">

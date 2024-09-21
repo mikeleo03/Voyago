@@ -37,8 +37,20 @@ export class TourService {
     return this.http.get<Tour>(`${this.apiUrl}/${id}`);
   }
 
-  createTour(tour: TourSave): Observable<TourSave> {
-    return this.http.post<Tour>(this.apiUrl, tour);
+  createTour(tour: TourSave, imageFile?: File): Observable<Tour> {
+    const formData: FormData = new FormData();
+
+    formData.append('tour', new Blob([JSON.stringify(tour)], { type: 'application/json' }));
+
+    if (imageFile) {
+      formData.append('file', imageFile);
+    }
+
+    return this.http.post<Tour>(this.apiUrl, formData);
+  }
+
+  getTourImage(tourId: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${tourId}/image`, { responseType: 'blob' });
   }
 
   updateTour(id: string, tour: Tour): Observable<Tour> {

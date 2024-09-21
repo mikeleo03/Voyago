@@ -61,7 +61,7 @@
       <!-- Tour Image -->
       <div class="tour-image w-1/5">
         <img
-          [src]="tour.image ? tour.image : '/assets/img/empty-img.jpg'"
+          [src]="tourImageUrls[tour.id] ? tourImageUrls[tour.id] : '/assets/img/empty-img.jpg'"
           alt="Tour image"
           class="w-full h-auto rounded-lg shadow"
         />

@@ -15,6 +15,8 @@ export class TourDetailComponent implements OnInit {
   tourDetails: any;
   loading: boolean = true;
 
+  tourImageUrl: string = '';
+
   constructor(private route: ActivatedRoute, private tourService: TourService, private router: Router) {}
 
   ngOnInit(): void {
@@ -33,6 +35,10 @@ export class TourDetailComponent implements OnInit {
           (details) => {
               this.tourDetails = details;
               this.loading = false;
+              this.tourService.getTourImage(this.tourId as string).subscribe(blob => {
+                const url = window.URL.createObjectURL(blob);
+                this.tourImageUrl = url;
+              });
           },
           (error) => {
               console.error('Error fetching tour details:', error);

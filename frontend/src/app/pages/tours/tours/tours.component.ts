@@ -25,6 +25,8 @@ export class ToursComponent implements OnInit {
   location: string = '';
   sortPrice: string = '';
 
+  tourImageUrls: { [key: string]: string } = {};
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -49,6 +51,12 @@ export class ToursComponent implements OnInit {
       (result) => {
         this.tours = result.tours;
         this.totalPages = result.totalPages;
+        this.tours.forEach(tour => {
+          this.tourService.getTourImage(tour.id).subscribe(blob => {
+            const url = window.URL.createObjectURL(blob);
+            this.tourImageUrls[tour.id] = url;
+          });
+        });
       },
       (error) => {
         console.error('Error fetching tours:', error);
