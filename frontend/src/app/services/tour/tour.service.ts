@@ -17,7 +17,9 @@ export class TourService {
     minPrice?: number,
     maxPrice?: number,
     location?: string,
-    sortPrice?: string
+    sortPrice?: string,
+    page: number = 1,
+    limit: number = 10
   ): Observable<Tour[]> {
     let params = new HttpParams();
     if (title) params = params.append('title', title);
@@ -25,9 +27,11 @@ export class TourService {
     if (maxPrice) params = params.append('maxPrice', maxPrice.toString());
     if (location) params = params.append('location', location);
     if (sortPrice) params = params.append('sortPrice', sortPrice);
-
+    params = params.append('page', page.toString());
+    params = params.append('limit', limit.toString());
+  
     return this.http.get<Tour[]>(this.apiUrl, { params });
-  }
+  }  
 
   getTourById(id: string): Observable<Tour> {
     return this.http.get<Tour>(`${this.apiUrl}/${id}`);
@@ -45,7 +49,7 @@ export class TourService {
     const formData: FormData = new FormData();
     formData.append('file', file);
 
-    return this.http.post<string>(`${this.apiUrl}/import`, formData);
+    return this.http.post<string>(`${this.apiUrl}/import`, formData, { responseType: 'text' as 'json' });
   }
 
   reduceQuota(id: string, quantity: number): Observable<void> {

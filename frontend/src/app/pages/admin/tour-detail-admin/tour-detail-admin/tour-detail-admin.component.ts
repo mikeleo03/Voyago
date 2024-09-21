@@ -1,30 +1,36 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TourService } from '../../../services/tour/tour.service';
+import { TourService } from '../../../../services/tour/tour.service';
+import { AuthService } from '../../../../services/auth/auth.service';
 
 @Component({
-  selector: 'app-tour-detail',
+  selector: 'app-tour-detail-admin',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './tour-detail.component.html',
-  styleUrl: './tour-detail.component.css'
+  templateUrl: './tour-detail-admin.component.html',
+  styleUrl: './tour-detail-admin.component.css'
 })
-export class TourDetailComponent implements OnInit {
+export class TourDetailAdminComponent implements OnInit {
   tourId: string | null = null;
   tourDetails: any;
   loading: boolean = true;
 
-  constructor(private route: ActivatedRoute, private tourService: TourService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private tourService: TourService, private router: Router, private authService: AuthService) {}
 
   ngOnInit(): void {
       this.route.queryParams.subscribe(params => {
-          this.tourId = params['id'];
-          if (this.tourId) {
-              this.getTourDetails(this.tourId);
-          } else {
-              this.router.navigate(['/not-found']);
+        if (this.authService.getRole() !== 'Admin') {
+            this.router.navigate(['/not-found']);
+            return;
           }
+
+        this.tourId = params['id'];
+        if (this.tourId) {
+            this.getTourDetails(this.tourId);
+        } else {
+            this.router.navigate(['/not-found']);
+        }
       });
   }
 

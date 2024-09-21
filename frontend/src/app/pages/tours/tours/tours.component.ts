@@ -15,6 +15,9 @@ import { Tour } from '../../../models/tour.model';
 })
 export class ToursComponent implements OnInit {
   tours: Tour[] = [];
+  currentPage: number = 1;
+  totalPages: number = 1;
+  limit: number = 10; 
 
   title: string = '';
   minPrice?: number;
@@ -33,17 +36,35 @@ export class ToursComponent implements OnInit {
       
       this.searchTours();
       this.clearQueryParams();
-      console.log(this.authService.getRole());
     });
   }
 
-  searchTours() {
-    this.tourService.getTours(this.title, this.minPrice, this.maxPrice, this.location, this.sortPrice).subscribe(
-      (result) => {
-        this.tours = result;
+  searchTours(page: number = this.currentPage): void {
+    this.tourService.getTours(this.title, this.minPrice, this.maxPrice, this.location, this.sortPrice, page, this.limit).subscribe(
+      (result: any) => {
+        this.tours = result.tours;
+        this.totalPages = result.totalPages;
       },
       (error) => {
         console.error('Error fetching tours:', error);
+      }
+    );
+  }
+
+  changePage(page: number) {
+    if (page > 0 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.searchTours(page);
+    }
+  }
+
+  loadTours(): void {
+    this.tourService.getTours().subscribe(
+      (data: Tour[]) => {
+        this.tours = data;
+      },
+      (error) => {
+        console.error('Error fetching tours', error);
       }
     );
   }
@@ -54,4 +75,8 @@ export class ToursComponent implements OnInit {
       replaceUrl: true
     });
   }
+
+  goToTourDetails(id: string): void {
+    this.router.navigate(['/tour'], { queryParams: { id } });
+  }  
 }

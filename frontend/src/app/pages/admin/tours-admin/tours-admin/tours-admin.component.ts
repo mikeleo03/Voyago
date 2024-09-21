@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TourService } from '../../../../services/tour/tour.service';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { Tour, TourSave } from '../../../../models/tour.model';
+import { ToastContainerDirective, ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-tours-admin',
@@ -15,6 +16,9 @@ import { Tour, TourSave } from '../../../../models/tour.model';
 })
 export class ToursAdminComponent implements OnInit {
   tours: Tour[] = [];
+  currentPage: number = 1;
+  totalPages: number = 1;
+  limit: number = 10; 
 
   isModalOpen = false;
   newTour: TourSave = {
@@ -33,10 +37,32 @@ export class ToursAdminComponent implements OnInit {
   location: string = '';
   sortPrice: string = '';
 
-  constructor(private route: ActivatedRoute, private router: Router, private tourService: TourService, private authService: AuthService) {}
+  facilities: string[] = [];
+  newFacility: string = '';
+
+  @ViewChild(ToastContainerDirective, { static: true })
+  toastContainer!: ToastContainerDirective;
+
+  constructor(private route: ActivatedRoute, private router: Router, private tourService: TourService, private authService: AuthService, private toastrService: ToastrService) {}
+
+  addFacility() {
+      if (this.newFacility.trim()) {
+          this.facilities.push(this.newFacility.trim());
+          this.newFacility = '';
+      }
+  }
+
+  removeFacility(facility: string) {
+      this.facilities = this.facilities.filter(f => f !== facility);
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
+      if (this.authService.getRole() !== 'Admin') {
+        this.router.navigate(['/not-found']);
+        return;
+      }
+
       this.location = params['location'] || '';
       this.minPrice = params['minPrice'] ? +params['minPrice'] : undefined;
       this.maxPrice = params['maxPrice'] ? +params['maxPrice'] : undefined;
@@ -44,7 +70,8 @@ export class ToursAdminComponent implements OnInit {
       
       this.searchTours();
       this.clearQueryParams();
-      console.log(this.authService.getRole());
+      
+      this.toastrService.overlayContainer = this.toastContainer;
     });
   }
 
@@ -52,10 +79,11 @@ export class ToursAdminComponent implements OnInit {
     this.isModalOpen = true;
   }
 
-  searchTours() {
-    this.tourService.getTours(this.title, this.minPrice, this.maxPrice, this.location, this.sortPrice).subscribe(
-      (result) => {
-        this.tours = result;
+  searchTours(page: number = this.currentPage): void {
+    this.tourService.getTours(this.title, this.minPrice, this.maxPrice, this.location, this.sortPrice, page, this.limit).subscribe(
+      (result: any) => {
+        this.tours = result.tours;
+        this.totalPages = result.totalPages;
       },
       (error) => {
         console.error('Error fetching tours:', error);
@@ -63,11 +91,29 @@ export class ToursAdminComponent implements OnInit {
     );
   }
 
+  changePage(page: number) {
+    if (page > 0 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.searchTours(page);
+    }
+  }
+
   clearQueryParams() {
     this.router.navigate([], {
       queryParams: {},
       replaceUrl: true
     });
+  }
+
+  loadTours(): void {
+    this.tourService.getTours().subscribe(
+      (data: Tour[]) => {
+        this.tours = data;
+      },
+      (error) => {
+        console.error('Error fetching tours', error);
+      }
+    );
   }
 
   saveTour() {
@@ -88,14 +134,37 @@ export class ToursAdminComponent implements OnInit {
         };
   
         this.isModalOpen = false;
+        this.toastrService.success('Tour added successfully!');
       },
       (error) => {
         console.error('Error saving tour:', error);
+        this.toastrService.warning('Error saving tour:', error);
       }
     );
   }  
-  
-  importCSV() {
-    console.log('Import CSV clicked');
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.importCSV(file);
+    }
   }
+
+  importCSV(file: File) {
+    this.tourService.importToursFromCsv(file).subscribe(
+      response => {
+        console.log('Tours imported successfully:', response);
+        this.loadTours();
+        this.toastrService.success('Tour imported successfully!');
+      },
+      error => {
+        console.error('Error importing tours:', error);
+        this.toastrService.error('Error importing tours:', error);
+      }
+    );
+  }
+
+  goToTourDetails(id: string): void {
+    this.router.navigate(['/admin/tour'], { queryParams: { id } });
+  } 
 }

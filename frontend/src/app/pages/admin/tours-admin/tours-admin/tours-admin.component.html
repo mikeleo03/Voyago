@@ -59,14 +59,15 @@
   <button class="bg-blue-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="openModal()">
       Add Tour
   </button>
-  <button class="bg-yellow-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="importCSV()">
-      Import CSV
-  </button>
+  <label class="bg-yellow-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer">
+    Import CSV
+    <input type="file" (change)="onFileSelected($event)" accept=".csv" class="hidden" />
+</label>
 </div>
 
 <!-- Modal -->
 <div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-  <div class="bg-white rounded-lg p-6 w-11/12 md:w-3/4">
+  <div class="bg-white rounded-lg p-6 w-11/12 md:w-3/4 max-h-full overflow-y-auto">
       <h2 class="text-2xl font-bold mb-4">New Tour</h2>
       <div class="flex space-x-4">
           <!-- First Column -->
@@ -96,8 +97,28 @@
           <div class="flex flex-col w-1/2">
               <div class="mb-4">
                   <label class="block text-gray-600 mb-1">Detail</label>
-                  <textarea [(ngModel)]="newTour.detail" placeholder="Tour Details" class="border p-2 rounded w-full h-32"></textarea>
+                  <textarea [(ngModel)]="newTour.detail" placeholder="Tour Details" class="border p-2 rounded w-full h-24"></textarea>
               </div>
+              
+              <!-- Facilities Section -->
+              <div class="mb-4">
+                <h3 class="text-xl font-semibold mb-2">Facilities</h3>
+                <div class="flex items-center mb-2">
+                    <input type="text" [(ngModel)]="newFacility" placeholder="Add Facility" class="border p-2 rounded w-3/4" />
+                    <button class="bg-green-500 text-white ml-4 px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="addFacility()">
+                      Add
+                  </button>
+                </div>
+                <div [ngClass]="{'border border-gray-300 rounded p-2': facilities.length > 0}" class="facility-list max-h-48 overflow-y-auto">
+                    <div *ngFor="let facility of facilities" class="flex justify-between items-center py-2 border-b border-gray-300">
+                        <span>{{ facility }}</span>
+                        <button class="text-red-500" (click)="removeFacility(facility)">
+                            X 
+                        </button>
+                    </div>
+                </div>
+            </div>
+
           </div>
       </div>
 
@@ -116,8 +137,6 @@
       </div>
   </div>
 </div>
-
-
 
 <!-- Tour List -->
 <div class="tour-list p-8">
@@ -147,8 +166,44 @@
       <!-- Tour Price and Details Button -->
       <div class="tour-price w-1/5 flex flex-col items-center justify-center">
         <p class="text-xl font-semibold text-green-500 mb-2">IDR {{ tour.prices | number }}</p>
-        <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105">Details</button> <!-- Added hover effect -->
+        <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105" (click)="goToTourDetails(tour.id)">Details</button> <!-- Added hover effect -->
       </div>
   
     </div>
+</div>
+
+<!-- Pagination Controls -->
+<div class="pagination flex justify-center items-center space-x-2 mt-6 mb-6">
+  <!-- Previous Button -->
+  <button 
+    class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
+    (click)="changePage(currentPage - 1)" 
+    [disabled]="currentPage === 1"
+    [ngClass]="{'opacity-50': currentPage === 1, 'hover:bg-yellow-600': currentPage !== 1}"
+  >
+    Previous
+  </button>
+
+  <!-- Page Numbers -->
+  <span *ngFor="let page of [].constructor(totalPages); let i = index">
+    <button 
+      class="px-4 py-2 rounded-full text-center w-10 h-10 transition-transform transform ease-in-out hover:scale-105"
+      [ngClass]="{
+        'bg-yellow-500 text-white': currentPage === i + 1, 
+        'bg-gray-200 text-gray-700 hover:bg-gray-300': currentPage !== i + 1
+      }"
+      (click)="changePage(i + 1)">
+      {{ i + 1 }}
+    </button>
+  </span>
+
+  <!-- Next Button -->
+  <button 
+    class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
+    (click)="changePage(currentPage + 1)" 
+    [disabled]="currentPage === totalPages"
+    [ngClass]="{'opacity-50': currentPage === totalPages, 'hover:bg-yellow-600': currentPage !== totalPages}"
+  >
+    Next
+  </button>
 </div>
