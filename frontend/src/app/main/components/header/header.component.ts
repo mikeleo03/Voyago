@@ -71,7 +71,7 @@ export class HeaderComponent implements OnInit {
   }
 
   isLoggedIn(): boolean {
-    return this.authService.getToken() != null;
+    return this.authService.isLoggedIn();
   }
 
   handleLogout() {
