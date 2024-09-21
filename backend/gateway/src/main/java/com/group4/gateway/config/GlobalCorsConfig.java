@@ -12,9 +12,9 @@ public class GlobalCorsConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOriginPatterns(List.of("http://localhost:4200"));
-        corsConfig.setAllowedMethods(List.of("PUT", "GET", "POST", "DELETE", "OPTIONS"));
-        corsConfig.setAllowedHeaders(List.of("Content-Type", "Authorization"));
+        corsConfig.setAllowedOriginPatterns(List.of("http://localhost:4200", "http://localhost:3000"));
+        corsConfig.setAllowedMethods(List.of("PUT", "GET", "POST", "DELETE", "PATCH","OPTIONS"));
+        corsConfig.setAllowedHeaders(List.of("Content-Type", "Authorization", "api-key"));
         corsConfig.setAllowCredentials(true);
         return new CorsWebFilter(exchange -> corsConfig);
     }

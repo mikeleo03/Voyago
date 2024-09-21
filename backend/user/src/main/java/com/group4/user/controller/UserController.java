@@ -18,15 +18,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.group4.user.data.model.User;
+import com.group4.user.dto.EmailRequest;
 import com.group4.user.dto.UpdatePasswordDTO;
 import com.group4.user.dto.UserDTO;
 import com.group4.user.dto.UserSaveDTO;
 import com.group4.user.dto.UserUpdateDTO;
+import com.group4.user.services.EmailService;
 import com.group4.user.services.UserService;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -34,10 +38,12 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final EmailService emailService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EmailService emailService) {
         this.userService = userService;
+        this.emailService = emailService;
     }
 
     // [Admin] Get all users - Paginated.
@@ -80,5 +86,20 @@ public class UserController {
     public ResponseEntity<UserDTO> updatePassword(@PathVariable String id, @RequestBody @Valid UpdatePasswordDTO newPassword) {
         UserDTO updatedUser = userService.updatePassword(id, newPassword);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
+    }
+
+    // [-] Get user by email
+    @GetMapping("/email")
+    public ResponseEntity<UserDTO> getUserByEmail(@RequestParam String email) {
+        Optional<UserDTO> user = userService.getUserByEmail(email);
+
+        return user.map(ResponseEntity::ok)
+                   .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @PostMapping("/send")
+    public ResponseEntity<Map<String, String>> sendHtmlEmail(@RequestBody @Valid EmailRequest emailRequest) throws MessagingException {
+        emailService.sendHtmlEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getHtmlBody());
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "HTML Email sent successfully"));
     }
 }

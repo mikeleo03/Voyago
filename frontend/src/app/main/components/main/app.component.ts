@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         // Hide nav and footer for any URL starting with "/login" or "/signup"
-        this.showNavAndFooter = !event.url.startsWith('/login') && !event.url.startsWith('/signup');
+        this.showNavAndFooter = !event.url.startsWith('/login') && !event.url.startsWith('/signup') && !event.url.startsWith('/change');
       }
     });
   }
