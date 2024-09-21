@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environment/environment.prod';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { SignupResponse, User, UserDTO, UserSaveDTO } from '../../models/user.model';
+import { SignupResponse, User, UserDTO, UserSaveDTO, UserUpdateDTO } from '../../models/user.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -59,5 +59,10 @@ export class UserService {
   // Update user status
   updateUserStatus(userId: string, status: string): Observable<UserDTO> {
     return this.http.put<UserDTO>(`${this.authApiUrl}/${userId}/status`, { status });
+  }
+
+  // Update user
+  updateUser(userId: string, userData: UserUpdateDTO): Observable<UserDTO> {
+    return this.http.put<UserDTO>(`${this.authApiUrl}/${userId}`, userData);
   }
 }
