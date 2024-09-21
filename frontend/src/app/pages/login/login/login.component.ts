@@ -18,6 +18,7 @@ import { ToastContainerDirective, ToastrService } from 'ngx-toastr';
 })
 export class LoginComponent {
   // constants
+  isLoading: boolean = false;
   mainbg: string = '../assets/img/login.png';
   loginRequest: LoginRequest = { username: '', password: '' };
 
@@ -35,8 +36,10 @@ export class LoginComponent {
   }
 
   login() {
+    this.isLoading = true;
     this.authService.login(this.loginRequest).subscribe({
       next: (response) => {
+        this.isLoading = false;
         if (response.token) {
           this.authService.setToken(response.token);
           this.toastrService.success('Login successful!');
@@ -46,17 +49,18 @@ export class LoginComponent {
         }
       },
       error: (error) => {
+        this.isLoading = false;
         // Check if error.status exists and act accordingly
         if (error.status === 400) {
           // Handle 400 Bad Request with multiple errors
           if (error.error?.errors && Array.isArray(error.error.errors)) {
             // Display each error as its own toast
             error.error.errors.forEach((errMessage: string) => {
-              this.toastrService.error(errMessage);
+              this.toastrService.error(errMessage, 'Validation Error');
             });
           } else if (error.error?.error) {
             // Handle single error message
-            this.toastrService.error(error.error.error);
+            this.toastrService.error(error.error.error, 'Validation Error');
           } else {
             // Handle unexpected format of 400 errors
             this.toastrService.error('Bad Request: Please check your inputs.');
@@ -66,7 +70,7 @@ export class LoginComponent {
           this.toastrService.error('Unauthorized: Invalid username or password.');
         } else {
           // Handle any other unexpected errors
-          this.toastrService.error(error.error.error + ", please check your username or password." || 'An unexpected error occurred. Please try again.');
+          this.toastrService.error("Please check your username or password.", 'Bad Request');
         }
       }
     });

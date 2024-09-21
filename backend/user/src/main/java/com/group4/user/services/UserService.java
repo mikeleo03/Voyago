@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,4 +32,7 @@ public interface UserService {
 
     // [Customer, Admin] Update existing user's password.
     UserDTO updatePassword(String id, @Valid UpdatePasswordDTO newPassword);
+
+    // [-] Get user by email
+    Optional<UserDTO> getUserByEmail(String email);
 }

@@ -55,3 +55,7 @@ export interface UpdatePasswordDTO {
 export interface LoginResponse {
     token: string;
 }
+
+export interface SignupResponse {
+    status: string;
+}

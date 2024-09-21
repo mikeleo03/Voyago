@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { Component, OnInit, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
@@ -20,6 +20,7 @@ import { AuthService } from '../../../services/auth/auth.service';
 export class HeaderComponent implements OnInit {
   username = '';
   role = '';
+  isHome = true;
   isMenuOpen = false;
   showLogout = false;
   isOpen = false;
@@ -38,12 +39,27 @@ export class HeaderComponent implements OnInit {
       this.username = "Mr. Lorem Ipsum";
       this.role = "Guest"; // Default role if no token
     }
+
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.isHome = event.url == '/';
+        this.isScrolled = !this.isHome;
+      }
+    });
   }
 
   @HostListener('window:scroll', [])
   onScroll(): void {
     const scrollPosition = window.scrollY;
-    this.isScrolled = scrollPosition > 50; // Adjust the threshold as needed
+    
+    // If the user is at the top of the page and it's the home page, set isScrolled to false
+    if (scrollPosition <= 50 && this.isHome) {
+      this.isScrolled = false;
+    } 
+    // Otherwise, set isScrolled to true when scroll position is greater than 50
+    else if (scrollPosition > 50 || !this.isHome) {
+      this.isScrolled = true;
+    }
   }
 
   toggleMenu() {
@@ -51,7 +67,7 @@ export class HeaderComponent implements OnInit {
   }
 
   isLoggedIn(): boolean {
-    return this.authService.getToken() != null;
+    return this.authService.isLoggedIn();
   }
 
   handleLogout() {

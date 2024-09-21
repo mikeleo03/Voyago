@@ -13,6 +13,8 @@ export interface RouteLink {
 export const RouterConfig: Record<string, RouteLink> = {
     HOME: { path: '', link: '/', title: 'Home', data: { header: true } },
     LOGIN: { path: 'login', link: '/login', title: 'Login', data: { header: true } },
+    SIGNUP: { path: 'signup', link: '/signup', title: 'Signup', data: { header: true } },
+    CHANGES: { path: 'change', link: '/change', title: 'Change Password', data: { header: true } },
     TOURS: { path: 'tours', link: '/tours', title: 'Tours', data: { header: true } },
     TOURS_ADMIN: { path: 'admin/tours', link: '/admin/tours', title: 'Tours', data: { header: true } },
     TOUR_DETAIL: { path: 'tour', link: '/tour', title: 'Tour Detail', data: { header: true } },

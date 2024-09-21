@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -32,7 +33,26 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return this.getToken() !== null;
+    const token = this.getToken();
+    if (token === null) {
+      return false;
+    }
+  
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const expirationDate = decodedToken.exp * 1000; // Convert to ms
+      const currentTime = Date.now();
+  
+      if (expirationDate < currentTime) {
+        this.logout(); // Remove the token if it's expired
+        return false;
+      }
+  
+      return true;
+    } catch (error) {
+      this.logout(); // Error decoding, remove the token
+      return false;
+    }
   }
 
   getRole(): string {
