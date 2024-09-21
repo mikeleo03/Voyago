@@ -1,0 +1,23 @@
+.customer-list {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+  
+.customer-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+}
+  
+.customer-image img {
+    height: 6rem;
+    width: 6rem;
+    object-fit: cover;
+    border-radius: 20rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+  
+.customer-details {
+    padding-left: 24px;
+}
