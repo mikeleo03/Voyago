@@ -1,0 +1,103 @@
+<div class="flex h-screen bg-gray-100">
+    <div aria-live="polite" toastContainer></div>
+
+    <!-- Left Side (Form) -->
+    <div class="flex lg:p-8 lg:w-2/5 w-full items-start justify-center p-10 bg-white overflow-y-auto h-full py-20">
+        <div class="w-full max-w-md md:px-6 my-3">
+            <h2 class="text-3xl font-bold pb-1.5">Create Your Account</h2>
+            <p class="text-lg text-muted-foreground mb-8">Register to create your account!</p>
+
+            <!-- Signup Form -->
+            <form [formGroup]="signupForm" (ngSubmit)="signup()">
+                <!-- Username -->
+                <div class="mb-3">
+                    <input formControlName="username" type="text" id="username" class="appearance-none border rounded-2xl w-full py-3 px-4" placeholder="Username">
+                    <span *ngIf="signupForm.get('username')?.invalid && (signupForm.get('username')?.dirty || signupForm.get('username')?.touched)" class="text-red-500 text-sm mt-1">
+                        Username is required and must contain only letters and spaces.
+                    </span>
+                </div>
+                <!-- Email -->
+                <div class="mb-3">
+                    <input formControlName="email" type="email" id="email" class="appearance-none border rounded-2xl w-full py-3 px-4" placeholder="Email">
+                    <span *ngIf="signupForm.get('email')?.invalid && (signupForm.get('email')?.dirty || signupForm.get('email')?.touched)" class="text-red-500 text-sm mt-1">
+                        A valid email is required.
+                    </span>
+                </div>
+                <!-- Phone -->
+                <div class="mb-3">
+                    <input formControlName="phone" type="text" id="phone" class="appearance-none border rounded-2xl w-full py-3 px-4" placeholder="Phone Number">
+                    <span *ngIf="signupForm.get('phone')?.invalid && (signupForm.get('phone')?.dirty || signupForm.get('phone')?.touched)" class="text-red-500 text-sm mt-1">
+                        Phone number must start with +62 and be 9 to 13 digits.
+                    </span>
+                </div>
+                <!-- Password -->
+                <div class="mb-3">
+                    <input formControlName="password" type="password" id="password" class="appearance-none border rounded-2xl w-full py-3 px-4" placeholder="Password">
+                    <span *ngIf="signupForm.get('password')?.invalid && (signupForm.get('password')?.dirty || signupForm.get('password')?.touched)" class="text-red-500 text-sm mt-1">
+                        Password must be at least 12 characters and contain uppercase, lowercase, number, and special character.
+                    </span>
+                </div>
+                <!-- Confirm Password -->
+                <div class="mb-10">
+                    <input formControlName="confirmPassword" type="password" id="confpassword" class="appearance-none border rounded-2xl w-full py-3 px-4" placeholder="Confirm Password">
+                    <span *ngIf="signupForm.errors?.['mismatch'] && (signupForm.get('confirmPassword')?.dirty || signupForm.get('confirmPassword')?.touched)" class="text-red-500 text-sm mt-1">
+                        Passwords do not match.
+                    </span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex items-center justify-end w-full">
+                    <button 
+                        type="submit"
+                        [disabled]="signupForm.invalid || isLoading"
+                        class="bg-[#0A5185] w-full rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
+                        [ngClass]="{ 'opacity-50 cursor-not-allowed': signupForm.invalid || isLoading, 'hover:cursor-pointer': !signupForm.invalid && !isLoading }"
+                    >
+                        <span *ngIf="!isLoading">Create an Account</span>
+                        <span *ngIf="isLoading">
+                            <svg
+                                class="inline mr-2 w-5 h-5 text-white animate-spin"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path
+                                    class="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                            </svg>
+                            Signing in...
+                        </span>
+                    </button>
+                </div>
+            </form>
+
+            <p class="text-gray-500 text-sm mt-6">Already have an account? <a href="/login" class="text-green-2 font-semibold hover:underline hover:underline-offset-4">Log in</a></p>
+        </div>
+    </div>
+
+    <!-- Right Side (Image) -->
+    <div
+        class="relative hidden h-full flex-col p-10 lg:flex lg:w-3/5"
+        [ngStyle]="{
+            'background-image': 'url(' + mainbg + ')',
+            'background-repeat': 'no-repeat',
+            'background-size': 'cover',
+            'background-position': 'center'
+        }"
+    >
+        <img src="/assets/icons/logo.png" alt="Logo" class="absolute top-10 right-20 z-20 h-16" />
+
+        <!-- Black overlay -->
+        <div class="absolute inset-0 bg-black bg-opacity-70"></div>
+        
+        <div class="relative flex items-end justify-start w-full h-full text-white">
+            <div class="py-8 p-10">
+                <h1 class="text-5xl font-bold mb-4">Voyago</h1>
+                <p class="text-2xl italic">Discover More, Travel Better.</p>
+            </div>
+        </div>
+    </div>
+</div>

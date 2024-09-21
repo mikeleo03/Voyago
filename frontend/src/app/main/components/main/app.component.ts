@@ -25,8 +25,8 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        // Hide nav and footer for any URL starting with "/login"
-        this.showNavAndFooter = !event.url.startsWith('/login');
+        // Hide nav and footer for any URL starting with "/login" or "/signup"
+        this.showNavAndFooter = !event.url.startsWith('/login') && !event.url.startsWith('/signup');
       }
     });
   }

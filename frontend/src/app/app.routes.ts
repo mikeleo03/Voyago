@@ -11,6 +11,13 @@ export const routes: Routes = [
         data: RouterConfig['LOGIN'].data,
     },
     {
+        path: RouterConfig['SIGNUP'].path,
+        loadChildren: () =>
+            import('./pages/signup/signup.routes').then((m) => m.signupRoutes),
+        title: RouterConfig['SIGNUP'].title,
+        data: RouterConfig['SIGNUP'].data,
+    },
+    {
         path: '',
         // canActivate: [AuthGuard],
         children: [
