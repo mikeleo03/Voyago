@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TourService } from '../../../../services/tour/tour.service';
 import { AuthService } from '../../../../services/auth/auth.service';
-import { Tour } from '../../../../models/tour.model';
+import { Tour, TourSave } from '../../../../models/tour.model';
 
 @Component({
   selector: 'app-tours-admin',
@@ -15,6 +15,17 @@ import { Tour } from '../../../../models/tour.model';
 })
 export class ToursAdminComponent implements OnInit {
   tours: Tour[] = [];
+
+  isModalOpen = false;
+  newTour: TourSave = {
+    title: '',
+    detail: '',
+    quota: 0,
+    prices: 0,
+    location: '',
+    image: '',
+    status: 'ACTIVE',
+  };
 
   title: string = '';
   minPrice?: number;
@@ -37,6 +48,10 @@ export class ToursAdminComponent implements OnInit {
     });
   }
 
+  openModal() {
+    this.isModalOpen = true;
+  }
+
   searchTours() {
     this.tourService.getTours(this.title, this.minPrice, this.maxPrice, this.location, this.sortPrice).subscribe(
       (result) => {
@@ -53,5 +68,34 @@ export class ToursAdminComponent implements OnInit {
       queryParams: {},
       replaceUrl: true
     });
+  }
+
+  saveTour() {
+    console.log('New Tour:', this.newTour);
+  
+    this.tourService.createTour(this.newTour).subscribe(
+      () => {
+        this.searchTours();
+  
+        this.newTour = {
+          title: '',
+          detail: '',
+          quota: 0,
+          prices: 0,
+          location: '',
+          image: '',
+          status: 'ACTIVE',
+        };
+  
+        this.isModalOpen = false;
+      },
+      (error) => {
+        console.error('Error saving tour:', error);
+      }
+    );
+  }  
+  
+  importCSV() {
+    console.log('Import CSV clicked');
   }
 }

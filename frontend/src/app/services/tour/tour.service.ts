@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environment/environment.prod';
-import { Tour } from '../../models/tour.model';
+import { Tour, TourSave } from '../../models/tour.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +33,7 @@ export class TourService {
     return this.http.get<Tour>(`${this.apiUrl}/${id}`);
   }
 
-  createTour(tour: Tour): Observable<Tour> {
+  createTour(tour: TourSave): Observable<TourSave> {
     return this.http.post<Tour>(this.apiUrl, tour);
   }
 
