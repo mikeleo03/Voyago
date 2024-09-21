@@ -33,10 +33,77 @@
         <div class="flex flex-col items-end mt-10 space-y-4">
             <p class="text-lg font-semibold">Seats Available: {{ tourDetails?.quota }}</p>
             <p class="text-xl font-bold text-green-500">IDR {{ tourDetails?.prices | number }}</p>
-            <button class="bg-yellow-500 text-white p-2 rounded-xl transition-transform transform ease-in-out hover:scale-105" (click)="bookTour()">
+            <button class="bg-yellow-500 text-white p-2 rounded-xl transition-transform transform ease-in-out hover:scale-105" (click)="openEditModal()">
                 Edit
             </button>
         </div>
     </div>
+</div>
 
+<!-- Edit Modal -->
+<div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-11/12 md:w-3/4 max-h-full overflow-y-auto">
+        <h2 class="text-2xl font-bold mb-4">Edit Tour</h2>
+        <div class="flex space-x-4">
+            <div class="flex flex-col w-1/2">
+                <div class="mb-4">
+                    <label class="block text-gray-600 mb-1">Title</label>
+                    <input type="text" [(ngModel)]="newTour.title" class="border p-2 rounded w-full" />
+                </div>
+  
+                <div class="mb-4">
+                    <label class="block text-gray-600 mb-1">Location</label>
+                    <input type="text" [(ngModel)]="newTour.location" class="border p-2 rounded w-full" />
+                </div>
+  
+                <div class="mb-4">
+                    <label class="block text-gray-600 mb-1">Price</label>
+                    <input type="number" [(ngModel)]="newTour.prices" class="border p-2 rounded w-full" />
+                </div>
+  
+                <div class="mb-4">
+                    <label class="block text-gray-600 mb-1">Quota</label>
+                    <input type="number" [(ngModel)]="newTour.quota" class="border p-2 rounded w-full" />
+                </div>
+            </div>
+  
+            <div class="flex flex-col w-1/2">
+                <div class="mb-4">
+                    <label class="block text-gray-600 mb-1">Detail</label>
+                    <textarea [(ngModel)]="newTour.detail" class="border p-2 rounded w-full h-24"></textarea>
+                </div>
+                
+                <!-- Facilities Section -->
+                <div class="mb-4">
+                  <h3 class="text-xl font-semibold mb-2">Facilities</h3>
+                  <div class="flex items-center mb-2">
+                      <input type="text" [(ngModel)]="newFacility" placeholder="Add Facility" class="border p-2 rounded w-3/4" />
+                      <button class="bg-green-500 text-white ml-4 px-4 py-2 rounded-3xl" (click)="addFacility()">
+                        Add
+                    </button>
+                  </div>
+                  <div [ngClass]="{'border border-gray-300 rounded p-2': facilities.length > 0}" class="facility-list max-h-48 overflow-y-auto">
+                      <div *ngFor="let facility of facilities" class="flex justify-between items-center py-2 border-b border-gray-300">
+                          <span>{{ facility }}</span>
+                          <button class="text-red-500" (click)="removeFacility(facility)">X</button>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+  
+        <div class="flex justify-between items-center mt-6">
+            <button class="bg-yellow-500 text-white px-4 py-2 rounded-3xl">
+                Add image
+            </button>
+            <div class="flex justify-end space-x-4">
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-3xl" (click)="saveTour()">
+                    Save
+                </button>
+                <button class="bg-red-500 text-white px-4 py-2 rounded-3xl" (click)="isModalOpen = false">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
