@@ -2,7 +2,6 @@ package com.group4.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +28,8 @@ import com.group4.user.services.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,9 +51,20 @@ public class UserController {
     // [GET] /
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {
-        Page<User> users = userService.getAllUsers(pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(users);
+    public ResponseEntity<Map<String, Object>> getAllUsers(
+        @RequestParam(required = false) String name,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<User> users = userService.getAllUsers(name, page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("users", users.getContent());
+        response.put("currentPage", users.getNumber());
+        response.put("totalItems", users.getTotalElements());
+        response.put("totalPages", users.getTotalPages());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // [-] Create a new user, For signup purpose
@@ -73,11 +85,12 @@ public class UserController {
 
     // [Admin] Update user status.
     // [PATCH] /:id/status
-    @PatchMapping("/{id}/status")
+    @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserDTO> updateUserStatus(@PathVariable String id, @RequestParam String status) {
-        UserDTO userDTO = userService.updateUserStatus(id, status);
-        return ResponseEntity.status(HttpStatus.OK).body(userDTO);
+    public ResponseEntity<UserDTO> updateUserStatus(@PathVariable String id, @RequestBody Map<String, String> requestBody) {
+        String newStatus = requestBody.get("status");
+        UserDTO updatedUser = userService.updateUserStatus(id, newStatus);
+        return ResponseEntity.ok(updatedUser);
     }
 
     // [Customer, Admin] Update user password.

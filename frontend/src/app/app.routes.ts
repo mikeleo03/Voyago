@@ -66,6 +66,13 @@ export const routes: Routes = [
         data: RouterConfig['TOUR_DETAIL_ADMIN'].data,
     },
     {
+        path: RouterConfig['CUSTOMERS_ADMIN'].path,
+        loadChildren: () =>
+            import('./pages/admin/customers-admin/customers-admin.routes').then((m) => m.customersAdminRoutes),
+        title: RouterConfig['CUSTOMERS_ADMIN'].title,
+        data: RouterConfig['CUSTOMERS_ADMIN'].data,
+    },
+    {
         path: RouterConfig['NOT_FOUND'].path,
         loadChildren: () =>
             import('./pages/not-found/not-found.routes').then((m) => m.notFoundRoutes),
