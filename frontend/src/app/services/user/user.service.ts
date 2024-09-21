@@ -31,4 +31,9 @@ export class UserService {
     };
     return this.http.post(`${this.authApiUrl}/send`, emailData);
   }
+
+  // Update user password
+  updatePassword(userId: string, newPassword: { password: string }): Observable<UserDTO> {
+    return this.http.patch<UserDTO>(`${this.authApiUrl}/${userId}/password`, newPassword);
+  }
 }
