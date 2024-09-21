@@ -100,14 +100,14 @@ export class SignupComponent {
     if (error.status === 400) {
       const errors = error.error?.errors;
       if (Array.isArray(errors)) {
-        errors.forEach((errMessage: string) => this.toastrService.error(errMessage));
+        errors.forEach((errMessage: string) => this.toastrService.error(errMessage, 'Validation Error'));
       } else {
-        this.toastrService.error('Bad Request: Check your inputs.');
+        this.toastrService.error('Please check your inputs.', 'Bad Request');
       }
     } else if (error.status === 401) {
       this.toastrService.error('Unauthorized: Invalid credentials.');
     } else {
-      this.toastrService.error('An unexpected error occurred.');
+      this.toastrService.error('An unexpected error occurred.', 'Error');
     }
   }
 }
