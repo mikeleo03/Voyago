@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TourService } from '../../../services/tour/tour.service';
 
@@ -17,7 +17,7 @@ export class TourDetailComponent implements OnInit {
 
   tourImageUrl: string = '';
 
-  constructor(private route: ActivatedRoute, private tourService: TourService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private tourService: TourService, private router: Router, private location: Location) {}
 
   ngOnInit(): void {
       this.route.queryParams.subscribe(params => {
@@ -58,4 +58,8 @@ export class TourDetailComponent implements OnInit {
     'Parking',
     'Guided Tours',
   ];
+
+  goBack(): void {
+    this.location.back();
+  }
 }

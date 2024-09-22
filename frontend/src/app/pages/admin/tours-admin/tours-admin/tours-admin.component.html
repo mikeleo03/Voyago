@@ -1,13 +1,13 @@
 <!-- Hero Section -->
-<div class="relative bg-cover bg-center h-[60vh] rounded-b-[3rem] flex items-center justify-center mt-[-5rem]" style="background-image: url('/assets/img/main-bg.png'); background-size: cover;">
-    <div class="absolute inset-0 bg-black bg-opacity-20 rounded-b-[3rem]"></div>
+<div class="relative bg-cover bg-center h-[60vh] rounded-b-[3rem] flex items-center justify-center mt-[-5rem]" style="background-image: url('/assets/img/tour-bg.jpg'); background-size: cover;">
+    <div class="absolute inset-0 bg-black bg-opacity-40 rounded-b-[3rem]"></div>
     <div class="text-center text-white z-10 mb-20">
         <h1 class="text-5xl font-bold">Tours List</h1>
     </div>
 </div>
 
 <!-- Search Section -->
-<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-48 mx-auto w-10/12 relative">
+<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mx-auto w-10/12 relative">
   <div class="flex flex-wrap gap-4 justify-between mx-2">
       <div class="align-start justify-start flex flex-col text-start">
           <p class="text-lg mb-1 text-gray-400">Your Location</p>
@@ -55,11 +55,11 @@
 </div>
 
 <!-- Action Buttons -->
-<div class="flex justify-center space-x-4 mt-6">
-  <button class="bg-blue-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="openModal()">
+<div class="flex justify-left space-x-4 mt-6 pl-36">
+  <button class="bg-blue-500 text-white px-12 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="openModal()">
       Add Tour
   </button>
-  <label class="bg-yellow-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer">
+  <label class="bg-yellow-500 text-white px-12 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer">
     Import CSV
     <input type="file" (change)="onFileSelected($event)" accept=".csv" class="hidden" />
 </label>
@@ -68,77 +68,94 @@
 <!-- Modal -->
 <div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white rounded-lg p-6 w-11/12 md:w-3/4 max-h-full overflow-y-auto">
-      <h2 class="text-2xl font-bold mb-4">New Tour</h2>
-      <div class="flex space-x-4">
-          <!-- First Column -->
-          <div class="flex flex-col w-1/2">
-              <div class="mb-4">
-                  <label class="block text-gray-600 mb-1">Title</label>
-                  <input type="text" [(ngModel)]="newTour.title" placeholder="Tour Title" class="border p-2 rounded w-full" />
-              </div>
+    <h2 class="text-2xl font-bold mb-4">New Tour</h2>
+    <div class="flex space-x-4">
+      <!-- First Column -->
+      <div class="flex flex-col w-1/2">
+        <!-- Title Field -->
+        <div class="mb-4">
+          <label class="block text-gray-600 mb-1">Title <span class="text-red-500">*</span></label>
+          <input type="text" [(ngModel)]="newTour.title" placeholder="Tour Title" 
+            class="border p-2 rounded w-full"
+            [ngClass]="{'border-red-500': !newTour.title && isSubmitted}" />
+        </div>
 
-              <div class="mb-4">
-                  <label class="block text-gray-600 mb-1">Location</label>
-                  <input type="text" [(ngModel)]="newTour.location" placeholder="Location" class="border p-2 rounded w-full" />
-              </div>
+        <!-- Location Field -->
+        <div class="mb-4">
+          <label class="block text-gray-600 mb-1">Location <span class="text-red-500">*</span></label>
+          <input type="text" [(ngModel)]="newTour.location" placeholder="Location"
+            class="border p-2 rounded w-full"
+            [ngClass]="{'border-red-500': !newTour.location && isSubmitted}" />
+        </div>
 
-              <div class="mb-4">
-                  <label class="block text-gray-600 mb-1">Price</label>
-                  <input type="number" [(ngModel)]="newTour.prices" placeholder="Price" class="border p-2 rounded w-full" />
-              </div>
+        <!-- Price Field -->
+        <div class="mb-4">
+          <label class="block text-gray-600 mb-1">Price <span class="text-red-500">*</span></label>
+          <input type="number" [(ngModel)]="newTour.prices" placeholder="Price"
+            class="border p-2 rounded w-full"
+            [ngClass]="{'border-red-500': (!newTour.prices || newTour.prices <= 0) && isSubmitted}" />
+        </div>
 
-              <div class="mb-4">
-                  <label class="block text-gray-600 mb-1">Quota</label>
-                  <input type="number" [(ngModel)]="newTour.quota" placeholder="Available Seats" class="border p-2 rounded w-full" />
-              </div>
-          </div>
-
-          <!-- Second Column -->
-          <div class="flex flex-col w-1/2">
-              <div class="mb-4">
-                  <label class="block text-gray-600 mb-1">Detail</label>
-                  <textarea [(ngModel)]="newTour.detail" placeholder="Tour Details" class="border p-2 rounded w-full h-24"></textarea>
-              </div>
-              
-              <!-- Facilities Section -->
-              <div class="mb-4">
-                <h3 class="text-xl font-semibold mb-2">Facilities</h3>
-                <div class="flex items-center mb-2">
-                    <input type="text" [(ngModel)]="newFacility" placeholder="Add Facility" class="border p-2 rounded w-3/4" />
-                    <button class="bg-green-500 text-white ml-4 px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="addFacility()">
-                      Add
-                  </button>
-                </div>
-                <div [ngClass]="{'border border-gray-300 rounded p-2': facilities.length > 0}" class="facility-list max-h-48 overflow-y-auto">
-                    <div *ngFor="let facility of facilities" class="flex justify-between items-center py-2 border-b border-gray-300">
-                        <span>{{ facility }}</span>
-                        <button class="text-red-500" (click)="removeFacility(facility)">
-                            X 
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-          </div>
+        <!-- Quota Field -->
+        <div class="mb-4">
+          <label class="block text-gray-600 mb-1">Quota <span class="text-red-500">*</span></label>
+          <input type="number" [(ngModel)]="newTour.quota" placeholder="Available Seats"
+            class="border p-2 rounded w-full"
+            [ngClass]="{'border-red-500': (!newTour.quota || newTour.quota <= 0) && isSubmitted}" />
+        </div>
       </div>
 
-      <div class="flex justify-between items-center mt-6">
-        <label class="bg-yellow-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer">
-          Add image
-          <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" />
+      <!-- Second Column -->
+      <div class="flex flex-col w-1/2">
+        <!-- Detail Field -->
+        <div class="mb-4">
+          <label class="block text-gray-600 mb-1">Detail <span class="text-red-500">*</span></label>
+          <textarea [(ngModel)]="newTour.detail" placeholder="Tour Details" 
+            class="border p-2 rounded w-full h-24"
+            [ngClass]="{'border-red-500': !newTour.detail && isSubmitted}"></textarea>
+        </div>
+
+        <!-- Facilities Section -->
+        <div class="mb-4">
+          <h3 class="text-xl font-semibold mb-2">Facilities</h3>
+          <div class="flex items-center mb-2">
+            <input type="text" [(ngModel)]="newFacility" placeholder="Add Facility" class="border p-2 rounded w-3/4" />
+            <button class="bg-green-500 text-white ml-4 px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="addFacility()">
+              Add
+            </button>
+          </div>
+          <div [ngClass]="{'border border-gray-300 rounded p-2': facilities.length > 0}" class="facility-list max-h-48 overflow-y-auto">
+            <div *ngFor="let facility of facilities" class="flex justify-between items-center py-2 border-b border-gray-300">
+              <span>{{ facility }}</span>
+              <button class="text-red-500 hover:text-red-700 transition duration-200 transform hover:scale-110" (click)="removeFacility(facility)">
+                <i class="fa-solid fa-xmark text-xl"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-between items-center mt-6">
+      <label class="bg-yellow-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer">
+        Add image
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" required />
       </label>
       <span class="text-gray-600">{{ selectedImageName }}</span>
-          <div class="flex justify-end space-x-4">
-              <button class="bg-blue-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="saveTour()">
-                  Save
-              </button>
-              <button class="bg-red-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="isModalOpen = false">
-                  Cancel
-              </button>
-          </div>
+      
+      <div class="flex justify-end space-x-4">
+        <!-- Save button with form validation -->
+        <button [disabled]="!isFormValid()" class="bg-blue-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" (click)="saveTour()">
+          Save
+        </button>
+        <button class="bg-red-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="isModalOpen = false">
+          Cancel
+        </button>
       </div>
+    </div>
   </div>
 </div>
+
 
 <!-- Tour List -->
 <div class="tour-list p-8">

@@ -28,6 +28,10 @@ export class TourDetailAdminComponent implements OnInit {
   ];
   newFacility: string = '';
 
+  tourImageUrl: string = '';
+
+  isSubmitted = false;
+
   constructor(
     private route: ActivatedRoute, 
     private tourService: TourService, 
@@ -62,6 +66,10 @@ export class TourDetailAdminComponent implements OnInit {
       (details) => {
         this.tourDetails = details;
         this.loading = false;
+        this.tourService.getTourImage(this.tourId as string).subscribe(blob => {
+          const url = window.URL.createObjectURL(blob);
+          this.tourImageUrl = url;
+        });
       },
       (error) => {
         console.error('Error fetching tour details:', error);
@@ -88,6 +96,7 @@ export class TourDetailAdminComponent implements OnInit {
 
   saveTour(): void {
     if (this.tourId) {
+      this.isSubmitted = true;
       this.tourService.updateTour(this.tourId as string, this.newTour).subscribe(() => {
         this.isModalOpen = false;
         this.getTourDetails(this.tourId as string);
@@ -97,5 +106,13 @@ export class TourDetailAdminComponent implements OnInit {
     } else {
       console.error('Tour ID is null, cannot update tour.');
     }
+  }
+
+  isFormValid(): boolean {
+    return this.newTour.title.trim() !== '' &&
+           this.newTour.location.trim() !== '' &&
+           this.newTour.prices > 0 &&
+           this.newTour.quota > 0 &&
+           this.newTour.detail.trim() !== '';
   }
 }

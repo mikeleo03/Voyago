@@ -40,6 +40,8 @@ export class ToursAdminComponent implements OnInit {
   facilities: string[] = [];
   newFacility: string = '';
 
+  isSubmitted = false;
+
   selectedImage: File | null = null;
   selectedImageName: string = '';
   tourImageUrls: { [key: string]: string } = {};
@@ -121,10 +123,17 @@ export class ToursAdminComponent implements OnInit {
     this.facilities = this.facilities.filter(f => f !== facility);
   }
 
+  isFormValid(): boolean {
+    return this.newTour.title.trim() !== '' &&
+           this.newTour.location.trim() !== '' &&
+           this.newTour.prices > 0 &&
+           this.newTour.quota > 0 &&
+           this.newTour.detail.trim() !== '';
+  }
+
   saveTour() {
-    console.log('New Tour:', this.newTour);
-    
     const imageToUpload = this.selectedImage || undefined;
+    this.isSubmitted = true;
     
     this.tourService.createTour(this.newTour, imageToUpload).subscribe(
       () => {
