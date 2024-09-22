@@ -40,6 +40,10 @@ spring:
           filters:
             - name: ApiKey
             - name: JwtAuth
+        - id: facility-service
+          uri: lb://tour-service
+          predicates:
+            - Path=/api/v1/facility/**
 
 management:
   endpoints:

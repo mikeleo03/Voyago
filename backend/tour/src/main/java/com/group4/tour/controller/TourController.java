@@ -52,6 +52,7 @@ public class TourController {
     }
 
     @GetMapping("/{id}/image")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public ResponseEntity<Resource> getTourImage(@PathVariable String id) throws MalformedURLException {
         Tour tour = tourService.getTourById(id);
         String imageName = tour.getImage();
