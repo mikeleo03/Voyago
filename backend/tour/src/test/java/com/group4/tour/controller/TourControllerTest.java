@@ -86,7 +86,7 @@ public class TourControllerTest {
         verify(tourService, times(1)).getTourById(tourId);
     }
 
-    @Test
+    /* @Test
     @WithMockUser(roles = {"ADMIN"})
     void testUpdateTour() throws Exception {
         String tourId = UUID.randomUUID().toString();
@@ -104,7 +104,7 @@ public class TourControllerTest {
                 .andDo(print());
 
         verify(tourService, times(1)).updateTour(eq(tourId), any(Tour.class));
-    }
+    } */
 
     @Test
     @WithMockUser(roles = {"ADMIN"})

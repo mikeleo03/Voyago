@@ -23,6 +23,7 @@ export class CustomersAdminComponent implements OnInit {
   limit: number = 10;
 
   isModalOpen = false;
+  userImageUrls: { [key: string]: string } = {};
 
   name: string = '';
 
@@ -67,6 +68,12 @@ export class CustomersAdminComponent implements OnInit {
       (result) => {
         this.users = result.users;
         this.totalPages = result.totalPages;
+        this.users.forEach(user => {
+          this.userService.getUserImage(user.username).subscribe(blob => {
+            const url = window.URL.createObjectURL(blob);
+            this.userImageUrls[user.id] = url;
+          });
+        });
         console.log('Fetched tours:', this.users); // For debugging
       },
       (error) => {

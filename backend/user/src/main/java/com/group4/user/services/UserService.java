@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
@@ -36,4 +37,8 @@ public interface UserService {
     Optional<UserDTO> getUserByEmail(String email);
 
     Optional<UserDTO> getUserByUsername(String username);
+
+    String saveImage(MultipartFile file);
+
+    String getUserImageNameById(String id);
 }
