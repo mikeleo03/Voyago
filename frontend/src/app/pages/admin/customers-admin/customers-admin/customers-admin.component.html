@@ -29,7 +29,7 @@
             <!-- Customer Avatar -->
             <div class="customer-image w-[6rem]">
                 <img
-                    [src]="user.picture ? user.picture : '/assets/img/default.png'"
+                    [src]="userImageUrls[user.id] ? userImageUrls[user.id] : '/assets/img/default.png'"
                     alt="Customer avatar"
                     class="w-[8rem] h-auto rounded-lg shadow"
                     draggable="false"
