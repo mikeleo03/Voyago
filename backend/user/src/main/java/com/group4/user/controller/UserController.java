@@ -110,6 +110,15 @@ public class UserController {
                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
+    @GetMapping("/username")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
+    public ResponseEntity<UserDTO> getUserByUsername(@RequestParam String username) {
+        Optional<UserDTO> user = userService.getUserByUsername(username);
+
+        return user.map(ResponseEntity::ok)
+                   .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
     @PostMapping("/send")
     public ResponseEntity<Map<String, String>> sendHtmlEmail(@RequestBody @Valid EmailRequest emailRequest) throws MessagingException {
         emailService.sendHtmlEmail(emailRequest.getTo(), emailRequest.getSubject(), emailRequest.getHtmlBody());

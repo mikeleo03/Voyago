@@ -1,0 +1,138 @@
+<div class="flex justify-between px-8 py-10 space-x-12">
+    <!-- Left Profile Section with background image -->
+    <div class="relative w-full md:w-1/3 rounded-3xl bg-gray-100 overflow-hidden h-full">
+        <!-- Background image -->
+        <div
+            class="absolute inset-0 h-32 bg-cover bg-center"
+            style="background-image: url('/assets/img/main-bg.png');">
+        </div>
+
+        <!-- Profile Content -->
+        <div class="relative p-10">
+            <img
+                class="w-36 h-36 mb-4 bg-gray-300 rounded-full object-cover border-4 border-white"
+                [src]="userImgUrl"
+                alt="{{ userName }}"
+                draggable="false"
+            />
+            <h2 class="text-3xl font-semibold">{{ userName }}</h2>
+            <p class="text-lg text-gray-600">{{ userEmail }}</p>
+            <p class="text-gray-600 mt-2">📞 {{ userPhone }}</p>
+            <button class="bg-[#0A5185] mt-4 text-white py-2 px-6 rounded-full transition-transform transform ease-in-out hover:scale-105" (click)="openEditModal()">
+                Edit Profile
+            </button>
+        </div>
+    </div>
+
+    <!-- Right History Section -->
+    <div class="w-full md:w-2/3 relative">
+        <h2 class="text-4xl font-semibold">History</h2>
+        <p class="text-lg text-gray-500 mt-1">Lorem ipsum dolor sit amet.</p>
+
+        <!-- Timeline line -->
+        <div class="absolute left-3 top-28 bottom-14 w-1 bg-yellow-500"></div>
+
+        <!-- History items -->
+        <div *ngFor="let item of historyItems" class="relative flex my-8 mt-5">
+            <!-- Dot -->
+            <div class="absolute left-1 top-1.5 w-5 h-5 bg-[#0A5185] rounded-full"></div>
+
+            <!-- History item content -->
+            <div class="flex px-10 pl-12">
+                <div>
+                    <!-- Title beside the dot -->
+                    <h3 class="text-xl font-semibold">{{ item.title }}</h3>
+
+                    <!-- Image and description/time/cost in a column layout -->
+                    <div class="flex items-start mt-2 w-full">
+                        <img
+                            class="w-1/5 h-32 bg-gray-300 rounded-md mr-4 object-cover"
+                            [src]="item.imageUrl"
+                            alt="{{ item.title }}"
+                            draggable="false"
+                        />
+                        <div class="w-4/5">
+                            <p class="text-gray-600">{{ item.description }}</p>
+                            <div class="flex justify-between text-base mt-3">
+                                <span class="text-gray-500">📅 {{ item.date }}</span>
+                                <span class="text-gray-500">💰 {{ item.price }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="/history" class="bg-[#0A5185] text-white py-2 px-6 rounded-full transition-transform transform ease-in-out hover:scale-105">Show more history</a>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-11/12 md:w-3/4 max-h-full overflow-y-auto">
+        <h2 class="text-2xl font-bold mb-4">Edit Profile</h2>
+        <form [formGroup]="dashboardForm">
+            <div class="flex space-x-4">
+                <div class="flex flex-col w-1/2">
+                    <div class="mb-4">
+                        <label for="username" class="block text-gray-600 mb-1">Username</label>
+                        <input 
+                            id="username" 
+                            type="text" 
+                            formControlName="username" 
+                            class="border p-2 rounded-2xl w-full" 
+                        />
+                        <div *ngIf="dashboardForm.get('username')?.invalid && dashboardForm.get('username')?.touched" class="text-red-500">
+                            Username is required.
+                        </div>
+                    </div>
+        
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-600 mb-1">Email</label>
+                        <input id="email" type="email" formControlName="email" class="border p-2 rounded-2xl w-full" />
+                        <div *ngIf="dashboardForm.get('email')?.invalid && dashboardForm.get('email')?.touched" class="text-red-500">
+                            Please enter a valid email.
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="flex flex-col w-1/2">
+                    <div class="mb-4">
+                        <label for="phone" class="block text-gray-600 mb-1">Phone</label>
+                        <input id="phone" type="text" formControlName="phone" class="border p-2 rounded-2xl w-full" />
+                        <div *ngIf="dashboardForm.get('phone')?.invalid && dashboardForm.get('phone')?.touched" class="text-red-500">
+                            Phone must start with +62 and be 9-13 digits long.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="flex justify-between items-center mt-6">
+                <button type="button" class="bg-yellow-500 text-white px-4 py-2 rounded-xl font-semibold transition-transform duration-300 transform hover:scale-105">
+                    Add Image
+                </button>
+                <div class="flex justify-end space-x-4">
+                    <button 
+                        type="button" 
+                        class="bg-[#0A5185] w-full rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-6"
+                        [disabled]="dashboardForm.invalid || isLoading" 
+                        [ngClass]="{ 'opacity-50 cursor-not-allowed': dashboardForm.invalid || isLoading, 'hover:cursor-pointer': !dashboardForm.invalid && !isLoading }"
+                        (click)="saveUser()"
+                    >
+                        <span *ngIf="!isLoading">Update</span>
+                        <span *ngIf="isLoading">
+                            <svg class="inline mr-2 w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Updating...
+                        </span>
+                    </button>
+                    <button type="button" class="bg-red-500 text-white px-4 py-2 rounded-xl font-semibold transition-transform duration-300 transform hover:scale-105" (click)="isModalOpen = false">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>  

@@ -13,6 +13,17 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
+  getCurrentUsername() {
+    const token = this.getToken();
+    
+    if (token != null) {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.sub as string;
+    } else {
+      return "";
+    }
+  }
+
   // Do login request
   login(user: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(this.authApiUrl + "/login", user);

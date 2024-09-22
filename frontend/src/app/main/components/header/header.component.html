@@ -5,7 +5,7 @@
     <!-- Left side (Logo) -->
     <div class="flex items-center">
         <a href="/" class="flex items-center space-x-2 text-white font-bold text-lg hover:scale-105 transition-transform duration-300">
-            <img src="/assets/icons/logo-nav.png" alt="Voyago Logo" class="h-8">
+            <img src="/assets/icons/logo-nav.png" alt="Voyago Logo" class="h-8" draggable="false">
         </a>
     </div>
   
@@ -32,7 +32,7 @@
         <div *ngIf="isLoggedIn()" class="relative" (mouseenter)="showLogout = true" (mouseleave)="showLogout = false">
             <button class="flex space-x-3 p-3 py-1 rounded-xl text-white items-center">
                 <hlm-avatar>
-                    <img src='/assets/img/default.png' alt='profile' hlmAvatarImage />
+                    <img src='/assets/img/default.png' alt='profile' draggable="false" hlmAvatarImage />
                     <span class='text-white bg-destructive' hlmAvatarFallback>{{ username }}</span>
                 </hlm-avatar>
                 <div class="flex flex-col text-start md:block hidden">
@@ -44,7 +44,7 @@
             <!-- Dropdown menu -->
             <div *ngIf="showLogout" class="absolute bg-[#0A5185] rounded-lg text-white right-0 py-2 w-48"
                 (mouseenter)="showLogout = true" (mouseleave)="showLogout = false">
-                <a href="/profile" class="block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-black/[.2]">Profile</a>
+                <a href="/dashboard" class="block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-black/[.2]">Profile</a>
                 <button (click)="handleLogout()"
                     class="block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-red-900/[.4]">Logout</button>
             </div>

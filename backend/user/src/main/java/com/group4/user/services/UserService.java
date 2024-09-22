@@ -34,4 +34,6 @@ public interface UserService {
 
     // [-] Get user by email
     Optional<UserDTO> getUserByEmail(String email);
+
+    Optional<UserDTO> getUserByUsername(String username);
 }

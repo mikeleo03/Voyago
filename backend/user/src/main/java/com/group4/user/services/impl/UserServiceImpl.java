@@ -208,6 +208,15 @@ public class UserServiceImpl implements UserService {
         return Optional.of(userMapper.toUserDTO(user));
     }
 
+    @Override
+    public Optional<UserDTO> getUserByUsername(String username) {
+        log.info("Fetching user by email: {}", username);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+
+        return Optional.of(userMapper.toUserDTO(user));
+    }
+
     // This method will handle data propagation to the AuthClient and logging.
     private void propagateUserData(User user) {
         log.info("Preparing to propagate user data for username: {}", user.getUsername());
