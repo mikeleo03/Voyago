@@ -110,10 +110,12 @@
         </div>
 
         <!-- Save and Cancel Buttons -->
-        <div class="flex justify-between items-center mt-6">
-            <button class="bg-yellow-500 text-white px-4 py-2 rounded-3xl">
+        <div class="flex items-center mt-6">
+            <label class="bg-yellow-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer flex items-center">
                 Add image
-            </button>
+                <input type="file" (change)="onImageSelected($event)" accept="image/*" class="hidden" required />
+            </label>
+            <span class="text-gray-600 ml-4 flex-grow">{{ selectedImageName }}</span>
             <div class="flex justify-end space-x-4">
                 <button [disabled]="!isFormValid()" 
                         class="bg-blue-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" 

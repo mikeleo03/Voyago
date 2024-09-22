@@ -90,11 +90,24 @@ public class TourController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize(("hasRole('ADMIN')"))
-    public ResponseEntity<Tour> updateTour(@PathVariable String id, @RequestBody Tour tour) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Tour> updateTour(
+            @PathVariable String id,
+            @RequestPart("tour") Tour tour,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+
+        if (file != null && !file.isEmpty()) {
+            String imageUrl = tourService.saveImage(file);
+            tour.setImage(imageUrl);
+        } else {
+            String existingImage = tourService.getTourImageNameById(id);
+            tour.setImage(existingImage);
+        }
+
         Tour updatedTour = tourService.updateTour(id, tour);
         return updatedTour != null ? ResponseEntity.ok(updatedTour) : ResponseEntity.notFound().build();
     }
+
 
     @PostMapping("/import")
     @PreAuthorize(("hasRole('ADMIN')"))
