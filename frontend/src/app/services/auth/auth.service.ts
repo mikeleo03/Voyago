@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LoginRequest, LoginResponse } from '../../models/user.model';
 import { environment } from '../../../environment/environment.prod';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +12,17 @@ export class AuthService {
   private authApiUrl = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient) { }
+
+  getCurrentUsername() {
+    const token = this.getToken();
+    
+    if (token != null) {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.sub as string;
+    } else {
+      return "";
+    }
+  }
 
   // Do login request
   login(user: LoginRequest): Observable<LoginResponse> {

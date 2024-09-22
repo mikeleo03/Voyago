@@ -13,13 +13,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
     // [Admin] Retrieves a paginated list of all Users.
-    Page<User> getAllUsers(Pageable pageable);
+    Page<User> getAllUsers(String name, int page, int size);
 
     // [-] Create a new user. Do signup
     public Mono<ResponseEntity<Map<String, String>>> signup(@Valid UserSaveDTO userSaveDTO);
@@ -35,4 +34,6 @@ public interface UserService {
 
     // [-] Get user by email
     Optional<UserDTO> getUserByEmail(String email);
+
+    Optional<UserDTO> getUserByUsername(String username);
 }

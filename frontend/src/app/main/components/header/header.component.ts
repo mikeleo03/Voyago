@@ -92,4 +92,8 @@ export class HeaderComponent implements OnInit {
       this.router.navigate(['/history']);
     }
   }
+
+  navigateToCustomers() {
+    this.router.navigate(['/admin/customers']);
+  }
 }

@@ -38,6 +38,13 @@ export const routes: Routes = [
         ],
     },
     {
+        path: RouterConfig['DASHBOARD'].path,
+        loadChildren: () =>
+            import('./pages/dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
+        title: RouterConfig['DASHBOARD'].title,
+        data: RouterConfig['DASHBOARD'].data,
+    },
+    {
         path: RouterConfig['TOURS'].path,
         loadChildren: () =>
             import('./pages/tours/tours.routes').then((m) => m.toursRoutes),
@@ -64,6 +71,13 @@ export const routes: Routes = [
             import('./pages/admin/tour-detail-admin/tour-detail-admin.routes').then((m) => m.tourDetailAdminRoutes),
         title: RouterConfig['TOUR_DETAIL_ADMIN'].title,
         data: RouterConfig['TOUR_DETAIL_ADMIN'].data,
+    },
+    {
+        path: RouterConfig['CUSTOMERS_ADMIN'].path,
+        loadChildren: () =>
+            import('./pages/admin/customers-admin/customers-admin.routes').then((m) => m.customersAdminRoutes),
+        title: RouterConfig['CUSTOMERS_ADMIN'].title,
+        data: RouterConfig['CUSTOMERS_ADMIN'].data,
     },
     {
         path: RouterConfig['NOT_FOUND'].path,
