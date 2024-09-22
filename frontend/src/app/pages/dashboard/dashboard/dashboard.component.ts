@@ -19,7 +19,6 @@ export class DashboardComponent {
   dashboardForm!: FormGroup;
   isLoading: boolean = false;
 
-  userImageUrl: string = '';
   selectedImageFile: File | null = null;
   selectedImageName: string = '/assets/img/default.png';
 
@@ -82,10 +81,9 @@ export class DashboardComponent {
         this.userName = response.username;
         this.userEmail = response.email;
         this.userPhone = response.phone;
-        this.selectedImageName = response.picture || '/assets/img/default.png';
         this.userService.getUserImage(this.userName).subscribe(blob => {
           const url = window.URL.createObjectURL(blob);
-          this.userImageUrl = url;
+          this.selectedImageName = url;
         });
       },
       error: () => {
