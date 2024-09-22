@@ -1,8 +1,11 @@
 package com.group4.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +17,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.group4.user.data.model.User;
 import com.group4.user.dto.EmailRequest;
@@ -22,6 +27,7 @@ import com.group4.user.dto.UpdatePasswordDTO;
 import com.group4.user.dto.UserDTO;
 import com.group4.user.dto.UserSaveDTO;
 import com.group4.user.dto.UserUpdateDTO;
+import com.group4.user.exceptions.ResourceNotFoundException;
 import com.group4.user.services.EmailService;
 import com.group4.user.services.UserService;
 
@@ -29,6 +35,11 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -74,13 +85,52 @@ public class UserController {
         return userService.signup(userSaveDTO);
     }
 
+    @GetMapping("/{username}/image")
+    public ResponseEntity<Resource> getUserImage(@PathVariable String username) throws MalformedURLException {
+        Optional<UserDTO> user = userService.getUserByUsername(username);
+        if (user.isEmpty()){
+            throw new ResourceNotFoundException("User not found for this username : " + username);
+        }
+        String imageName = user.get().getPicture();
+        
+        // Get the file extension and dynamically determine the content type
+        Path path = Paths.get("src/main/resources/static/assets/" + imageName);
+        
+        if (Files.exists(path)) {
+            Resource resource = new UrlResource(path.toUri());
+            String contentType;
+            try {
+                contentType = Files.probeContentType(path);
+                return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType)) // Set the actual content type dynamically
+                    .body(resource);
+            } catch (IOException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // [Customer, Admin] Update an existing user.
     // [PUT] /:id
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable String id, @RequestBody @Valid UserUpdateDTO userUpdateDTO) {
+    public ResponseEntity<UserDTO> updateUser(
+        @PathVariable String id, 
+        @RequestPart("user") @Valid UserUpdateDTO userUpdateDTO,
+        @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+        if (file != null && !file.isEmpty()) {
+            String imageUrl = userService.saveImage(file);
+            userUpdateDTO.setPicture(imageUrl);
+        } else {
+            String existingImage = userService.getUserImageNameById(id);
+            userUpdateDTO.setPicture(existingImage);
+        }
+        
         UserDTO updatedUser = userService.updateUser(id, userUpdateDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
+        return updatedUser != null ? ResponseEntity.status(HttpStatus.OK).body(updatedUser) : ResponseEntity.notFound().build();
     }
 
     // [Admin] Update user status.

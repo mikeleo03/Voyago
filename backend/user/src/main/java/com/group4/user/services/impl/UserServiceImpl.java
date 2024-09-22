@@ -1,5 +1,9 @@
 package com.group4.user.services.impl;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.group4.user.client.AuthClient;
 import com.group4.user.data.model.User;
@@ -29,6 +34,7 @@ import com.group4.user.dto.UpdatePasswordDTO;
 import com.group4.user.dto.UserDTO;
 import com.group4.user.dto.UserSaveDTO;
 import com.group4.user.dto.UserUpdateDTO;
+import com.group4.user.exceptions.BadRequestException;
 import com.group4.user.exceptions.ResourceNotFoundException;
 import com.group4.user.mapper.UserMapper;
 import com.group4.user.services.UserService;
@@ -48,6 +54,8 @@ public class UserServiceImpl implements UserService {
     private static final String USER_NOT_FOUND = "User not found";
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+
+    private final String uploadDir = "src/main/resources/static/assets/";
 
     @Autowired
     public UserServiceImpl(UserMapper userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder, AuthClient authClient) {
@@ -215,6 +223,24 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
 
         return Optional.of(userMapper.toUserDTO(user));
+    }
+
+    @Override
+    public String saveImage(MultipartFile file) {
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        Path path = Paths.get(uploadDir + fileName);
+        try {
+            Files.write(path, file.getBytes());
+            return fileName;
+        } catch (IOException e) {
+            throw new BadRequestException("Could not save image: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public String getUserImageNameById(String id) {
+        User tour = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tour not found"));
+        return tour.getPicture();
     }
 
     // This method will handle data propagation to the AuthClient and logging.
