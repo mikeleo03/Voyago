@@ -35,4 +35,6 @@ build/
 # Ignore actual private and public keys in certs/ directory
 private-key.pem
 public-key.pem
+
 env.properties
+\src\main\resources\static\assets

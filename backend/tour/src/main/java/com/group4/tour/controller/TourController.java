@@ -3,14 +3,22 @@ package com.group4.tour.controller;
 import com.group4.tour.data.model.Tour;
 import com.group4.tour.service.TourService;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +51,22 @@ public class TourController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/image")
+    public ResponseEntity<Resource> getTourImage(@PathVariable String id) throws MalformedURLException {
+        Tour tour = tourService.getTourById(id);
+        String imageName = tour.getImage();
+
+        Path path = Paths.get("src/main/resources/static/assets/" + imageName);
+
+        if (Files.exists(path)) {
+            Resource resource = new UrlResource(path.toUri());
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @GetMapping("/{id}")
     @PreAuthorize(("hasAnyRole('ADMIN', 'CUSTOMER')"))
@@ -52,17 +76,37 @@ public class TourController {
     }
 
     @PostMapping
-    @PreAuthorize(("hasRole('ADMIN')"))
-    public ResponseEntity<Tour> createTour(@RequestBody Tour tour) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Tour> createTour(
+            @RequestPart("tour") Tour tour,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+
+        if (file != null && !file.isEmpty()) {
+            String imageUrl = tourService.saveImage(file);
+            tour.setImage(imageUrl);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(tourService.createTour(tour));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize(("hasRole('ADMIN')"))
-    public ResponseEntity<Tour> updateTour(@PathVariable String id, @RequestBody Tour tour) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Tour> updateTour(
+            @PathVariable String id,
+            @RequestPart("tour") Tour tour,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+
+        if (file != null && !file.isEmpty()) {
+            String imageUrl = tourService.saveImage(file);
+            tour.setImage(imageUrl);
+        } else {
+            String existingImage = tourService.getTourImageNameById(id);
+            tour.setImage(existingImage);
+        }
+
         Tour updatedTour = tourService.updateTour(id, tour);
         return updatedTour != null ? ResponseEntity.ok(updatedTour) : ResponseEntity.notFound().build();
     }
+
 
     @PostMapping("/import")
     @PreAuthorize(("hasRole('ADMIN')"))

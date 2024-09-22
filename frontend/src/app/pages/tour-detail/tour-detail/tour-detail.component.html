@@ -8,7 +8,7 @@
 </div>
 
 <!-- Tour Detail Section -->
-<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-48 mb-8 mx-auto w-10/12 relative grid grid-cols-3 gap-8">
+<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mb-8 mx-auto w-10/12 relative grid grid-cols-3 gap-8">
     <!-- Left Side: Description and Facilities -->
     <div class="col-span-2 flex flex-col">
         <h2 class="text-3xl font-semibold mb-4">Description</h2>
@@ -27,13 +27,13 @@
 
     <!-- Right Side: Image, Seats, Price, and Book Button -->
     <div class="flex flex-col items-end">
-        <img [src]="tourDetails?.image ? tourDetails.image : '/assets/img/empty-img.jpg'" 
+        <img [src]="tourImageUrl ? tourImageUrl : '/assets/img/empty-img.jpg'" 
             alt="Tour Image" 
             class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
         <div class="flex flex-col items-end mt-10 space-y-4">
             <p class="text-lg font-semibold">Seats Available: {{ tourDetails?.quota }}</p>
             <p class="text-xl font-bold text-green-500">IDR {{ tourDetails?.prices | number }}</p>
-            <button class="bg-yellow-500 text-white p-2 rounded-xl transition-transform transform ease-in-out hover:scale-105" (click)="bookTour()">
+            <button class="bg-yellow-500 text-white px-12 py-2 rounded-3xl" (click)="bookTour()">
                 Book Now
             </button>
         </div>

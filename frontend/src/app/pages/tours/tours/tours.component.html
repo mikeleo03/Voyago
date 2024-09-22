@@ -1,20 +1,17 @@
 <!-- Hero Section -->
-<div class="relative bg-cover bg-center h-[60vh] rounded-b-[3rem] flex items-center justify-center mt-[-5rem]" style="background-image: url('/assets/img/main-bg.png'); background-size: cover;">
-    <div class="absolute inset-0 bg-black bg-opacity-20 rounded-b-[3rem]"></div>
+<div class="relative bg-cover bg-center h-[60vh] rounded-b-[3rem] flex items-center justify-center mt-[-5rem]" style="background-image: url('/assets/img/tour-bg.jpg'); background-size: cover;">
+    <div class="absolute inset-0 bg-black bg-opacity-40 rounded-b-[3rem]"></div>
     <div class="text-center text-white z-10 mb-20">
-        <h1 class="text-5xl font-bold">What do you want to do?</h1>
+        <h1 class="text-5xl font-bold">Where do you want to go today?</h1>
     </div>
 </div>
 
 <!-- Search Section -->
-<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-48 mx-auto w-10/12 relative">
+<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mx-auto w-10/12 relative">
   <div class="flex flex-wrap gap-4 justify-between mx-2">
       <div class="align-start justify-start flex flex-col text-start">
           <p class="text-lg mb-1 text-gray-400">Your Location</p>
           <h2 class="text-2xl font-semibold">Bandung, Indonesia</h2>
-      </div>
-      <div class="items-end justify-end flex text-end">
-          <a href="/search" class="text-base text-blue-500 hover:underline">Go to search page</a>
       </div>
   </div>
   <hr class="my-6 border-gray-300" />
@@ -61,7 +58,7 @@
       <!-- Tour Image -->
       <div class="tour-image w-1/5">
         <img
-          [src]="tour.image ? tour.image : '/assets/img/empty-img.jpg'"
+          [src]="tourImageUrls[tour.id] ? tourImageUrls[tour.id] : '/assets/img/empty-img.jpg'"
           alt="Tour image"
           class="w-full h-auto rounded-lg shadow"
         />

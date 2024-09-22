@@ -40,6 +40,12 @@ export class ToursAdminComponent implements OnInit {
   facilities: string[] = [];
   newFacility: string = '';
 
+  isSubmitted = false;
+
+  selectedImage: File | null = null;
+  selectedImageName: string = '';
+  tourImageUrls: { [key: string]: string } = {};
+
   @ViewChild(ToastContainerDirective, { static: true })
   toastContainer!: ToastContainerDirective;
 
@@ -75,7 +81,12 @@ export class ToursAdminComponent implements OnInit {
       (result) => {
         this.tours = result.tours;
         this.totalPages = result.totalPages;
-        console.log('Fetched tours:', this.tours); // For debugging
+        this.tours.forEach(tour => {
+          this.tourService.getTourImage(tour.id).subscribe(blob => {
+            const url = window.URL.createObjectURL(blob);
+            this.tourImageUrls[tour.id] = url;
+          });
+        });
       },
       (error) => {
         console.error('Error fetching tours:', error);
@@ -112,10 +123,19 @@ export class ToursAdminComponent implements OnInit {
     this.facilities = this.facilities.filter(f => f !== facility);
   }
 
+  isFormValid(): boolean {
+    return this.newTour.title.trim() !== '' &&
+           this.newTour.location.trim() !== '' &&
+           this.newTour.prices > 0 &&
+           this.newTour.quota > 0 &&
+           this.newTour.detail.trim() !== '';
+  }
+
   saveTour() {
-    console.log('New Tour:', this.newTour);
-  
-    this.tourService.createTour(this.newTour).subscribe(
+    const imageToUpload = this.selectedImage || undefined;
+    this.isSubmitted = true;
+    
+    this.tourService.createTour(this.newTour, imageToUpload).subscribe(
       () => {
         this.searchTours();
         this.resetNewTour();
@@ -127,7 +147,8 @@ export class ToursAdminComponent implements OnInit {
         this.toastrService.warning('Error saving tour:', error);
       }
     );
-  }
+}
+
 
   resetNewTour() {
     this.newTour = {
@@ -136,15 +157,17 @@ export class ToursAdminComponent implements OnInit {
       quota: 0,
       prices: 0,
       location: '',
-      image: '',
       status: 'ACTIVE',
     };
+    this.selectedImage = null;
+    this.selectedImageName = '';
   }
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
-      this.importCSV(file);
+      this.selectedImage = file;
+      this.selectedImageName = file.name;
     }
   }
 
@@ -152,7 +175,7 @@ export class ToursAdminComponent implements OnInit {
     this.tourService.importToursFromCsv(file).subscribe(
       response => {
         console.log('Tours imported successfully:', response);
-        this.searchTours(); // Refresh the list of tours
+        this.searchTours();
         this.toastrService.success('Tour imported successfully!');
       },
       error => {

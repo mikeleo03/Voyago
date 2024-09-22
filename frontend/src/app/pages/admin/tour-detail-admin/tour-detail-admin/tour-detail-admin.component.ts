@@ -28,6 +28,12 @@ export class TourDetailAdminComponent implements OnInit {
   ];
   newFacility: string = '';
 
+  tourImageUrl: string = '';
+  selectedImageFile: File | null = null;
+  selectedImageName: string | undefined = '';
+
+  isSubmitted = false;
+
   constructor(
     private route: ActivatedRoute, 
     private tourService: TourService, 
@@ -61,7 +67,12 @@ export class TourDetailAdminComponent implements OnInit {
     this.tourService.getTourById(id).subscribe(
       (details) => {
         this.tourDetails = details;
+        this.selectedImageName = details.image;
         this.loading = false;
+        this.tourService.getTourImage(this.tourId as string).subscribe(blob => {
+          const url = window.URL.createObjectURL(blob);
+          this.tourImageUrl = url;
+        });
       },
       (error) => {
         console.error('Error fetching tour details:', error);
@@ -86,9 +97,20 @@ export class TourDetailAdminComponent implements OnInit {
     this.facilities = this.facilities.filter(f => f !== facility);
   }
 
+  onImageSelected(event: any): void {
+    if (event.target.files && event.target.files.length > 0) {
+      this.selectedImageFile = event.target.files[0];
+      if (this.selectedImageFile){
+        this.selectedImageName = this.selectedImageFile.name;
+      }
+    }
+  }
+
   saveTour(): void {
     if (this.tourId) {
-      this.tourService.updateTour(this.tourId as string, this.newTour).subscribe(() => {
+      this.isSubmitted = true;
+      const imageToUpload = this.selectedImageFile || undefined;
+      this.tourService.updateTour(this.tourId as string, this.newTour, imageToUpload).subscribe(() => {
         this.isModalOpen = false;
         this.getTourDetails(this.tourId as string);
       }, (error) => {
@@ -97,5 +119,13 @@ export class TourDetailAdminComponent implements OnInit {
     } else {
       console.error('Tour ID is null, cannot update tour.');
     }
+  }
+
+  isFormValid(): boolean {
+    return this.newTour.title.trim() !== '' &&
+           this.newTour.location.trim() !== '' &&
+           this.newTour.prices > 0 &&
+           this.newTour.quota > 0 &&
+           this.newTour.detail.trim() !== '';
   }
 }

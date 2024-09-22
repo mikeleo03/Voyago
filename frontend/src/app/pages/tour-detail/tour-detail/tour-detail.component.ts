@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TourService } from '../../../services/tour/tour.service';
 
@@ -15,7 +15,9 @@ export class TourDetailComponent implements OnInit {
   tourDetails: any;
   loading: boolean = true;
 
-  constructor(private route: ActivatedRoute, private tourService: TourService, private router: Router) {}
+  tourImageUrl: string = '';
+
+  constructor(private route: ActivatedRoute, private tourService: TourService, private router: Router, private location: Location) {}
 
   ngOnInit(): void {
       this.route.queryParams.subscribe(params => {
@@ -33,6 +35,10 @@ export class TourDetailComponent implements OnInit {
           (details) => {
               this.tourDetails = details;
               this.loading = false;
+              this.tourService.getTourImage(this.tourId as string).subscribe(blob => {
+                const url = window.URL.createObjectURL(blob);
+                this.tourImageUrl = url;
+              });
           },
           (error) => {
               console.error('Error fetching tour details:', error);
@@ -52,4 +58,8 @@ export class TourDetailComponent implements OnInit {
     'Parking',
     'Guided Tours',
   ];
+
+  goBack(): void {
+    this.location.back();
+  }
 }
