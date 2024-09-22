@@ -19,11 +19,14 @@ export class DashboardComponent {
   dashboardForm!: FormGroup;
   isLoading: boolean = false;
 
+  userImageUrl: string = '';
+  selectedImageFile: File | null = null;
+  selectedImageName: string = '/assets/img/default.png';
+
   // Variables to store user details for profile display
   userName: string = '';
   userEmail: string = '';
   userPhone: string = '';
-  userImgUrl: string = '/assets/img/default.png';  // Default image if not available
 
   @Input() historyItems: any[] = [
     {
@@ -79,7 +82,11 @@ export class DashboardComponent {
         this.userName = response.username;
         this.userEmail = response.email;
         this.userPhone = response.phone;
-        this.userImgUrl = response.picture || '/assets/img/default.png';
+        this.selectedImageName = response.picture || '/assets/img/default.png';
+        this.userService.getUserImage(this.userName).subscribe(blob => {
+          const url = window.URL.createObjectURL(blob);
+          this.userImageUrl = url;
+        });
       },
       error: () => {
         this.toastr.error('You are unauthenticated, Please login first', 'Unauthenticated');
@@ -91,6 +98,15 @@ export class DashboardComponent {
 
   openEditModal(): void {
     this.isModalOpen = true;
+  }
+
+  onImageSelected(event: any): void {
+    if (event.target.files && event.target.files.length > 0) {
+      this.selectedImageFile = event.target.files[0];
+      if (this.selectedImageFile){
+        this.selectedImageName = this.selectedImageFile.name;
+      }
+    }
   }
 
   saveUser(): void {
@@ -108,7 +124,7 @@ export class DashboardComponent {
     this.userService.getUserByUsername(this.authService.getCurrentUsername()).subscribe({
         next: (response) => {
           // Update the user data
-          this.userService.updateUser(response.id, updatedUser).subscribe({
+          this.userService.updateUser(response.id, updatedUser, this.selectedImageFile as File).subscribe({
             next: (response: any) => {
               this.toastr.success('User data updated successfully', 'Updated Succesfully');
               this.isLoading = false;
@@ -116,7 +132,7 @@ export class DashboardComponent {
               this.userName = updatedUser.username;
               this.userEmail = updatedUser.email;
               this.userPhone = updatedUser.phone;
-              this.userImgUrl = updatedUser.picture || '/assets/img/default.png';
+              this.selectedImageName = updatedUser.picture || '/assets/img/default.png';
               this.isModalOpen = false;
             },
             error: () => {
