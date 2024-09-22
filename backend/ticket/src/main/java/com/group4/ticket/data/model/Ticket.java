@@ -50,6 +50,9 @@ public class Ticket extends AuditorBase {
     @Column(name = "endDate", nullable = false)
     private LocalDate endDate;
 
+    @Column(name = "price", nullable = false)
+    private Double price;
+
     @Column(name = "isRescheduled", nullable = false)
     private boolean isRescheduled;
 
