@@ -61,8 +61,20 @@ export class UserService {
     return this.http.put<UserDTO>(`${this.authApiUrl}/${userId}/status`, { status });
   }
 
+  getUserImage(username: string): Observable<Blob> {
+    return this.http.get(`${this.authApiUrl}/${username}/image`, { responseType: 'blob' });
+  }
+
   // Update user
-  updateUser(userId: string, userData: UserUpdateDTO): Observable<UserDTO> {
-    return this.http.put<UserDTO>(`${this.authApiUrl}/${userId}`, userData);
+  updateUser(userId: string, userData: UserUpdateDTO, imageFile?: File): Observable<UserDTO> {
+    const formData: FormData = new FormData();
+
+    formData.append('user', new Blob([JSON.stringify(userData)], { type: 'application/json' }));
+
+    if (imageFile) {
+      formData.append('file', imageFile);
+    }
+
+    return this.http.put<UserDTO>(`${this.authApiUrl}/${userId}`, formData);
   }
 }
