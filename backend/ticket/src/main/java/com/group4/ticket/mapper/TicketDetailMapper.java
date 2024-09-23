@@ -21,6 +21,7 @@ public interface TicketDetailMapper {
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "ticket", ignore = true)
+    @Mapping(target = "id", ignore = true)
     TicketDetail toTicketDetail(TicketDetailDTO ticketDetailDTO);
 
     // TicketDetail - TicketDetailSaveDTO
@@ -31,5 +32,6 @@ public interface TicketDetailMapper {
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "ticket", ignore = true)
+    @Mapping(target = "id", ignore = true)
     TicketDetail toTicketDetail(TicketDetailSaveDTO ticketDetailSaveDTO);
 }

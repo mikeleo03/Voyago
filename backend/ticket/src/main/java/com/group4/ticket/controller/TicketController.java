@@ -32,6 +32,7 @@ import lombok.AllArgsConstructor;
 public class TicketController {
 
     private final TicketService ticketService;
+    private static final String TICKETS = "tickets";
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -47,7 +48,7 @@ public class TicketController {
         Page<Ticket> tickets = ticketService.getAllTickets(minPrice, maxPrice, sortPrice, startDate, endDate, page, size);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("tickets", tickets.getContent());
+        response.put(TICKETS, tickets.getContent());
         response.put("currentPage", tickets.getNumber());
         response.put("totalItems", tickets.getTotalElements());
         response.put("totalPages", tickets.getTotalPages());
@@ -69,7 +70,7 @@ public class TicketController {
         Page<Ticket> tickets = ticketService.getAllTicketsByUsername((String) authentication.getPrincipal(), minPrice, maxPrice, startDate, endDate, page, size);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("tickets", tickets.getContent());
+        response.put(TICKETS, tickets.getContent());
         response.put("currentPage", tickets.getNumber());
         response.put("totalItems", tickets.getTotalElements());
         response.put("totalPages", tickets.getTotalPages());
@@ -113,9 +114,10 @@ public class TicketController {
 
     @GetMapping("/excel")
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
-    public void exportTicketToExcel(@RequestParam List<Ticket> listOfTickets, HttpServletResponse response) throws IOException {
+    public void exportTicketToExcel(@RequestBody Map<String, List<Ticket>> requestBody, HttpServletResponse response) throws IOException {
+        List<Ticket> listOfTickets = requestBody.get(TICKETS);
+        
         String fileName = "tickets_report.xlsx";
-
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
