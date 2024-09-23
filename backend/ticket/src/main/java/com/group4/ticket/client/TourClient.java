@@ -54,25 +54,50 @@ public class TourClient {
         return webClientBuilder.baseUrl(url.toString()).build();
     }
 
+    private <T> Mono<T> handleError(Mono<T> mono, String tourID) {
+        return mono.onErrorResume(WebClientResponseException.class, ex -> {
+            log.error("Error fetching tour details for Tour ID {}: Status code: {}, Response body: {}",
+                    tourID, ex.getStatusCode(), ex.getResponseBodyAsString());
+            if (ex.getStatusCode().is4xxClientError()) {
+                return Mono.error(new ResourceNotFoundException("Tour not found for ID: " + tourID));
+            }
+            return Mono.error(ex);
+        });
+    }
+
     // Method to fetch tour details using tourID
     public Mono<String> getTourNameById(String tourID) {
-        log.debug("Fetching tour details from Tour Service for Tour ID: {}", tourID);
-
         WebClient webClient = getWebClientForTourService();
 
-        return webClient.get()
+        return handleError(webClient.get()
                 .uri("/{id}", tourID)
                 .retrieve()
                 .bodyToMono(Tour.class)
-                .map(Tour::getTitle) // Assuming `getTitle()` returns the tour name
-                .doOnSuccess(name -> log.debug("Received Tour Name: {}", name))
-                .onErrorResume(WebClientResponseException.class, ex -> {
-                    log.error("Error fetching tour details for Tour ID {}: Status code: {}, Response body: {}",
-                            tourID, ex.getStatusCode(), ex.getResponseBodyAsString());
-                    if (ex.getStatusCode().is4xxClientError()) {
-                        return Mono.error(new ResourceNotFoundException("Tour not found for ID: " + tourID));
-                    }
-                    return Mono.error(ex);
-                });
+                .map(Tour::getTitle), tourID);
+    }
+
+    // Method to fetch tour details using tourID
+    public Mono<Integer> getTourPriceById(String tourID) {
+        WebClient webClient = getWebClientForTourService();
+
+        return handleError(webClient.get()
+                .uri("/{id}", tourID)
+                .retrieve()
+                .bodyToMono(Tour.class)
+                .map(Tour::getPrices), tourID);
+    }
+
+    // Method to fetch tour details using tourID
+    public Mono<Void> updateTourQuantityById(String tourID, Integer quantity) {
+        WebClient webClient = getWebClientForTourService();
+
+        return handleError(webClient.put()
+                .uri(uriBuilder -> uriBuilder
+                    .path("/reduce")
+                    .queryParam("id", tourID)
+                    .queryParam("quantity", quantity)
+                    .build())
+                .retrieve()
+                .bodyToMono(Void.class), tourID);
     }
 }

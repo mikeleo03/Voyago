@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,7 +58,6 @@ public class TicketController {
     @GetMapping("/list")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Map<String, Object>> getAllTicketsByUserID(
-            @RequestParam String userID,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) LocalDate startDate,
@@ -64,7 +65,8 @@ public class TicketController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<Ticket> tickets = ticketService.getAllTicketsByUserID(userID, minPrice, maxPrice, startDate, endDate, page, size);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Page<Ticket> tickets = ticketService.getAllTicketsByUsername((String) authentication.getPrincipal(), minPrice, maxPrice, startDate, endDate, page, size);
 
         Map<String, Object> response = new HashMap<>();
         response.put("tickets", tickets.getContent());
@@ -76,7 +78,7 @@ public class TicketController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize(("hasRole('CUSTOMER')"))
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public ResponseEntity<TicketDTO> getTicketById(@PathVariable String id) {
         TicketDTO ticketDTO = ticketService.getTicketById(id);
         return ResponseEntity.status(HttpStatus.OK).body(ticketDTO);

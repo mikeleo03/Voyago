@@ -13,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -77,7 +76,6 @@ public class TourController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize(("hasAnyRole('ADMIN', 'CUSTOMER')"))
     public ResponseEntity<Tour> getTourById(@PathVariable String id) {
         Tour tour = tourService.getTourById(id);
         return ResponseEntity.ok(tour);
@@ -128,7 +126,6 @@ public class TourController {
 
 
     @PutMapping("/reduce")
-    @PreAuthorize(("hasRole('ADMIN')"))
     public ResponseEntity<Void> reduceQuota(@RequestParam String id, @RequestParam int quantity) {
         tourService.reduceQuota(id, quantity);
         return ResponseEntity.ok().build();
