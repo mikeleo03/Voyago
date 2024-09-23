@@ -1,9 +1,5 @@
 package com.group4.ticket.services.impl;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +24,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 
@@ -39,7 +34,6 @@ public class TicketServiceImpl implements TicketService {
     private final TicketRepository ticketRepository;
     private final TicketMapper ticketMapper;
     private static final String TICKET_NOT_FOUND = "Ticket not found with id: ";
-    private static final String UPLOAD_DIR = "src/main/resources/static/assets/";
     private static final String PRICE = "price";
 
     @Autowired
@@ -102,6 +96,18 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public TicketDTO editPayment(String id, String paymentID) {
+        Optional<Ticket> ticketOptional = ticketRepository.findById(id);
+        if (ticketOptional.isPresent()) {
+            Ticket ticket = ticketOptional.get();
+            ticket.setPaymentID(paymentID);
+            return ticketMapper.toTicketDTO(ticket);
+        } else {
+            throw new ResourceNotFoundException(TICKET_NOT_FOUND + id);
+        }
+    }
+
+    @Override
     @PreAuthorize("hasRole('ADMIN')")
     public TicketDTO updateTicketStatus(String id, String status) {
         if (!"USED".equalsIgnoreCase(status) && !"UNUSED".equalsIgnoreCase(status)) {
@@ -151,28 +157,6 @@ public class TicketServiceImpl implements TicketService {
             ticket.setRescheduled(true);
             ticket = ticketRepository.save(ticket);
             return ticketMapper.toTicketDTO(ticket);
-        } else {
-            throw new ResourceNotFoundException(TICKET_NOT_FOUND + id);
-        }
-    }
-
-    @Override
-    public String saveEvidenceImage(MultipartFile file) {
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path path = Paths.get(UPLOAD_DIR + fileName);
-        try {
-            Files.write(path, file.getBytes());
-            return fileName;
-        } catch (IOException e) {
-            throw new ResourceNotFoundException("Could not save image: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public String getTicketEvidenceNameId(String id) {
-        Optional<Ticket> ticket = ticketRepository.findById(id);
-        if (ticket.isPresent()) {
-            return ticket.get().getTicketEvidence();
         } else {
             throw new ResourceNotFoundException(TICKET_NOT_FOUND + id);
         }

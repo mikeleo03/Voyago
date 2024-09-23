@@ -9,7 +9,6 @@ import com.group4.ticket.dto.TicketSaveDTO;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.domain.Page;
-import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 
@@ -27,6 +26,9 @@ public interface TicketService {
     // [Customer] Create new ticket
     TicketDTO createTicket(@Valid TicketSaveDTO ticketSaveDTO);
 
+    // [-] Add payment evidence
+    TicketDTO editPayment(String id, String paymentID);
+
     // [Admin] Change ticket status (used, unused)
     TicketDTO updateTicketStatus(String id, String status);
 
@@ -36,10 +38,4 @@ public interface TicketService {
 
     // [Customer] Reschedule ticket
     TicketDTO rescheduleTicket(String id, LocalDate startDate, LocalDate endDate);
-
-    // [Utilities] Save ticket image from multipart
-    String saveEvidenceImage(MultipartFile file);
-
-    // [Utilities] Get ticket image name by ID
-    String getTicketEvidenceNameId(String id);
 }
