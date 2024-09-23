@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { HlmAvatarImageDirective, HlmAvatarComponent, HlmAvatarFallbackDirective } from '@spartan-ng/ui-avatar-helm';
 import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { AuthService } from '../../../services/auth/auth.service';
+import { UserService } from "../../../services/user/user.service";
 
 @Component({
   selector: 'app-header',
@@ -25,8 +26,9 @@ export class HeaderComponent implements OnInit {
   showLogout = false;
   isOpen = false;
   isScrolled = false; // Track whether the page is scrolled
+  userImageUrl: string = '/assets/img/default.png';
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService, private userService: UserService) {}
 
   ngOnInit(): void {
     const token = this.authService.getToken();
@@ -39,6 +41,11 @@ export class HeaderComponent implements OnInit {
       this.username = "Mr. Lorem Ipsum";
       this.role = "Guest"; // Default role if no token
     }
+
+    this.userService.getUserImage(this.username).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      this.userImageUrl = url;
+    });
 
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -73,6 +80,11 @@ export class HeaderComponent implements OnInit {
   handleLogout() {
     this.authService.logout();
     this.router.navigate(['/login']); // Redirect to login page after logout
+  }
+
+  // Navigate to profile
+  navigateToProfile() {
+    this.router.navigate(['/dashboard']);
   }
 
   // Navigate to tours based on user role

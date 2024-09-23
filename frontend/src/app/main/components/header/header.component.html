@@ -32,7 +32,7 @@
         <div *ngIf="isLoggedIn()" class="relative" (mouseenter)="showLogout = true" (mouseleave)="showLogout = false">
             <button class="flex space-x-3 p-3 py-1 rounded-xl text-white items-center">
                 <hlm-avatar>
-                    <img src='/assets/img/default.png' alt='profile' draggable="false" hlmAvatarImage />
+                    <img [src]="userImageUrl" alt='profile' draggable="false" hlmAvatarImage />
                     <span class='text-white bg-destructive' hlmAvatarFallback>{{ username }}</span>
                 </hlm-avatar>
                 <div class="flex flex-col text-start md:block hidden">
@@ -44,7 +44,7 @@
             <!-- Dropdown menu -->
             <div *ngIf="showLogout" class="absolute bg-[#0A5185] rounded-lg text-white right-0 py-2 w-48"
                 (mouseenter)="showLogout = true" (mouseleave)="showLogout = false">
-                <a href="/dashboard" class="block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-black/[.2]">Profile</a>
+                <a (click)="navigateToProfile()" class="block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-black/[.2] cursor-pointer">Profile</a>
                 <button (click)="handleLogout()"
                     class="block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-red-900/[.4]">Logout</button>
             </div>

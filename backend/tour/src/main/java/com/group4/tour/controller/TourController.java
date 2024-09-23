@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,14 +57,21 @@ public class TourController {
     public ResponseEntity<Resource> getTourImage(@PathVariable String id) throws MalformedURLException {
         Tour tour = tourService.getTourById(id);
         String imageName = tour.getImage();
-
+        
+        // Get the file extension and dynamically determine the content type
         Path path = Paths.get("src/main/resources/static/assets/" + imageName);
-
+        
         if (Files.exists(path)) {
             Resource resource = new UrlResource(path.toUri());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_PNG)
+            String contentType;
+            try {
+                contentType = Files.probeContentType(path);
+                return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType)) // Set the actual content type dynamically
                     .body(resource);
+            } catch (IOException e) {
+                return ResponseEntity.badRequest().build();
+            }
         } else {
             return ResponseEntity.notFound().build();
         }

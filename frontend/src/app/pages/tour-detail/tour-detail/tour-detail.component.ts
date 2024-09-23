@@ -37,8 +37,9 @@ export class TourDetailComponent implements OnInit {
               this.loading = false;
               this.tourService.getTourImage(this.tourId as string).subscribe(blob => {
                 const url = window.URL.createObjectURL(blob);
+                console.log('Image URL:', url);  // Log the URL to verify
                 this.tourImageUrl = url;
-              });
+              });            
           },
           (error) => {
               console.error('Error fetching tour details:', error);
