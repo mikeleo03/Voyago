@@ -12,7 +12,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,6 +27,17 @@ import java.util.Optional;
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
+
+    private final String uploadDir = "src/main/resources/static/assets/";
+
+    @Override
+    public Payment getPaymentById(String id){
+        Optional<Payment> paymentOptional = paymentRepository.findById(id);
+        if (paymentOptional.isEmpty()){
+            throw new ResourceNotFoundException("Payment not found for this id : " + id);
+        }
+        return paymentOptional.get();
+    }
 
     @Override
     public Payment createPayment(PaymentCreateDTO dto) {
@@ -52,8 +68,23 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ResourceNotFoundException("Payment not found for this id : " + id);
         }
         Payment payment = paymentOptional.get();
+        if (Objects.equals(payment.getStatus(), "FAILED")){
+            throw new TimeOutException("Payment already failed.");
+        }
         payment.setPicture(dto.getPicture());
         payment.setPaymentDate(LocalDateTime.now());
         return paymentRepository.save(payment);
+    }
+
+    @Override
+    public String saveImage(MultipartFile file){
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        Path path = Paths.get(uploadDir + fileName);
+        try {
+            Files.write(path, file.getBytes());
+            return fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("Could not save image: " + e.getMessage());
+        }
     }
 }

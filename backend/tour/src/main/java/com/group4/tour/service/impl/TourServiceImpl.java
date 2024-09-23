@@ -54,8 +54,6 @@ public class TourServiceImpl implements TourService {
         return tourRepository.findAll(pageable);
     }
 
-
-
     public Tour getTourById(String id) {
         Optional<Tour> tourOptional = tourRepository.findById(id);
         if (tourOptional.isEmpty()){
