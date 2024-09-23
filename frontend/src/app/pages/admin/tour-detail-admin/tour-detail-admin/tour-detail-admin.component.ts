@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TourService } from '../../../../services/tour/tour.service';
 import { AuthService } from '../../../../services/auth/auth.service';
+import { FacilityService } from '../../../../services/facility/facility.service';
+import { FacilityDTO } from '../../../../models/facility.model';
 
 @Component({
   selector: 'app-tour-detail-admin',
@@ -19,13 +21,7 @@ export class TourDetailAdminComponent implements OnInit {
 
   isModalOpen: boolean = false;
   newTour: any = {};
-  facilities: string[] = [
-    'Wi-Fi',
-    'Free Breakfast',
-    'Swimming Pool',
-    'Parking',
-    'Guided Tours',
-  ];
+  facilities: FacilityDTO[] = [];
   newFacility: string = '';
 
   tourImageUrl: string = '';
@@ -37,6 +33,7 @@ export class TourDetailAdminComponent implements OnInit {
   constructor(
     private route: ActivatedRoute, 
     private tourService: TourService, 
+    private facilityService: FacilityService,
     private router: Router, 
     private authService: AuthService
   ) {}
@@ -51,6 +48,7 @@ export class TourDetailAdminComponent implements OnInit {
       this.tourId = params['id'];
       if (this.tourId) {
         this.getTourDetails(this.tourId);
+        this.getFacilitiesByTourId(this.tourId);
       } else {
         this.router.navigate(['/not-found']);
       }
@@ -81,20 +79,47 @@ export class TourDetailAdminComponent implements OnInit {
     );
   }
 
+  getFacilitiesByTourId(tourId: string): void {
+    this.facilityService.getFacilitiesByTourId(tourId).subscribe(
+      (facilities) => {
+        this.facilities = facilities;
+      },
+      (error) => {
+        console.error('Error fetching facilities:', error);
+      }
+    );
+  }
+
+  addFacility(): void {
+    if (this.newFacility.trim() && this.tourId) {
+      const facility: FacilityDTO = { name: this.newFacility.trim(), tourId: this.tourId };
+      this.facilityService.createFacility(facility).subscribe(
+        () => {
+          this.newFacility = '';
+          this.getFacilitiesByTourId(this.tourId!);
+        },
+        (error) => {
+          console.error('Error adding facility:', error);
+        }
+      );
+    }
+  }
+  
+
+  removeFacility(facilityId: string): void {
+    this.facilityService.deleteFacility(facilityId).subscribe(
+      () => {
+        this.facilities = this.facilities.filter(f => f.id !== facilityId);
+      },
+      (error) => {
+        console.error('Error deleting facility:', error);
+      }
+    );
+  }
+
   openEditModal(): void {
     this.isModalOpen = true;
     this.newTour = { ...this.tourDetails };
-  }
-
-  addFacility() {
-    if (this.newFacility.trim()) {
-      this.facilities.push(this.newFacility.trim());
-      this.newFacility = '';
-    }
-  }
-
-  removeFacility(facility: string) {
-    this.facilities = this.facilities.filter(f => f !== facility);
   }
 
   onImageSelected(event: any): void {

@@ -1,4 +1,4 @@
-package com.group4.tour.config;
+package com.group4.payment.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,8 +32,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/v1/tour/**").permitAll();
-                    auth.requestMatchers("/api/v1/facility/**").permitAll();
+                    auth.requestMatchers("/api/v1/payment/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

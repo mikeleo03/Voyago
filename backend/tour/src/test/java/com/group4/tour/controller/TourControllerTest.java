@@ -86,25 +86,25 @@ public class TourControllerTest {
         verify(tourService, times(1)).getTourById(tourId);
     }
 
-    /* @Test
-    @WithMockUser(roles = {"ADMIN"})
-    void testUpdateTour() throws Exception {
-        String tourId = UUID.randomUUID().toString();
-        Tour updatedTour = new Tour();
-        updatedTour.setId(tourId);
-        updatedTour.setTitle("Updated Tour");
-
-        when(tourService.updateTour(eq(tourId), any(Tour.class))).thenReturn(updatedTour);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/tour/{id}", tourId)
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(updatedTour)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Updated Tour"))
-                .andDo(print());
-
-        verify(tourService, times(1)).updateTour(eq(tourId), any(Tour.class));
-    } */
+//    @Test
+//    @WithMockUser(roles = {"ADMIN"})
+//    void testUpdateTour() throws Exception {
+//        String tourId = UUID.randomUUID().toString();
+//        Tour updatedTour = new Tour();
+//        updatedTour.setId(tourId);
+//        updatedTour.setTitle("Updated Tour");
+//
+//        when(tourService.updateTour(eq(tourId), any(Tour.class))).thenReturn(updatedTour);
+//
+//        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/tour/{id}", tourId)
+//                        .contentType("application/json")
+//                        .content(new ObjectMapper().writeValueAsString(updatedTour)))
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Updated Tour"))
+//                .andDo(print());
+//
+//        verify(tourService, times(1)).updateTour(eq(tourId), any(Tour.class));
+//    }
 
     @Test
     @WithMockUser(roles = {"ADMIN"})
