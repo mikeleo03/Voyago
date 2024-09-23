@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketDTO {
-    private String userID;
+    private String username;
     private String tourID;
     private String paymentID;
     private String status;
