@@ -3,6 +3,7 @@ package com.group4.payment.service.impl;
 import com.group4.payment.dto.PaymentCreateDTO;
 import com.group4.payment.dto.PaymentUpdateDTO;
 import com.group4.payment.exception.ResourceNotFoundException;
+import com.group4.payment.exception.TimeOutException;
 import com.group4.payment.mapper.PaymentMapper;
 import com.group4.payment.model.Payment;
 import com.group4.payment.repository.PaymentRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -36,6 +38,9 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ResourceNotFoundException("Payment not found for this id : " + id);
         }
         Payment payment = paymentOptional.get();
+        if (Objects.equals(payment.getStatus(), "FAILED")){
+            throw new TimeOutException("Payment already failed.");
+        }
         payment.setStatus(status);
         return paymentRepository.save(payment);
     }

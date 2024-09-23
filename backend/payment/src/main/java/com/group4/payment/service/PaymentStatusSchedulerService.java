@@ -14,9 +14,9 @@ import java.util.List;
 public class PaymentStatusSchedulerService {
     private final PaymentRepository paymentRepository;
 
-    @Scheduled(fixedRate = 30)
+    @Scheduled(fixedRate = 1000)
     public void updateUnverifiedPayments() {
-        LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusSeconds(30);
+        LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusMinutes(30);
 
         List<Payment> unverifiedPayments = paymentRepository.findByCreatedAtBeforeAndStatus(thirtyMinutesAgo, "UNVERIFIED");
 
