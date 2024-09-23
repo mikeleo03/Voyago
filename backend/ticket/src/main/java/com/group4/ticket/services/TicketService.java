@@ -18,7 +18,7 @@ public interface TicketService {
     Page<Ticket> getAllTickets(Integer minPrice, Integer maxPrice, String sortPrice, LocalDate startDate, LocalDate endDate, int page, int size);
 
     // [Customer] Show list of tickets (for user history)
-    Page<Ticket> getAllTicketsByUserID(String userID, Integer minPrice, Integer maxPrice, LocalDate startDate, LocalDate endDate, int page, int size);
+    Page<Ticket> getAllTicketsByUsername(String username, Integer minPrice, Integer maxPrice, LocalDate startDate, LocalDate endDate, int page, int size);
 
     // [Customer] Show ticket by ID
     TicketDTO getTicketById(String id);

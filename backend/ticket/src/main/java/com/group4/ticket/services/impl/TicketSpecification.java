@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TicketSpecification {
-    public static Specification<Ticket> filterByCriteria(String userID, Integer minPrice, Integer maxPrice, LocalDate startDate, LocalDate endDate) {
+    public static Specification<Ticket> filterByCriteria(String username, Integer minPrice, Integer maxPrice, LocalDate startDate, LocalDate endDate) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             // Filter by userid
-            if (userID != null) {
-                predicates.add(criteriaBuilder.equal(root.get("userID"), userID));
+            if (username != null) {
+                predicates.add(criteriaBuilder.equal(root.get("username"), username));
             }
 
             // Price filtering

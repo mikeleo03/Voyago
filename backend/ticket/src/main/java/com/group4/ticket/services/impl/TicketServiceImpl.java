@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.Valid;
+import reactor.core.publisher.Mono;
 
 @Service
 @Validated
@@ -66,19 +67,19 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @PreAuthorize("hasRole('CUSTOMER')")
-    public Page<Ticket> getAllTicketsByUserID(String userID, Integer minPrice, Integer maxPrice, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<Ticket> getAllTicketsByUsername(String username, Integer minPrice, Integer maxPrice, LocalDate startDate, LocalDate endDate, int page, int size) {
         // Pageable setup
         Pageable pageable = PageRequest.of(page, size);
 
         // Build the specification with filters
-        Specification<Ticket> spec = TicketSpecification.filterByCriteria(userID, minPrice, maxPrice, startDate, endDate);
+        Specification<Ticket> spec = TicketSpecification.filterByCriteria(username, minPrice, maxPrice, startDate, endDate);
 
         // Query the database with the specification and pageable
         return ticketRepository.findAll(spec, pageable);
     }
 
     @Override
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public TicketDTO getTicketById(String id) {
         Optional<Ticket> ticket = ticketRepository.findById(id);
         if (ticket.isPresent()) {
@@ -92,7 +93,23 @@ public class TicketServiceImpl implements TicketService {
     @PreAuthorize("hasRole('CUSTOMER')")
     public TicketDTO createTicket(@Valid TicketSaveDTO ticketSaveDTO) {
         Ticket ticket = ticketMapper.toTicket(ticketSaveDTO);
-        // Add any business logic 
+        // Set the ticket price
+        // Get the price of tour via tourClient
+        Mono<Integer> tourPriceMono = tourClient.getTourPriceById(ticket.getTourID());
+        Integer price = tourPriceMono.block();
+
+        // Get the quantity of ticket
+        Integer quantity = ticketSaveDTO.getTicketDetails().size();
+
+        // Set ticket price
+        ticket.setPrice(price * quantity);
+
+        // Reduce the tour quantity
+        tourClient.updateTourQuantityById(ticket.getTourID(), quantity).block();
+
+        // TODO: Handle related to payment
+        ticket.setPaymentID(UUID.randomUUID().toString());
+
         ticket.setId(UUID.randomUUID().toString());
         ticket = ticketRepository.save(ticket);
         return ticketMapper.toTicketDTO(ticket);
