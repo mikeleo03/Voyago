@@ -29,9 +29,9 @@ public class Ticket extends AuditorBase {
     @Column(name = "ID", length = 36, updatable = false, nullable = false)
     private String id;
 
-    @NotBlank(message = "User ID is required")
-    @Column(name = "userID", length = 36, nullable = false)
-    private String userID;
+    @NotBlank(message = "Usernameis required")
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @NotBlank(message = "Tour ID is required")
     @Column(name = "tourID", length = 36, nullable = false)

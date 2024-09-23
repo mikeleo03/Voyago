@@ -1,5 +1,6 @@
 package com.group4.ticket.utils;
 
+import com.group4.ticket.client.TourClient;
 import com.group4.ticket.data.model.Ticket;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -7,14 +8,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.List;
+import reactor.core.publisher.Mono;
 
 public class ExcelGenerator {
 
     private ExcelGenerator() {
         throw new IllegalStateException("Utility class");
     }
-    
-    public static Workbook generateTicketExcel(List<Ticket> tickets) {
+
+    public static Workbook generateTicketExcel(List<Ticket> tickets, TourClient tourClient) {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Tickets");
 
@@ -29,10 +31,13 @@ public class ExcelGenerator {
         for (Ticket ticket : tickets) {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(ticket.getId());
-            // Fetch from user service
-            row.createCell(1).setCellValue(ticket.getUserID());
-            // Fetch from tour service
-            row.createCell(2).setCellValue(ticket.getTourID());
+            row.createCell(1).setCellValue(ticket.getUsername());
+            
+            // Fetch Tour Name from Tour Service
+            Mono<String> tourNameMono = tourClient.getTourNameById(ticket.getTourID());
+            String tourName = tourNameMono.block();
+
+            row.createCell(2).setCellValue(tourName);
             row.createCell(3).setCellValue(ticket.getPrice());
             row.createCell(4).setCellValue(ticket.getStartDate().toString());
             row.createCell(5).setCellValue(ticket.getEndDate().toString());

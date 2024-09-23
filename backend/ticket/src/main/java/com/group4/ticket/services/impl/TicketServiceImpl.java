@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.group4.ticket.client.TourClient;
 import com.group4.ticket.data.model.Ticket;
 import com.group4.ticket.data.repository.TicketRepository;
 import com.group4.ticket.dto.TicketDTO;
@@ -33,13 +34,15 @@ public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
     private final TicketMapper ticketMapper;
+    private final TourClient tourClient;
     private static final String TICKET_NOT_FOUND = "Ticket not found with id: ";
     private static final String PRICE = "price";
 
     @Autowired
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketMapper ticketMapper) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketMapper ticketMapper, TourClient tourClient) {
         this.ticketRepository = ticketRepository;
         this.ticketMapper = ticketMapper;
+        this.tourClient = tourClient;
     }
 
     @Override
@@ -119,7 +122,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public Workbook exportTicketToExcel(List<Ticket> listOfTickets) {
-        return ExcelGenerator.generateTicketExcel(listOfTickets);
+        return ExcelGenerator.generateTicketExcel(listOfTickets, tourClient);
     }
 
     @Override
