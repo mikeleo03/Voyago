@@ -59,6 +59,9 @@ public class Ticket extends AuditorBase {
     @Column(name = "isReviewed", nullable = false)
     private boolean isReviewed;
 
+    @Column(name = "ticketEvidence")
+    private String ticketEvidence;
+
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<TicketDetail> ticketDetails;

@@ -20,5 +20,6 @@ public class TicketDTO {
     private Double price;
     private boolean isRescheduled;
     private boolean isReviewed;
+    private String ticketEvidence;
     private Set<TicketDetailDTO> ticketDetails;
 }
