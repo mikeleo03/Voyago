@@ -37,8 +37,7 @@ public class Ticket extends AuditorBase {
     @Column(name = "tourID", length = 36, nullable = false)
     private String tourID;
 
-    @NotBlank(message = "Payment ID is required")
-    @Column(name = "paymentID", length = 36, nullable = false)
+    @Column(name = "paymentID", length = 36)
     private String paymentID;
 
     @Column(name = "status", nullable = false)
@@ -58,9 +57,6 @@ public class Ticket extends AuditorBase {
 
     @Column(name = "isReviewed", nullable = false)
     private boolean isReviewed;
-
-    @Column(name = "ticketEvidence")
-    private String ticketEvidence;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore

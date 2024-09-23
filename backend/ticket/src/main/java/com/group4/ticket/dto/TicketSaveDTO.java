@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 public class TicketSaveDTO {
     private String userID;
     private String tourID;
-    private String paymentID;
     private LocalDate startDate;
     private LocalDate endDate;
     private Set<TicketDetailSaveDTO> ticketDetails;

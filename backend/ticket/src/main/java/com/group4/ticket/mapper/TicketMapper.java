@@ -34,7 +34,7 @@ public interface TicketMapper {
     @Mapping(target = "rescheduled", ignore = true)
     @Mapping(target = "reviewed", ignore = true)
     @Mapping(target = "status", ignore = true)
-    @Mapping(target = "ticketEvidence", ignore = true)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "paymentID", ignore = true)
     Ticket toTicket(TicketSaveDTO ticketSaveDTO);
 }
