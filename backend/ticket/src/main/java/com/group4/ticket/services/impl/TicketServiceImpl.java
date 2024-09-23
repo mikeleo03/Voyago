@@ -96,18 +96,6 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public TicketDTO editPayment(String id, String paymentID) {
-        Optional<Ticket> ticketOptional = ticketRepository.findById(id);
-        if (ticketOptional.isPresent()) {
-            Ticket ticket = ticketOptional.get();
-            ticket.setPaymentID(paymentID);
-            return ticketMapper.toTicketDTO(ticket);
-        } else {
-            throw new ResourceNotFoundException(TICKET_NOT_FOUND + id);
-        }
-    }
-
-    @Override
     @PreAuthorize("hasRole('ADMIN')")
     public TicketDTO updateTicketStatus(String id, String status) {
         if (!"USED".equalsIgnoreCase(status) && !"UNUSED".equalsIgnoreCase(status)) {

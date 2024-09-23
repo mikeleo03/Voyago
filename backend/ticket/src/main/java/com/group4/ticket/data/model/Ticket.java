@@ -37,7 +37,8 @@ public class Ticket extends AuditorBase {
     @Column(name = "tourID", length = 36, nullable = false)
     private String tourID;
 
-    @Column(name = "paymentID", length = 36)
+    @NotBlank(message = "Payment ID is required")
+    @Column(name = "paymentID", length = 36, nullable = false)
     private String paymentID;
 
     @Column(name = "status", nullable = false)

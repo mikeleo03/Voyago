@@ -26,9 +26,6 @@ public interface TicketService {
     // [Customer] Create new ticket
     TicketDTO createTicket(@Valid TicketSaveDTO ticketSaveDTO);
 
-    // [-] Add payment evidence
-    TicketDTO editPayment(String id, String paymentID);
-
     // [Admin] Change ticket status (used, unused)
     TicketDTO updateTicketStatus(String id, String status);
 
