@@ -26,7 +26,7 @@ public class Ticket extends AuditorBase {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID", length = 36, updatable = false, nullable = false)
+    @Column(name = "id", length = 36, updatable = false, nullable = false)
     private String id;
 
     @NotBlank(message = "Usernameis required")
@@ -59,7 +59,7 @@ public class Ticket extends AuditorBase {
     @Column(name = "isReviewed", nullable = false)
     private boolean isReviewed;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<TicketDetail> ticketDetails;
 }

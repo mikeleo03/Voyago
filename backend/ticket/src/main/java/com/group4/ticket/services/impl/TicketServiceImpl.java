@@ -1,21 +1,30 @@
 package com.group4.ticket.services.impl;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import com.group4.ticket.client.TourClient;
 import com.group4.ticket.data.model.Ticket;
+import com.group4.ticket.data.model.TicketDetail;
+import com.group4.ticket.data.model.TicketDetailKey;
+import com.group4.ticket.data.repository.TicketDetailRepository;
 import com.group4.ticket.data.repository.TicketRepository;
 import com.group4.ticket.dto.TicketDTO;
+import com.group4.ticket.dto.TicketDetailSaveDTO;
 import com.group4.ticket.dto.TicketSaveDTO;
 import com.group4.ticket.exceptions.ResourceNotFoundException;
+import com.group4.ticket.mapper.TicketDetailMapper;
 import com.group4.ticket.mapper.TicketMapper;
 import com.group4.ticket.services.TicketService;
 import com.group4.ticket.utils.ExcelGenerator;
 
 import org.apache.poi.ss.usermodel.Workbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,16 +42,22 @@ import reactor.core.publisher.Mono;
 @Validated
 public class TicketServiceImpl implements TicketService {
 
+    private static final Logger logger = LoggerFactory.getLogger(TicketServiceImpl.class);
+    
     private final TicketRepository ticketRepository;
+    private final TicketDetailRepository ticketDetailRepository;
     private final TicketMapper ticketMapper;
+    private final TicketDetailMapper ticketDetailMapper;
     private final TourClient tourClient;
     private static final String TICKET_NOT_FOUND = "Ticket not found with id: ";
     private static final String PRICE = "price";
 
     @Autowired
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketMapper ticketMapper, TourClient tourClient) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketDetailRepository ticketDetailRepository, TicketMapper ticketMapper, TicketDetailMapper ticketDetailMapper, TourClient tourClient) {
         this.ticketRepository = ticketRepository;
+        this.ticketDetailRepository = ticketDetailRepository;
         this.ticketMapper = ticketMapper;
+        this.ticketDetailMapper = ticketDetailMapper;
         this.tourClient = tourClient;
     }
 
@@ -92,27 +107,46 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @PreAuthorize("hasRole('CUSTOMER')")
     public TicketDTO createTicket(@Valid TicketSaveDTO ticketSaveDTO) {
+        // Step 1: Map ticketSaveDTO to Ticket entity
+        logger.info("Save DTO: {}", ticketSaveDTO);
         Ticket ticket = ticketMapper.toTicket(ticketSaveDTO);
-        // Set the ticket price
-        // Get the price of tour via tourClient
+        logger.info("Ticket: {}", ticket);
+
+        // Step 2: Set the ticket price based on the tour
         Mono<Integer> tourPriceMono = tourClient.getTourPriceById(ticket.getTourID());
         Integer price = tourPriceMono.block();
-
-        // Get the quantity of ticket
         Integer quantity = ticketSaveDTO.getTicketDetails().size();
-
-        // Set ticket price
         ticket.setPrice(price * quantity);
 
-        // Reduce the tour quantity
-        tourClient.updateTourQuantityById(ticket.getTourID(), quantity).block();
-
-        // TODO: Handle related to payment
+        // Step 3: Generate paymentID and ticketID
         ticket.setPaymentID(UUID.randomUUID().toString());
 
-        ticket.setId(UUID.randomUUID().toString());
-        ticket = ticketRepository.save(ticket);
-        return ticketMapper.toTicketDTO(ticket);
+        // Step 4: Save the ticket entity (this will cascade and save the ticket details as well)
+        logger.info("Saving ticket with TourID: {}", ticket.getTourID());
+        Ticket savedTicket = ticketRepository.save(ticket);  // Ensure cascade is enabled
+
+        logger.info("Ticket created successfully with ID: {}", savedTicket.getId());
+
+        Set<TicketDetail> ticketDetails = new HashSet<>();
+        
+        // Step 5: Set the ticket reference for each TicketDetail and save
+        for (TicketDetailSaveDTO ticketDetailSaveDTO : ticketSaveDTO.getTicketDetails()) {
+            // Start from the key
+            TicketDetailKey key = new TicketDetailKey(UUID.randomUUID().toString(), savedTicket.getId());
+
+            TicketDetail ticketDetail = ticketDetailMapper.toTicketDetail(ticketDetailSaveDTO);
+            ticketDetail.setId(key); // Set the key to each detail
+            ticketDetail.setTicket(savedTicket); // Assign the saved ticket to each detail
+            
+            ticketDetails.add(ticketDetail); // Add the detail to the list
+        }
+
+        // Step 6: Save the ticket details (this is usually done automatically if cascading is set correctly)
+        // If cascading is NOT set in the TicketDetail, uncomment this line:
+        ticketDetailRepository.saveAll(ticketDetails);
+
+        // Return the mapped TicketDTO
+        return ticketMapper.toTicketDTO(savedTicket);
     }
 
     @Override

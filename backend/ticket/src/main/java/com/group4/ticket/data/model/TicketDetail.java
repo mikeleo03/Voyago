@@ -16,18 +16,16 @@ import com.group4.ticket.auditor.AuditorBase;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "TicketDetail")
+@Table(name = "Ticket_detail")
 @EqualsAndHashCode(callSuper = true)
 @EntityListeners(AuditingEntityListener.class)
 public class TicketDetail extends AuditorBase {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID", length = 36, updatable = false, nullable = false)
-    private String id;
+    @EmbeddedId
+    private TicketDetailKey id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticketId")
+    @MapsId("ticketId")
     private Ticket ticket;
 
     @NotBlank(message = "Username is required")
