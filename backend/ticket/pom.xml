@@ -61,11 +61,22 @@
             <version>8.0.33</version>
 			<scope>runtime</scope>
         </dependency>
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>		
 
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>5.2.5</version>
+		</dependency>
+		<!-- POI for Excel Generation -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.3.0</version>
 		</dependency>
 
 		<!-- Lombok Annotation -->
