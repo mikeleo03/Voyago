@@ -17,7 +17,7 @@ public class TicketDTO {
     private String status;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Double price;
+    private Integer price;
     private boolean isRescheduled;
     private boolean isReviewed;
     private Set<TicketDetailDTO> ticketDetails;

@@ -16,7 +16,7 @@ import com.group4.ticket.auditor.AuditorBase;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Ticket")
+@Table(name = "TicketDetail")
 @EqualsAndHashCode(callSuper = true)
 @EntityListeners(AuditingEntityListener.class)
 public class TicketDetail extends AuditorBase {
@@ -27,7 +27,6 @@ public class TicketDetail extends AuditorBase {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("ticketId")
     @JoinColumn(name = "ticketId")
     private Ticket ticket;
 
