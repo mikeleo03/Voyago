@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TourService } from '../../../services/tour/tour.service';
+import { FacilityService } from '../../../services/facility/facility.service';
+import { FacilityDTO } from '../../../models/facility.model';
 
 @Component({
   selector: 'app-tour-detail',
@@ -16,8 +18,9 @@ export class TourDetailComponent implements OnInit {
   loading: boolean = true;
 
   tourImageUrl: string = '';
+  facilities: FacilityDTO[] = [];
 
-  constructor(private route: ActivatedRoute, private tourService: TourService, private router: Router, private location: Location) {}
+  constructor(private route: ActivatedRoute, private tourService: TourService, private facilityService: FacilityService, private router: Router, private location: Location) {}
 
   ngOnInit(): void {
       this.route.queryParams.subscribe(params => {
@@ -37,9 +40,9 @@ export class TourDetailComponent implements OnInit {
               this.loading = false;
               this.tourService.getTourImage(this.tourId as string).subscribe(blob => {
                 const url = window.URL.createObjectURL(blob);
-                console.log('Image URL:', url);  // Log the URL to verify
                 this.tourImageUrl = url;
-              });            
+              });
+              this.getFacilitiesByTourId(this.tourId as string);
           },
           (error) => {
               console.error('Error fetching tour details:', error);
@@ -48,17 +51,20 @@ export class TourDetailComponent implements OnInit {
       );
   }
 
+  getFacilitiesByTourId(tourId: string): void {
+    this.facilityService.getFacilitiesByTourId(tourId).subscribe(
+      (facilities) => {
+        this.facilities = facilities;
+      },
+      (error) => {
+        console.error('Error fetching facilities:', error);
+      }
+    );
+  }
+
   bookTour() {
       console.log(`Booking tour ID: ${this.tourId}`);
   }
-
-  facilities: string[] = [
-    'Wi-Fi',
-    'Free Breakfast',
-    'Swimming Pool',
-    'Parking',
-    'Guided Tours',
-  ];
 
   goBack(): void {
     this.location.back();

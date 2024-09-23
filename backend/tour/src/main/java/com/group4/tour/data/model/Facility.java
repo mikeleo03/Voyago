@@ -1,9 +1,11 @@
 package com.group4.tour.data.model;
 
+import com.group4.tour.auditor.AuditorBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -13,7 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Facility")
-public class Facility {
+@EqualsAndHashCode(callSuper = true)
+public class Facility extends AuditorBase {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(length = 36)
@@ -26,12 +29,4 @@ public class Facility {
     @NotBlank(message = "Name is mandatory")
     @Column(name = "name", nullable = false)
     private String name;
-
-    private LocalDateTime createdTime;
-
-    private LocalDateTime updatedTime;
-
-    private String createdBy;
-
-    private String updatedBy;
 }
