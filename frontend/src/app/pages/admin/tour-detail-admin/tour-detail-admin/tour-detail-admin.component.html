@@ -19,7 +19,7 @@
             <h3 class="text-2xl font-semibold mb-2">Facilities</h3>
             <div class="facility-list">
                 <div *ngFor="let facility of facilities" class="facility-item">
-                    {{ facility }}
+                    {{ facility.name }}
                 </div>
             </div>
         </div>
@@ -29,6 +29,7 @@
     <div class="flex flex-col items-end">
         <img [src]="tourImageUrl ? tourImageUrl : '/assets/img/empty-img.jpg'" 
             alt="Tour Image" 
+            draggable="false"
             class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
         <div class="flex flex-col items-end mt-10 space-y-4">
             <p class="text-lg font-semibold">Seats Available: {{ tourDetails?.quota }}</p>
@@ -98,9 +99,10 @@
                     <div [ngClass]="{'border border-gray-300 rounded p-2': facilities.length > 0}"
                          class="facility-list max-h-48 overflow-y-auto">
                         <div *ngFor="let facility of facilities" class="flex justify-between items-center py-2 border-b border-gray-300">
-                            <span>{{ facility }}</span>
+                            <span>{{ facility.name }}</span>
                             <button class="text-red-500 hover:text-red-700 transition duration-200 transform hover:scale-110" 
-                                    (click)="removeFacility(facility)">
+                                    *ngIf="facility.id"
+                                    (click)="removeFacility(facility.id)">
                                 <i class="fa-solid fa-xmark text-xl"></i>
                             </button>
                         </div>
@@ -117,15 +119,19 @@
             </label>
             <span class="text-gray-600 ml-4 flex-grow">{{ selectedImageName }}</span>
             <div class="flex justify-end space-x-4">
+                <!-- Save Button -->
                 <button [disabled]="!isFormValid()" 
-                        class="bg-blue-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:bg-blue-700 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" 
                         (click)="saveTour()">
                     Save
                 </button>
-                <button class="bg-red-500 text-white px-4 py-2 rounded-3xl" (click)="isModalOpen = false">
+                <!-- Cancel Button -->
+                <button class="bg-red-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:bg-red-700 hover:scale-105" 
+                        (click)="isModalOpen = false">
                     Cancel
                 </button>
             </div>
         </div>
+
     </div>
 </div>

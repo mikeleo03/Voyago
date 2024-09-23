@@ -1,6 +1,7 @@
 package com.group4.tour.mapper;
 import com.group4.tour.data.model.Facility;
 import com.group4.tour.dto.FacilityDTO;
+import com.group4.tour.dto.FacilityWithIdDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -13,6 +14,8 @@ public interface FacilityMapper {
 
     FacilityDTO toFacilityDTO(Facility facility);
 
+    FacilityWithIdDTO toFacilityWithIdDTO(Facility facility);
+
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
@@ -22,5 +25,5 @@ public interface FacilityMapper {
     @Mapping(target = "tour.id", source = "tourId")
     Facility toFacility(FacilityDTO facilityDTO);
 
-    List<FacilityDTO> toFacilityDTOList(List<Facility> facilities);
+    List<FacilityWithIdDTO> toFacilityWithIdDTOList(List<Facility> facilities);
 }

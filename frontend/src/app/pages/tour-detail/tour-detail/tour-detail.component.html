@@ -19,7 +19,7 @@
             <h3 class="text-2xl font-semibold mb-2">Facilities</h3>
             <div class="facility-list">
                 <div *ngFor="let facility of facilities" class="facility-item">
-                    {{ facility }}
+                    {{ facility.name }}
                 </div>
             </div>
         </div>
@@ -29,6 +29,7 @@
     <div class="flex flex-col items-end">
         <img [src]="tourImageUrl ? tourImageUrl : '/assets/img/empty-img.jpg'" 
             alt="Tour Image" 
+            draggable="false"
             class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
         <div class="flex flex-col items-end mt-10 space-y-4">
             <p class="text-lg font-semibold">Seats Available: {{ tourDetails?.quota }}</p>

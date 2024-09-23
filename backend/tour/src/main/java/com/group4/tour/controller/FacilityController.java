@@ -2,6 +2,7 @@ package com.group4.tour.controller;
 
 import com.group4.tour.data.model.Facility;
 import com.group4.tour.dto.FacilityDTO;
+import com.group4.tour.dto.FacilityWithIdDTO;
 import com.group4.tour.mapper.FacilityMapper;
 import com.group4.tour.service.FacilityService;
 import lombok.AllArgsConstructor;
@@ -44,8 +45,9 @@ public class FacilityController {
 
     @GetMapping("/tour/{tourId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
-    public ResponseEntity<List<FacilityDTO>> getFacilitiesByTourId(@PathVariable String tourId) {
+    public ResponseEntity<List<FacilityWithIdDTO>> getFacilitiesByTourId(@PathVariable String tourId) {
         List<Facility> facilities = facilityService.getFacilitiesByTourId(tourId);
-        return ResponseEntity.ok(facilityMapper.toFacilityDTOList(facilities));
+        return ResponseEntity.ok(facilityMapper.toFacilityWithIdDTOList(facilities));
     }
+
 }

@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environment/environment.prod';
 import { Tour, TourSave } from '../../models/tour.model';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -20,18 +19,18 @@ export class TourService {
     sortPrice?: string,
     page: number = 1,
     limit: number = 10
-): Observable<{ tours: Tour[], currentPage: number, totalItems: number, totalPages: number }> {
-    let params = new HttpParams();
-    if (title) params = params.append('title', title);
-    if (minPrice !== undefined) params = params.append('minPrice', minPrice.toString());
-    if (maxPrice !== undefined) params = params.append('maxPrice', maxPrice.toString());
-    if (location) params = params.append('location', location);
-    if (sortPrice) params = params.append('sortPrice', sortPrice);
-    params = params.append('page', (page - 1).toString());
-    params = params.append('size', limit.toString());
+  ): Observable<{ tours: Tour[], currentPage: number, totalItems: number, totalPages: number }> {
+      let params = new HttpParams();
+      if (title) params = params.append('title', title);
+      if (minPrice !== undefined) params = params.append('minPrice', minPrice.toString());
+      if (maxPrice !== undefined) params = params.append('maxPrice', maxPrice.toString());
+      if (location) params = params.append('location', location);
+      if (sortPrice) params = params.append('sortPrice', sortPrice);
+      params = params.append('page', (page - 1).toString());
+      params = params.append('size', limit.toString());
 
-    return this.http.get<{ tours: Tour[], currentPage: number, totalItems: number, totalPages: number }>(this.apiUrl, { params });
-} 
+      return this.http.get<{ tours: Tour[], currentPage: number, totalItems: number, totalPages: number }>(this.apiUrl, { params });
+  } 
 
   getTourById(id: string): Observable<Tour> {
     return this.http.get<Tour>(`${this.apiUrl}/${id}`);
@@ -63,7 +62,7 @@ export class TourService {
     }
 
     return this.http.put<Tour>(`${this.apiUrl}/${id}`, formData);
-}
+  }
 
 
   importToursFromCsv(file: File): Observable<string> {
