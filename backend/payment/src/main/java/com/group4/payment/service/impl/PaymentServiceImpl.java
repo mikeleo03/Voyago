@@ -10,6 +10,7 @@ import com.group4.payment.service.PaymentService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -23,7 +24,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Payment createPayment(PaymentCreateDTO dto) {
         Payment payment = paymentMapper.toPayment(dto);
-        payment.setPaymentDate(LocalDateTime.now());
+        payment.setStatus("UNVERIFIED");
+        payment.setPicture(null);
         return paymentRepository.save(payment);
     }
 

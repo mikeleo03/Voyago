@@ -27,11 +27,9 @@ public class Payment extends AuditorBase {
     @Column(name = "nominal", nullable = false)
     private int nominal;
 
-    @NotBlank(message = "Picture is mandatory")
     @Column(name = "picture")
     private String picture;
 
-    @NotBlank(message = "Payment date is mandatory")
     @Column(name = "paymentDate")
     private LocalDateTime paymentDate;
 
