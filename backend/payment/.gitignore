@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore actual private and public keys in certs/ directory
+private-key.pem
+public-key.pem
+
+env.properties
+\src\main\resources\static\assets\*.{jpg,jpeg,png,gif,bmp,webp}
+/src/main/resources/static/assets/*.[jJ][pP][gG]
+/src/main/resources/static/assets/*.[jJ][pP][eE][gG]
+/src/main/resources/static/assets/*.[pP][nN][gG]
+/src/main/resources/static/assets/*.[gG][iI][fF]
+/src/main/resources/static/assets/*.[bB][mM][pP]
+/src/main/resources/static/assets/*.[wW][eE][bB][pP]
