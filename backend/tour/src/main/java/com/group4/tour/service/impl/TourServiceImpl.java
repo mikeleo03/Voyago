@@ -111,17 +111,17 @@ public class TourServiceImpl implements TourService {
     }
 
 
-    public void reduceQuota(String id, int quantity) {
+    public Tour reduceQuota(String id, int quantity) {
         Optional<Tour> tour = tourRepository.findById(id);
         if (tour.isEmpty()){
             throw new ResourceNotFoundException("Tour not found for this id : " + id);
         }
         Tour existingTour = tour.get();
         existingTour.setQuota(existingTour.getQuota() - quantity);
-        tourRepository.save(existingTour);
+        return tourRepository.save(existingTour);
     }
 
-    public void updateTourStatus(String id) {
+    public Tour updateTourStatus(String id) {
         Optional<Tour> tourOptional = tourRepository.findById(id);
         if (tourOptional.isEmpty()){
             throw new ResourceNotFoundException("Tour not found for this id : " + id);
@@ -129,7 +129,7 @@ public class TourServiceImpl implements TourService {
         Tour tour = tourOptional.get();
         String newStatus = tour.getStatus().equals("ACTIVE") ? "INACTIVE" : "ACTIVE";
         tour.setStatus(newStatus);
-        tourRepository.save(tour);
+        return tourRepository.save(tour);
     }
 
     public String importToursFromCsv(MultipartFile file) {

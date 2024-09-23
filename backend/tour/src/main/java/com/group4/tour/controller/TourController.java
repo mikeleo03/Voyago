@@ -130,15 +130,13 @@ public class TourController {
 
     @PutMapping("/reduce")
     @PreAuthorize(("hasRole('ADMIN')"))
-    public ResponseEntity<Void> reduceQuota(@RequestParam String id, @RequestParam int quantity) {
-        tourService.reduceQuota(id, quantity);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Tour> reduceQuota(@RequestParam String id, @RequestParam int quantity) {
+        return ResponseEntity.ok().body(tourService.reduceQuota(id, quantity));
     }
 
     @PutMapping("/status")
     @PreAuthorize(("hasRole('ADMIN')"))
-    public ResponseEntity<Void> updateTourStatus(@RequestParam String id) {
-        tourService.updateTourStatus(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Tour> updateTourStatus(@RequestParam String id) {
+        return ResponseEntity.ok().body(tourService.updateTourStatus(id));
     }
 }

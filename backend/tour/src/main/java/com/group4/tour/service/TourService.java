@@ -11,8 +11,8 @@ public interface TourService {
     String saveImage(MultipartFile file);
     String getTourImageNameById(String id);
     Tour updateTour(String id, Tour updatedTour);
-    void reduceQuota(String id, int quantity);
-    void updateTourStatus(String id);
+    Tour reduceQuota(String id, int quantity);
+    Tour updateTourStatus(String id);
     String importToursFromCsv(MultipartFile file);
 
 }
