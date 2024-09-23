@@ -2,6 +2,7 @@ package com.group4.payment.service.impl;
 
 import com.group4.payment.dto.PaymentCreateDTO;
 import com.group4.payment.dto.PaymentUpdateDTO;
+import com.group4.payment.exception.FileNotFoundException;
 import com.group4.payment.exception.ResourceNotFoundException;
 import com.group4.payment.exception.TimeOutException;
 import com.group4.payment.mapper.PaymentMapper;
@@ -62,7 +63,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Payment addPaymentEvidence(String id, PaymentUpdateDTO dto) {
+    public Payment addPaymentEvidence(String id, MultipartFile file) {
         Optional<Payment> paymentOptional = paymentRepository.findById(id);
         if (paymentOptional.isEmpty()){
             throw new ResourceNotFoundException("Payment not found for this id : " + id);
@@ -71,7 +72,12 @@ public class PaymentServiceImpl implements PaymentService {
         if (Objects.equals(payment.getStatus(), "FAILED")){
             throw new TimeOutException("Payment already failed.");
         }
-        payment.setPicture(dto.getPicture());
+        if (file != null && !file.isEmpty()) {
+            String imageUrl = saveImage(file);
+            payment.setPicture(imageUrl);
+        } else{
+            throw new FileNotFoundException("File not found.");
+        }
         payment.setPaymentDate(LocalDateTime.now());
         return paymentRepository.save(payment);
     }

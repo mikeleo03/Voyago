@@ -11,6 +11,6 @@ public interface PaymentService {
     Payment getPaymentById(String id);
     Payment createPayment(PaymentCreateDTO dto);
     Payment changeVerifyStatus(String id, String status);
-    Payment addPaymentEvidence(String id, PaymentUpdateDTO dto);
+    Payment addPaymentEvidence(String id, MultipartFile file);
     String saveImage(MultipartFile file);
 }

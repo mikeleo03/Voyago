@@ -74,16 +74,12 @@ public class PaymentController {
         return ResponseEntity.ok().body(paymentService.changeVerifyStatus(id, status));
     }
 
-    @PutMapping("/evidence/{id}")
+    @PutMapping("/payment/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Payment> addPaymentEvidence(
             @PathVariable String id,
-            @RequestBody PaymentUpdateDTO dto,
             @RequestPart(value = "file", required = true) MultipartFile file) {
-        if (file != null && !file.isEmpty()) {
-            String imageUrl = paymentService.saveImage(file);
-            dto.setPicture(imageUrl);
-        }
-        return ResponseEntity.ok().body(paymentService.addPaymentEvidence(id, dto));
+        Payment payment = paymentService.addPaymentEvidence(id, file);
+        return ResponseEntity.ok().body(payment);
     }
 }
