@@ -16,7 +16,7 @@
         <!-- Conditionally render "Customer" or "Contact" -->
         <a *ngIf="role === 'Admin'; else contactLink" (click)="navigateToCustomers()" class="text-white text-lg hover:underline cursor-pointer">Customer</a>
         <ng-template #contactLink>
-            <a href="/contact" class="text-white text-lg hover:underline">Contact</a>
+            <a href="/" class="text-white text-lg hover:underline">Contact</a>
         </ng-template>
     </div>
   

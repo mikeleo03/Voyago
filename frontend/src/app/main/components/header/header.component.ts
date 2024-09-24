@@ -37,15 +37,12 @@ export class HeaderComponent implements OnInit {
       const decodedToken: any = jwtDecode(token);
       this.username = decodedToken.sub as string; // Get the 'sub' value for the username
       this.role = this.authService.getRole();
-    } else {
-      this.username = "Mr. Lorem Ipsum";
-      this.role = "Guest"; // Default role if no token
-    }
 
-    this.userService.getUserImage(this.username).subscribe(blob => {
-      const url = window.URL.createObjectURL(blob);
-      this.userImageUrl = url;
-    });
+      this.userService.getUserImage(this.username).subscribe(blob => {
+        const url = window.URL.createObjectURL(blob);
+        this.userImageUrl = url;
+      });
+    }
 
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
