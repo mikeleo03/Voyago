@@ -70,7 +70,7 @@ public class PaymentController {
     }
 
     @PutMapping("/payment/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Payment> addPaymentEvidence(
             @PathVariable String id,
             @RequestPart(value = "file", required = true) MultipartFile file) {
