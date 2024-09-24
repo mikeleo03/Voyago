@@ -21,8 +21,7 @@ export class PaymentService {
             return throwError(() => new Error('Failed to fetch payment data.'));
         })
     );
-}
-
+  }
 
   getPaymentImage(id: string): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${id}/image`, { responseType: 'blob' });

@@ -51,21 +51,13 @@ export class TicketDetailAdminComponent implements OnInit {
       this.ticket = ticket;
       this.loadPaymentDetails(ticket.paymentID);
       this.loadTourDetails(ticket.tourID);
-      this.updateButtonLabel(ticket.status);
     });
   }
 
   loadPaymentDetails(paymentId: string) {
-    this.paymentService.getPaymentById(paymentId).subscribe(payment => {
+    this.paymentService.getPaymentById(paymentId).subscribe((payment: Payment) => {
       this.payment = payment;
-    });
-
-    this.paymentService.getPaymentImage(paymentId).subscribe(imageBlob => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.tourImageUrl = reader.result as string;
-      };
-      reader.readAsDataURL(imageBlob);
+      this.updateButtonLabel();
     });
   }
 
@@ -83,24 +75,33 @@ export class TicketDetailAdminComponent implements OnInit {
     });
   }
 
-  updateButtonLabel(status: string) {
-    if (status === 'unverified') {
+  updateButtonLabel() {
+    console.log("Payment status: " + this.payment?.status);
+    console.log("Ticket status: " + this.ticket?.status);
+    if (this.payment?.status === 'UNVERIFIED') {
       this.buttonLabel = 'Verify';
       this.showButton = true;
-    } else if (status === 'unused') {
-      this.buttonLabel = 'Used';
+    } else if (this.payment?.status === 'VERIFIED' && this.ticket?.status === 'UNUSED') {
+      this.buttonLabel = 'Use';
       this.showButton = true;
     } else {
       this.showButton = false;
     }
   }
 
-  verifyPayment() {
+  actionButton() {
     if (this.payment) {
-      const newStatus = this.payment.status === 'unverified' ? 'verified' : 'used';
-      this.paymentService.changeVerifyStatus(this.payment.id, newStatus).subscribe(() => {
-        this.loadTicketDetails();
-      });
+      if (this.payment?.status === 'UNVERIFIED') {
+        this.paymentService.changeVerifyStatus(this.payment.id, 'VERIFIED').subscribe(() => {
+          this.loadTicketDetails();
+        });
+      } else if (this.ticket?.status === 'UNUSED') {
+        this.ticketService.updateTicketStatus(this.ticketId, 'USED').subscribe(() => {
+          this.loadTicketDetails();
+        });
+      } else {
+        this.showButton = false;
+      }
     }
   }
 }

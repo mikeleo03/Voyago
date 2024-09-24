@@ -58,7 +58,7 @@
         <img src="/assets/img/payment-image.jpg" alt="Payment Image" class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
         <p class="text-gray-600 mb-4"><strong>Payment Date:</strong> {{ payment?.paymentDate | date: 'longDate' }}</p>
 
-        <button *ngIf="showButton" class="bg-yellow-500 text-white px-12 py-2 rounded-3xl mt-auto" (click)="verifyPayment()">
+        <button *ngIf="showButton" class="bg-yellow-500 text-white px-12 py-2 rounded-3xl mt-auto" (click)="actionButton()">
             {{ buttonLabel }}
         </button>
     </div>
