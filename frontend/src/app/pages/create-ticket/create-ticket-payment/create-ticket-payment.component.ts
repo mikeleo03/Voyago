@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService, PaymentService, TourService } from '../../../services';
 
 @Component({
   selector: 'app-create-ticket-payment',
@@ -14,8 +15,11 @@ export class CreateTicketPaymentComponent implements OnInit, OnDestroy {
   paymentForm: FormGroup;
   isLoading: boolean = false;
   tourImage: string = '/assets/img/empty-img.jpg';
-  totalPrice = 400000;
+  totalPrice = 0;
   paymentId: string = '';
+  tourId: string = '';
+  tourDetails: any;
+  paymentDetails: any;
 
   selectedImageFile: File | null = null;
   selectedImageName: string = '';
@@ -27,9 +31,16 @@ export class CreateTicketPaymentComponent implements OnInit, OnDestroy {
   private countdownInterval: any;
 
   // Example: Backend-provided time (could be fetched dynamically)
-  backendTime: string = "2024-09-24 23:36:35.039819";  // Example provided timestamp
+  backendTime: string = "";  // Example provided timestamp
 
-  constructor(private fb: FormBuilder, private route: ActivatedRoute) {
+  constructor(
+    private fb: FormBuilder, 
+    private router: Router,
+    private route: ActivatedRoute,
+    private tourService: TourService,
+    private paymentService: PaymentService,
+    private authService: AuthService
+  ) {
     // Initialize the form with one customer field and date fields
     this.paymentForm = this.fb.group({
       picture: ['']
@@ -37,12 +48,62 @@ export class CreateTicketPaymentComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Extracting 'id' from the URL as '/ticket/create/payment/{id}'
+    const currentUsername = this.authService.getCurrentUsername();
+    // Extracting 'id' from the URL as '/ticket/create/payment/{id}/{tour}'
     this.paymentId = this.route.snapshot.paramMap.get('id') ?? '';
-
-    // Start the countdown
-    this.startCountdown();
+    this.tourId = this.route.snapshot.paramMap.get('tour') ?? '';
+    if (currentUsername) {
+      if (this.tourId) {
+        this.getTourDetails(this.tourId);
+        this.getPaymentDetails(this.paymentId);
+      } else {
+        this.router.navigate(['/not-found']);
+      }
+    } else {
+      this.router.navigate(['/login']);
+    };
   }
+
+  getTourDetails(id: string): void {
+    this.tourService.getTourById(id).subscribe(
+        (details) => {
+          this.tourDetails = details;
+          this.isLoading = false;
+          this.tourService.getTourImage(this.tourId).subscribe(blob => {
+            const url = window.URL.createObjectURL(blob);
+            this.tourImage = url;
+          });
+        },
+        (error) => {
+          console.error('Error fetching tour details:', error);
+          this.router.navigate(['/not-found']);
+        }
+    );
+  }
+
+  getPaymentDetails(id: string): void {
+    this.paymentService.getPaymentById(id).subscribe(
+      (details) => {
+        console.log(details);
+        this.paymentDetails = details;
+        this.totalPrice = details.nominal;
+        this.backendTime = details.createdAt.toString(); // Ensure backendTime is populated
+        
+        this.isLoading = false;
+  
+        // Now start the countdown after backendTime is set
+        if (this.backendTime) {
+          this.startCountdown(); 
+        } else {
+          console.error('No backend time available to start the countdown');
+        }
+      },
+      (error) => {
+        console.error('Error fetching tour details:', error);
+        this.router.navigate(['/not-found']);
+      }
+    );
+  }  
 
   ngOnDestroy(): void {
     if (this.countdownInterval) {
@@ -52,7 +113,7 @@ export class CreateTicketPaymentComponent implements OnInit, OnDestroy {
 
   startCountdown(): void {
     // Parse the backend-provided time
-    const backendDate = new Date(this.backendTime.replace(" ", "T")); // Convert backend time to valid JS format
+    const backendDate = new Date(this.backendTime); // Convert backend time to valid JS format
     const currentTime = new Date(); // Current time
 
     // Add 30 minutes to the backend time
@@ -112,11 +173,18 @@ export class CreateTicketPaymentComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.isLoading = true;
-    if (this.paymentForm.valid) {
-      console.log('Form Submitted:', this.paymentForm.value);
+    if (this.paymentId) {
+      const imageToUpload = this.selectedImageFile || undefined;
+      this.paymentService.uploadPaymentEvidence(this.paymentId, imageToUpload).subscribe(() => {
+        console.log('Evidence succesfully uploaded');
+        this.isLoading = false;
+      }, (error) => {
+        console.error('Error updating payment:', error);
+        this.isLoading = false;
+      });
     } else {
-      console.log('Form is invalid!');
+      console.error('Payment ID is null, cannot update payment.');
+      this.isLoading = false;
     }
-    this.isLoading = false;
   }
 }

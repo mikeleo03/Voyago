@@ -4,5 +4,5 @@ import { CreateTicketPaymentComponent } from './create-ticket-payment/create-tic
 
 export const createTicketRoutes: Routes = [
     { path: 'setup/:id', component: CreateTicketSetupComponent },
-    { path: 'payment/:id', component: CreateTicketPaymentComponent },
+    { path: 'payment/:id/:tour', component: CreateTicketPaymentComponent },
 ];

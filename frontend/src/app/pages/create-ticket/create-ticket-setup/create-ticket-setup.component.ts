@@ -15,7 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class CreateTicketSetupComponent implements OnInit {
   ticketForm: FormGroup;
   isLoading: boolean = false;
-  ticketPrice = 200000; // Constant for price per ticket (e.g., Rp 200.000)
+  ticketPrice = 0;
   tourImage: string = '/assets/img/empty-img.jpg';
   tourId: string = '';
   tourDetails: any;
@@ -67,7 +67,7 @@ export class CreateTicketSetupComponent implements OnInit {
           this.router.navigate(['/not-found']);
         }
     );
-}
+  }
 
   // Helper method to create a customer FormGroup
   createCustomerGroup(): FormGroup {
@@ -150,7 +150,7 @@ export class CreateTicketSetupComponent implements OnInit {
         console.log('Ticket created successfully:', response);
         this.isLoading = false;
         // Handle successful response
-        this.router.navigate(['/ticket/create/payment/' + response.paymentID]);
+        this.router.navigate(['/ticket/create/payment/' + response.paymentID + "/" + this.tourId]);
       },
       error: (error) => {
         console.error('Error creating ticket:', error);
