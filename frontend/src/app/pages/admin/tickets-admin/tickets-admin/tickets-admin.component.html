@@ -56,8 +56,8 @@
   </div>
 </div>
 
+<!-- Ticket List Items -->
 <div class="ticket-list p-8">
-    <!-- Ticket List Items -->
     <div *ngFor="let ticket of filteredTickets" class="flex items-center p-3 border-b">
       <div class="w-full px-4">{{ ticket.id }}</div>
       <div class="w-full ">{{ ticket.name }}</div>
@@ -66,34 +66,40 @@
         <button class="bg-yellow-500 text-white p-2 px-16 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105" (click)="viewTicketDetails(ticket.id)">Details</button> <!-- Added hover effect -->
       </div>
     </div>
+</div>
+
+<!-- Pagination Controls -->
+<div class="pagination flex justify-center items-center space-x-2 mt-6 mb-6">
+    <!-- Previous Button -->
+    <button 
+      class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
+      (click)="changePage(currentPage - 1)" 
+      [disabled]="currentPage === 1"
+      [ngClass]="{'opacity-50': currentPage === 1, 'hover:bg-yellow-600': currentPage !== 1}"
+    >
+      Previous
+    </button>
   
-    <!-- Pagination Controls -->
-    <div class="pagination flex justify-center items-center space-x-2 mt-6 mb-6">
+    <!-- Page Numbers -->
+    <span *ngFor="let page of [].constructor(totalPages); let i = index">
       <button 
-        class="bg-yellow-500 text-white px-4 py-2 rounded-full" 
-        (click)="changePage(currentPage - 1)" 
-        [disabled]="currentPage === 1">
-        Previous
+        class="px-4 py-2 rounded-full text-center w-10 h-10 transition-transform transform ease-in-out hover:scale-105"
+        [ngClass]="{
+          'bg-yellow-500 text-white': currentPage === i + 1, 
+          'bg-gray-200 text-gray-700 hover:bg-gray-300': currentPage !== i + 1
+        }"
+        (click)="changePage(i + 1)">
+        {{ i + 1 }}
       </button>
+    </span>
   
-      <span *ngFor="let page of [].constructor(totalPages); let i = index">
-        <button 
-          class="px-4 py-2 rounded-full text-center w-10 h-10"
-          [ngClass]="{
-            'bg-yellow-500 text-white': currentPage === i + 1, 
-            'bg-gray-200': currentPage !== i + 1
-          }"
-          (click)="changePage(i + 1)">
-          {{ i + 1 }}
-        </button>
-      </span>
-  
-      <button 
-        class="bg-yellow-500 text-white px-4 py-2 rounded-full" 
-        (click)="changePage(currentPage + 1)" 
-        [disabled]="currentPage === totalPages">
-        Next
-      </button>
-    </div>
-  
-  </div>  
+    <!-- Next Button -->
+    <button 
+      class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
+      (click)="changePage(currentPage + 1)" 
+      [disabled]="currentPage === totalPages"
+      [ngClass]="{'opacity-50': currentPage === totalPages, 'hover:bg-yellow-600': currentPage !== totalPages}"
+    >
+      Next
+    </button>
+</div>
