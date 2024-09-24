@@ -150,6 +150,9 @@ public class TicketServiceImpl implements TicketService {
         // If cascading is NOT set in the TicketDetail, uncomment this line:
         ticketDetailRepository.saveAll(ticketDetails);
 
+        // Step 7 : Update the tour quantity
+        tourClient.updateTourQuantityById(savedTicket.getTourID(), savedTicket.getTicketDetails().size()).block();
+
         // Return the mapped TicketDTO
         return ticketMapper.toTicketDTO(savedTicket);
     }
@@ -206,6 +209,25 @@ public class TicketServiceImpl implements TicketService {
             return ticketMapper.toTicketDTO(ticket);
         } else {
             throw new ResourceNotFoundException(TICKET_NOT_FOUND + id);
+        }
+    }
+
+    @Override
+    public Ticket returnTourQuota(String paymentID) {
+        // Search the ticket based on given payemnt ID
+        logger.info("Return tour quota with paymentID: {}", paymentID);
+        Optional<Ticket> ticketOptional = ticketRepository.findByPaymentID(paymentID);
+        if (ticketOptional.isPresent()) {
+            // Get the tour sizes
+            Ticket ticket = ticketOptional.get();
+            logger.info("Ticket existed: {}", ticket);
+            // Update the tour quantity
+            tourClient.returnTourQuantityByPrice(ticket.getTourID(), ticket.getPrice()).block();
+            logger.info("Ticket update complete");
+            return ticket;
+        } else {
+            logger.info("Ticket not");
+            throw new ResourceNotFoundException(TICKET_NOT_FOUND + paymentID);
         }
     }
 }
