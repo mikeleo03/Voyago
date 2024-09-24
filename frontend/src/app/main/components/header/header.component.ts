@@ -99,7 +99,7 @@ export class HeaderComponent implements OnInit {
   // Navigate to history based on user role
   navigateToHistory() {
     if (this.role === 'Admin') {
-      this.router.navigate(['/admin/history']);
+      this.router.navigate(['/admin/tickets']);
     } else {
       this.router.navigate(['/history']);
     }

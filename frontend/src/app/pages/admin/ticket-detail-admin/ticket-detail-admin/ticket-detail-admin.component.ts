@@ -5,7 +5,7 @@ import { TicketService } from '../../../../services/ticket1/ticket1.service';
 import { PaymentService } from '../../../../services/payment1/payment1.service';
 import { TourService } from '../../../../services/tour/tour.service';
 import { AuthService } from '../../../../services/auth/auth.service';
-import { Ticket, TicketDTO } from '../../../../models/ticket1.model';
+import { TicketDTO } from '../../../../models/ticket1.model';
 import { Payment } from '../../../../models/payment1.model';
 import { Tour } from '../../../../models/tour.model';
 
@@ -76,8 +76,6 @@ export class TicketDetailAdminComponent implements OnInit {
   }
 
   updateButtonLabel() {
-    console.log("Payment status: " + this.payment?.status);
-    console.log("Ticket status: " + this.ticket?.status);
     if (this.payment?.status === 'UNVERIFIED') {
       this.buttonLabel = 'Verify';
       this.showButton = true;
