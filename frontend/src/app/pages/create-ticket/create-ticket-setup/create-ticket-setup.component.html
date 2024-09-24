@@ -29,7 +29,14 @@
         <!-- Tour Package Details -->
         <div class="lg:col-span-2 bg-white rounded-xl shadow p-6 pb-10 px-8 border">
             <div class="flex items-center space-x-4 mb-4 border rounded-lg p-5 bg-gray-100/[0.5]">
-                <div class="w-28 h-28 bg-gray-200 rounded-md"></div>
+                <div class="w-28 h-28 bg-gray-200 rounded-xl">
+                    <img
+                        class="w-28 h-28 mb-4 rounded-xl object-cover border-4 border-white"
+                        [src]="tourImage"
+                        alt="Tour"
+                        draggable="false"
+                    />
+                </div>
                 <div class="flex flex-col space-y-1">
                     <h2 class="text-2xl font-semibold">Tour Package Title</h2>
                     <p class="text-gray-500 text-sm pb-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquet eget mauris vitae laoreet.</p>
@@ -56,11 +63,17 @@
                             <div class="flex space-x-6 w-full h-full">
                                 <div class="w-full">
                                     <label for="fullName">Full Name</label>
-                                    <input type="text" formControlName="fullName" class="rounded-xl mt-1 block w-full p-2 border border-gray-300" />
+                                    <input type="text" formControlName="fullName" class="rounded-xl pl-4 mt-1 block w-full p-2 border border-gray-300" />
+                                    <div *ngIf="customer.get('fullName')?.invalid && customer.get('fullName')?.touched" class="text-red-500">
+                                        Full Name is required.
+                                    </div>
                                 </div>
                                 <div class="w-full">
                                     <label for="phone">Phone Number</label>
-                                    <input type="text" formControlName="phone" class="rounded-xl mt-1 block w-full p-2 border border-gray-300" />
+                                    <input type="text" formControlName="phone" class="rounded-xl pl-4 mt-1 block w-full p-2 border border-gray-300" />
+                                    <div *ngIf="customer.get('phone')?.invalid && customer.get('phone')?.touched" class="text-red-500">
+                                        Phone must start with +62 and be 9-13 digits long.
+                                    </div>
                                 </div>
                                 <div *ngIf="customers.length > 1" class="items-end flex w-1/6">
                                     <button type="button" (click)="removeCustomer(i)" class="bg-red-500 font-bold rounded-xl text-white w-10 h-10">-</button>
@@ -68,21 +81,30 @@
                             </div>
                         </div>
                     </div>
-                  
+
                     <!-- Add new customer button -->
                     <button type="button" (click)="addCustomer()" class="bg-[#0A5185] text-white px-8 py-2 rounded-2xl">
                         + Add Customer
                     </button>
-
+                    
                     <!-- Date Range -->
                     <div class="flex w-full space-x-8 mt-6">
                         <div class="w-1/2">
                             <label for="startDate">Start Date</label>
-                            <input id="startDate" type="date" class="rounded-xl mt-1 block w-full p-2 border border-gray-300" />
+                            <input id="startDate" formControlName="startDate" type="date" class="rounded-xl pl-4 mt-1 block w-full p-2 border border-gray-300" />
+                            <div *ngIf="ticketForm.get('startDate')?.invalid && ticketForm.get('startDate')?.touched" class="text-red-500">
+                                Start date must be today or later.
+                            </div>
                         </div>
                         <div class="w-1/2">
                             <label for="endDate">End Date</label>
-                            <input id="endDate" type="date" class="rounded-xl mt-1 block w-full p-2 border border-gray-300" />
+                            <input id="endDate" formControlName="endDate" type="date" class="rounded-xl pl-4 mt-1 block w-full p-2 border border-gray-300" />
+                            <div *ngIf="ticketForm.get('endDate')?.invalid && ticketForm.get('endDate')?.touched" class="text-red-500">
+                                End date must be today or later.
+                            </div>
+                            <div *ngIf="ticketForm.errors?.['dateRangeInvalid']" class="text-red-500">
+                                End date must be after the start date.
+                            </div>
                         </div>
                     </div>
                 </form>                  
@@ -93,20 +115,39 @@
         <div class="bg-white rounded-xl h-full">
             <div class="bg-white shadow p-6 border rounded-xl">
                 <h3 class="text-xl font-semibold mb-4">Reservation Summary</h3>
+                
+                <!-- Tickets ordered -->
                 <div class="flex flex-col space-y-2 mb-8">
                     <div class="flex justify-between text-gray-500">
                         <div class="font-semibold">Tickets ordered</div>
-                        <div>2 tickets</div>
+                        <div>{{ customers.length }} tickets</div> <!-- Bind tickets ordered to the number of customers -->
                     </div>
+                    
+                    <!-- Price Summary -->
                     <div class="flex justify-between text-gray-500">
                         <div class="font-semibold">Price Summary</div>
-                        <div>Rp 4.000,00</div>
+                        <div>Rp {{ totalPrice | number }}</div> <!-- Dynamically calculate total price -->
                     </div>
                 </div>
-                <button class="bg-[#0A5185] text-white px-8 py-2 rounded-2xl w-full" (click)="onSubmit()">
-                    Request to Book
+                
+                <!-- Request to Book button -->
+                <button 
+                    type="button" 
+                    class="bg-[#0A5185] w-full rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-6"
+                    [disabled]="ticketForm.invalid || isLoading" 
+                    [ngClass]="{ 'opacity-50 cursor-not-allowed': ticketForm.invalid || isLoading, 'hover:cursor-pointer': !ticketForm.invalid && !isLoading }"
+                    (click)="onSubmit()"
+                >
+                    <span *ngIf="!isLoading">Request to Book</span>
+                    <span *ngIf="isLoading">
+                        <svg class="inline mr-2 w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Booking on process...
+                    </span>
                 </button>
             </div>
-        </div>
+        </div>  
     </div>
 </div>
