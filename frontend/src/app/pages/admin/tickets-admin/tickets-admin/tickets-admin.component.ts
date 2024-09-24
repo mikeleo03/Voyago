@@ -11,9 +11,15 @@ import { FormsModule } from '@angular/forms';
 })
 export class TicketsAdminComponent {
   tickets = [
-    { id: 1, name: 'Ticket A', status: 'VERIFIED' },
-    { id: 2, name: 'Ticket B', status: 'UNVERIFIED' },
+    { id: 1, name: 'User A', status: 'VERIFIED' },
+    { id: 2, name: 'User B', status: 'UNVERIFIED' },
   ];
+
+  name: string = '';
+  minPrice?: number;
+  maxPrice?: number;
+  sortPrice: string = '';
+  sortStatus: string = '';
 
   searchName: string = '';
   filterStatus: string = '';
