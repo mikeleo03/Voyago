@@ -41,13 +41,13 @@ export class TicketsAdminComponent implements OnInit {
     private paymentService: PaymentService) {}
 
   ngOnInit() {
-    // this.route.queryParams.subscribe(() => {
-    //   if (this.authService.getRole() !== 'Admin') {
-    //     this.router.navigate(['/not-found']);
-    //     return;
-    //   }
-    //   this.fetchTickets();
-    // });
+    this.route.queryParams.subscribe(() => {
+      if (this.authService.getRole() !== 'Admin') {
+        this.router.navigate(['/not-found']);
+        return;
+      }
+      this.fetchTickets();
+    });
     this.fetchTickets();
   }
 
@@ -93,7 +93,7 @@ export class TicketsAdminComponent implements OnInit {
     }
   }
 
-  viewTicketDetails(ticketId: string) {
-    
-  }
+  goToTicketDetails(id: string): void {
+    this.router.navigate(['/admin/ticket'], { queryParams: { id } });
+  }  
 }
