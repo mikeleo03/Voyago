@@ -1,4 +1,5 @@
 export interface TicketDetailDTO {
+    id: string
     name: string;
     phone: string;
 }

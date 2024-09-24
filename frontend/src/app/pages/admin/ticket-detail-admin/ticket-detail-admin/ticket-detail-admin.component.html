@@ -17,7 +17,7 @@
             </div>
             <div class="w-full item-detail mx-2 p-4 border border-gray-300 rounded-3xl">
                 <h3 class="font-semibold">Username</h3>
-                <p>{{username}}</p>
+                <p>{{ticket?.username}}</p>
             </div>
         </div>
         
@@ -35,9 +35,9 @@
             
             <!-- Tour Details -->
             <div class="tour-details w-2/5 pl-6">
-              <h3 class="text-2xl font-semibold mb-2">{{ tour.title }}</h3>
-              <p class="text-gray-600 mb-2">{{ tour.detail }}</p>
-              <p class="text-gray-400">📍 {{ tour.location }}</p>
+              <h3 class="text-2xl font-semibold mb-2">{{ tour?.title }}</h3>
+              <p class="text-gray-600 mb-2">{{ tour?.detail }}</p>
+              <p class="text-gray-400">📍 {{ tour?.location }}</p>
             </div>
         </div>
 
@@ -45,7 +45,7 @@
         <div class="mt-6 p-4 border rounded-lg shadow-sm">
             <h3 class="text-2xl font-semibold mb-2">Details</h3>
             <div class="detail-list">
-                <div *ngFor="let detail of details" class="detail-item">
+                <div *ngFor="let detail of ticket?.ticketDetails" class="detail-item">
                     {{ detail.name }}
                 </div>
             </div>
@@ -54,11 +54,12 @@
 
     <!-- Right Column  -->
     <div class="flex flex-col items-end">
-        <h2 class="text-3xl font-bold text-green-500 mb-8">IDR 1,000,000</h2>
+        <h2 class="text-3xl font-bold text-green-500 mb-8">IDR {{ticket?.price | number}}</h2>
         <img src="/assets/img/payment-image.jpg" alt="Payment Image" class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
-        <p class="text-gray-600 mb-4"><strong>Payment Date:</strong> {{ paymentDate }}</p>
-        <button class="bg-yellow-500 text-white px-12 py-2 rounded-3xl mt-auto" (click)="verifyPayment()">
-            Verify
+        <p class="text-gray-600 mb-4"><strong>Payment Date:</strong> {{ payment?.paymentDate | date: 'longDate' }}</p>
+
+        <button *ngIf="showButton" class="bg-yellow-500 text-white px-12 py-2 rounded-3xl mt-auto" (click)="verifyPayment()">
+            {{ buttonLabel }}
         </button>
     </div>
 </div>
