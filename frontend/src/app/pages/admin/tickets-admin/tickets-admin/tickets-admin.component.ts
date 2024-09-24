@@ -99,14 +99,20 @@ export class TicketsAdminComponent implements OnInit {
   }  
 
   exportToExcel() {
-    this.ticketService.exportTicketsToExcel().subscribe({
+    if (this.tickets.length === 0) {
+        console.warn('No tickets available for export.');
+        return;
+    }
+
+    this.ticketService.exportTicketsToExcel(this.tickets).subscribe({
       next: (blob) => {
-        const fileName = 'tickets.xlsx';
+        const fileName = 'tickets_report.xlsx';
         saveAs(blob, fileName);
       },
       error: (error) => {
         console.error('Failed to export tickets:', error);
       }
     });
-  }
+}
+
 }

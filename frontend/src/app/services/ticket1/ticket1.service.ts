@@ -66,8 +66,8 @@ export class TicketService {
     return this.http.put<TicketDTO>(`${this.apiUrl}/${id}/status`, { status: newStatus });
   }
 
-  exportTicketsToExcel(): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/excel`, { responseType: 'blob' });
+  exportTicketsToExcel(tickets: Ticket[]): Observable<Blob> {
+    return this.http.post(`${this.apiUrl}/excel`, { tickets }, { responseType: 'blob' });
   }
 
   reduceTourQuota(paymentId: string): Observable<void> {
