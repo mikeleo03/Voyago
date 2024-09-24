@@ -1,12 +1,9 @@
 package com.group4.payment.controller;
 
 import com.group4.payment.dto.PaymentCreateDTO;
-import com.group4.payment.dto.PaymentUpdateDTO;
-import com.group4.payment.mapper.PaymentMapper;
 import com.group4.payment.model.Payment;
 import com.group4.payment.service.PaymentService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -21,7 +18,6 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/payment")
@@ -62,7 +58,6 @@ public class PaymentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public ResponseEntity<Payment> createPayment(@RequestBody PaymentCreateDTO dto) {
         Payment payment = paymentService.createPayment(dto);
         return ResponseEntity.ok(payment);

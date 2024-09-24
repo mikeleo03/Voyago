@@ -12,7 +12,7 @@ public interface TourService {
     String getTourImageNameById(String id);
     Tour updateTour(String id, Tour updatedTour);
     Tour reduceQuota(String id, int quantity);
+    Tour addQuotaByPrice(String id, int price);
     Tour updateTourStatus(String id);
     String importToursFromCsv(MultipartFile file);
-
 }

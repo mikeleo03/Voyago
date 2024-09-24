@@ -128,4 +128,10 @@ public class TicketController {
             throw new IOException(e.getMessage());
         }
     }
+
+    @PutMapping("/return")
+    public ResponseEntity<Void> reduceQuota(@RequestParam String paymentId) {
+        ticketService.returnTourQuota(paymentId);
+        return ResponseEntity.ok().build();
+    }
 }

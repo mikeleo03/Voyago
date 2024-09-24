@@ -132,6 +132,12 @@ public class TourController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/return")
+    public ResponseEntity<Void> returnQuota(@RequestParam String id, @RequestParam int price) {
+        tourService.addQuotaByPrice(id, price);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping("/status")
     @PreAuthorize(("hasRole('ADMIN')"))
     public ResponseEntity<Tour> updateTourStatus(@RequestParam String id) {

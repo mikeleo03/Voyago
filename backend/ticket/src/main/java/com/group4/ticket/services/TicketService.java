@@ -35,4 +35,7 @@ public interface TicketService {
 
     // [Customer] Reschedule ticket
     TicketDTO rescheduleTicket(String id, LocalDate startDate, LocalDate endDate);
+
+    // [-] Get nominal to be increased back
+    Ticket returnTourQuota(String paymentID);
 }

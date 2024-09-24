@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import com.group4.ticket.client.PaymentClient;
 import com.group4.ticket.client.TourClient;
 import com.group4.ticket.data.model.Ticket;
 import com.group4.ticket.data.model.TicketDetail;
@@ -49,16 +50,18 @@ public class TicketServiceImpl implements TicketService {
     private final TicketMapper ticketMapper;
     private final TicketDetailMapper ticketDetailMapper;
     private final TourClient tourClient;
+    private final PaymentClient paymentClient;
     private static final String TICKET_NOT_FOUND = "Ticket not found with id: ";
     private static final String PRICE = "price";
 
     @Autowired
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketDetailRepository ticketDetailRepository, TicketMapper ticketMapper, TicketDetailMapper ticketDetailMapper, TourClient tourClient) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketDetailRepository ticketDetailRepository, TicketMapper ticketMapper, TicketDetailMapper ticketDetailMapper, TourClient tourClient, PaymentClient paymentClient) {
         this.ticketRepository = ticketRepository;
         this.ticketDetailRepository = ticketDetailRepository;
         this.ticketMapper = ticketMapper;
         this.ticketDetailMapper = ticketDetailMapper;
         this.tourClient = tourClient;
+        this.paymentClient = paymentClient;
     }
 
     @Override
@@ -118,8 +121,10 @@ public class TicketServiceImpl implements TicketService {
         Integer quantity = ticketSaveDTO.getTicketDetails().size();
         ticket.setPrice(price * quantity);
 
-        // Step 3: Generate paymentID and ticketID
-        ticket.setPaymentID(UUID.randomUUID().toString());
+        // Step 3: Generate payment and get the paymentID
+        Mono<String> paymentIDMono = paymentClient.createPayment(ticket.getPrice());
+        String paymentID = paymentIDMono.block();
+        ticket.setPaymentID(paymentID);
 
         // Step 4: Save the ticket entity (this will cascade and save the ticket details as well)
         logger.info("Saving ticket with TourID: {}", ticket.getTourID());
@@ -144,6 +149,9 @@ public class TicketServiceImpl implements TicketService {
         // Step 6: Save the ticket details (this is usually done automatically if cascading is set correctly)
         // If cascading is NOT set in the TicketDetail, uncomment this line:
         ticketDetailRepository.saveAll(ticketDetails);
+
+        // Step 7 : Update the tour quantity
+        tourClient.updateTourQuantityById(savedTicket.getTourID(), savedTicket.getTicketDetails().size()).block();
 
         // Return the mapped TicketDTO
         return ticketMapper.toTicketDTO(savedTicket);
@@ -201,6 +209,25 @@ public class TicketServiceImpl implements TicketService {
             return ticketMapper.toTicketDTO(ticket);
         } else {
             throw new ResourceNotFoundException(TICKET_NOT_FOUND + id);
+        }
+    }
+
+    @Override
+    public Ticket returnTourQuota(String paymentID) {
+        // Search the ticket based on given payemnt ID
+        logger.info("Return tour quota with paymentID: {}", paymentID);
+        Optional<Ticket> ticketOptional = ticketRepository.findByPaymentID(paymentID);
+        if (ticketOptional.isPresent()) {
+            // Get the tour sizes
+            Ticket ticket = ticketOptional.get();
+            logger.info("Ticket existed: {}", ticket);
+            // Update the tour quantity
+            tourClient.returnTourQuantityByPrice(ticket.getTourID(), ticket.getPrice()).block();
+            logger.info("Ticket update complete");
+            return ticket;
+        } else {
+            logger.info("Ticket not");
+            throw new ResourceNotFoundException(TICKET_NOT_FOUND + paymentID);
         }
     }
 }
