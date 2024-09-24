@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environment/environment.prod';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Payment } from '../../models/payment.model';
 import { Observable } from 'rxjs';
 
@@ -26,5 +26,14 @@ export class PaymentService {
     }
 
     return this.http.put<Payment>(`${this.apiUrl}/payment/${id}`, formData);
+  }
+
+  getPaymentImage(id: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/image`, { responseType: 'blob' });
+  }
+
+  changeVerifyStatus(id: string, status: string): Observable<Payment> {
+    const params = new HttpParams().set('status', status);
+    return this.http.put<Payment>(`${this.apiUrl}/verify/${id}`, null, { params });
   }
 }

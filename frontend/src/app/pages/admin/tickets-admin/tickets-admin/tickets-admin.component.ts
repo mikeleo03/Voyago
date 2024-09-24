@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Ticket } from '../../../../models/ticket1.model';
-import { Payment } from '../../../../models/payment1.model';
-import { TicketService } from '../../../../services/ticket1/ticket1.service';
-import { PaymentService } from '../../../../services/payment1/payment1.service';
+import { Ticket } from '../../../../models/ticket.model';
+import { Payment } from '../../../../models/payment.model';
+import { TicketService } from '../../../../services/ticket/ticket.service';
+import { PaymentService } from '../../../../services/payment/payment.service';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { saveAs } from 'file-saver';

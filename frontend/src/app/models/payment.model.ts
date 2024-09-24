@@ -10,3 +10,13 @@ export interface Payment {
     updatedBy: string;
     updatedAt: Date;
 }
+
+export interface PaymentCreateDTO {
+    nominal: number;
+}
+  
+export interface PaymentUpdateDTO {
+    status: string;
+    picture?: string;
+    paymentDate?: Date;
+}

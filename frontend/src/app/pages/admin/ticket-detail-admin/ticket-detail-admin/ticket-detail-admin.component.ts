@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TicketService } from '../../../../services/ticket1/ticket1.service';
-import { PaymentService } from '../../../../services/payment1/payment1.service';
+import { TicketService } from '../../../../services/ticket/ticket.service';
+import { PaymentService } from '../../../../services/payment/payment.service';
 import { TourService } from '../../../../services/tour/tour.service';
 import { AuthService } from '../../../../services/auth/auth.service';
-import { TicketDTO } from '../../../../models/ticket1.model';
-import { Payment } from '../../../../models/payment1.model';
+import { TicketDTO } from '../../../../models/ticket.model';
+import { Payment } from '../../../../models/payment.model';
 import { Tour } from '../../../../models/tour.model';
 
 @Component({
