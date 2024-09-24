@@ -80,6 +80,13 @@ export const routes: Routes = [
         data: RouterConfig['CUSTOMERS_ADMIN'].data,
     },
     {
+        path: RouterConfig['HISTORY'].path,
+        loadChildren: () =>
+            import('./pages/history/history.routes').then((m) => m.historyRoutes),
+        title: RouterConfig['HISTORY'].title,
+        data: RouterConfig['HISTORY'].data,
+    },
+    {
         path: RouterConfig['TICKETS_ADMIN'].path,
         loadChildren: () =>
             import('./pages/admin/tickets-admin/tickets-admin.routes').then((m) => m.ticketsAdminRoutes),
