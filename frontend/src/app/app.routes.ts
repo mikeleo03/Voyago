@@ -45,6 +45,13 @@ export const routes: Routes = [
         data: RouterConfig['DASHBOARD'].data,
     },
     {
+        path: RouterConfig['BOOK_TICKET'].path,
+        loadChildren: () =>
+            import('./pages/create-ticket/create-ticket.routes').then((m) => m.createTicketRoutes),
+        title: RouterConfig['BOOK_TICKET'].title,
+        data: RouterConfig['BOOK_TICKET'].data,
+    },
+    {
         path: RouterConfig['TOURS'].path,
         loadChildren: () =>
             import('./pages/tours/tours.routes').then((m) => m.toursRoutes),
@@ -85,5 +92,5 @@ export const routes: Routes = [
             import('./pages/not-found/not-found.routes').then((m) => m.notFoundRoutes),
         title: RouterConfig['NOT_FOUND'].title,
         data: RouterConfig['NOT_FOUND'].data,
-    },
+    }
 ];

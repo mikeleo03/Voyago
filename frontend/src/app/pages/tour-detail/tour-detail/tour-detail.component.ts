@@ -63,7 +63,7 @@ export class TourDetailComponent implements OnInit {
   }
 
   bookTour() {
-      console.log(`Booking tour ID: ${this.tourId}`);
+    this.router.navigate(['/ticket/create/setup/' + this.tourId]);
   }
 
   goBack(): void {

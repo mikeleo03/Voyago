@@ -71,7 +71,7 @@ public class TokenService {
             .setClaims(claims)
             .setSubject(email)
             .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)) // 10 mins expiration
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 30 mins expiration
             .signWith(getSecretKey(), SignatureAlgorithm.HS512)
             .compact();
     }

@@ -21,5 +21,6 @@ export const RouterConfig: Record<string, RouteLink> = {
     TOUR_DETAIL: { path: 'tour', link: '/tour', title: 'Tour Detail', data: { header: true } },
     TOUR_DETAIL_ADMIN: { path: 'admin/tour', link: '/admin/tour', title: 'Tour Detail', data: { header: true } },
     CUSTOMERS_ADMIN: { path: 'admin/customers', link: '/admin/customers', title: 'Customers', data: { header: true } },
+    BOOK_TICKET: { path: 'ticket/create', link: '/ticket/create', title: 'Booking Ticket', data: { header: true } },
     NOT_FOUND: { path: '**', link: '', title: 'Page Not Found', data: { header: true } },
 };

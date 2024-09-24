@@ -1,0 +1,132 @@
+<div class="container mx-auto p-6 pb-12 px-16">
+    <!-- Progress Indicator -->
+    <div class="flex items-center justify-center my-4">
+        <div class="flex items-center space-x-4">
+            <!-- Step 1: Dates & Rooms -->
+            <div class="flex items-center">
+                <div class="text-center font-semibold w-12 h-12 flex items-center justify-center bg-green-700 text-white border-2 border-green-700 rounded-lg">
+                    <i class="fas fa-check"></i> <!-- Font Awesome Check Icon -->
+                </div>
+                <div class="ml-4 text-start font-semibold text-lg">Date & Tickets</div>
+                <div class="border-t-2 border-gray-800 flex-grow w-12 ml-4"></div>
+            </div> 
+
+            <!-- Step 2: Payment -->
+            <div class="flex items-center">
+                <div class="text-center font-semibold w-12 h-12 flex items-center justify-center bg-[#0A5185] text-white border-2 border-[#0A5185] rounded-lg">2</div>
+                <div class="ml-4 text-start font-semibold text-lg">Payment</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-8 rounded-lg h-full">
+        <!-- Tour Package Details -->
+        <div class="lg:col-span-2 bg-white rounded-xl shadow p-6 pb-10 px-8 border">
+            <div class="flex items-center space-x-4 mb-4 border rounded-lg p-5 bg-gray-100/[0.5]">
+                <div class="w-28 h-28 bg-gray-200 rounded-xl">
+                    <img
+                        class="w-28 h-28 mb-4 rounded-xl object-cover border-4 border-white"
+                        [src]="tourImage"
+                        alt="Tour"
+                        draggable="false"
+                    />
+                </div>
+                <div class="flex flex-col space-y-1">
+                    <h2 class="text-2xl font-semibold">{{ tourDetails?.title }}</h2>
+                    <p class="text-gray-500 text-sm pb-2">{{ tourDetails?.detail }}</p>
+                    <p class="text-gray-500 text-sm">📍 {{ tourDetails?.location }}</p>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <div class="bg-white mt-8">
+                <!-- Countdown -->
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="text-start text-[#0A5185] font-semibold text-xl">Countdown</div>
+                    <div class="border-t-2 border-gray-300 flex-grow w-12"></div>
+                </div>
+                <div>Please submit your payment evidence in</div>
+                <div class="flex space-x-4 my-4">
+                    <!-- Countdown Boxes -->
+                    <div class="text-center">
+                        <div class="text-4xl flex items-center justify-center font-semibold bg-gray-200 py-2 px-4 rounded-lg w-20 h-20">{{ hours }}</div>
+                        <div class="text-sm mt-2">Hours</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl flex items-center justify-center font-semibold bg-gray-200 py-2 px-4 rounded-lg w-20 h-20">{{ minutes }}</div>
+                        <div class="text-sm mt-2">Minutes</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl flex items-center justify-center font-semibold bg-gray-200 py-2 px-4 rounded-lg w-20 h-20">{{ seconds }}</div>
+                        <div class="text-sm mt-2">Seconds</div>
+                    </div>
+                </div>
+                
+                <!-- Upload image evidence -->
+                <div class="flex items-center space-x-4 my-4">
+                    <div class="text-start text-[#0A5185] font-semibold text-xl">Upload Payment Evidence</div>
+                    <div class="border-t-2 border-gray-300 flex-grow w-12"></div>
+                </div> 
+                <form [formGroup]="paymentForm">
+                    <div class="flex justify-between items-center mt-6">
+                        <label class="bg-yellow-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer flex items-center">
+                            Add image
+                            <input type="file" (change)="onImageSelected($event)" accept="image/*" class="hidden" required />
+                        </label>
+                        <span class="text-gray-600 ml-4 flex-grow">{{ selectedImageName }}</span>
+                    </div>
+                </form>                  
+            </div>
+        </div>
+        
+        <!-- Payment Summary -->
+        <div class="bg-white rounded-xl h-full">
+            <div class="bg-white shadow p-6 border rounded-xl">
+                <h3 class="text-xl font-semibold mb-4">Payment Summary</h3>
+                
+                <!-- Tickets ordered -->
+                <div class="flex flex-col space-y-2 mb-8">                    
+                    <!-- Price Summary -->
+                    <div class="flex justify-between text-gray-500">
+                        <div class="font-semibold">Price Summary</div>
+                        <div>Rp {{ totalPrice | number }}</div> <!-- Dynamically calculate total price -->
+                    </div>
+                </div>
+                
+                <!-- Request to Book button -->
+                <button 
+                    type="button" 
+                    class="bg-[#0A5185] w-full rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-6"
+                    [disabled]="(paymentForm.invalid || isLoading || !selectedImageFile || isFailed)" 
+                    [ngClass]="{ 'opacity-50 cursor-not-allowed': paymentForm.invalid || isLoading || !selectedImageFile, 'hover:cursor-pointer': !paymentForm.invalid && !isLoading && selectedImageFile }"
+                    (click)="onSubmit()"
+                >
+                    <span *ngIf="!isLoading">Confirm payment</span>
+                    <span *ngIf="isLoading">
+                        <svg class="inline mr-2 w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Submitting...
+                    </span>
+                </button>
+            </div>
+        </div>  
+    </div>
+</div>
+
+<!-- Success Popup -->
+<div 
+    *ngIf="successPopupVisible" 
+    class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center transition-opacity duration-300 ease-in-out"
+    [ngClass]="{'opacity-100': successPopupVisible, 'opacity-0': !successPopupVisible}"
+>
+    <div 
+        class="bg-white rounded-lg shadow-lg p-6 mb-4 transform transition-transform duration-500 ease-out translate-y-full" 
+        [ngClass]="{'translate-y-0': successPopupVisible, 'translate-y-full': !successPopupVisible}">
+        <h2 class="text-2xl font-semibold text-green-700 mb-2">Payment Successful!</h2>
+        <p class="text-gray-600">Your payment evidence has been submitted successfully!</p> 
+        <p class="text-gray-600">Please wait for the admin to review it.</p>
+    </div>
+</div>
