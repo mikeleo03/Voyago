@@ -12,9 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.group4.payment.dto.PaymentCreateDTO;
-import com.group4.payment.exception.FileNotFoundException;
-import com.group4.payment.exception.ResourceNotFoundException;
-import com.group4.payment.exception.TimeOutException;
+import com.group4.payment.exceptions.ResourceNotFoundException;
+import com.group4.payment.exceptions.TimeoutException;
 import com.group4.payment.mapper.PaymentMapper;
 import com.group4.payment.model.Payment;
 import com.group4.payment.repository.PaymentRepository;
@@ -55,8 +54,8 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ResourceNotFoundException(PAYMENT_NOT_FOUND + id);
         }
         Payment payment = paymentOptional.get();
-        if (Objects.equals(payment.getStatus(), "FAILED")){
-            throw new TimeOutException("Payment already failed.");
+        if (Objects.equals(payment.getStatus(), "FAILED")) {
+            throw new TimeoutException("Payment already failed.");
         }
         payment.setStatus(status);
         return paymentRepository.save(payment);
@@ -70,13 +69,13 @@ public class PaymentServiceImpl implements PaymentService {
         }
         Payment payment = paymentOptional.get();
         if (Objects.equals(payment.getStatus(), "FAILED")){
-            throw new TimeOutException("Payment already failed.");
+            throw new TimeoutException("Payment already failed.");
         }
         if (file != null && !file.isEmpty()) {
             String imageUrl = saveImage(file);
             payment.setPicture(imageUrl);
-        } else{
-            throw new FileNotFoundException("File not found.");
+        } else {
+            throw new ResourceNotFoundException("File not found.");
         }
         payment.setPaymentDate(LocalDateTime.now());
         return paymentRepository.save(payment);
@@ -90,7 +89,7 @@ public class PaymentServiceImpl implements PaymentService {
             Files.write(path, file.getBytes());
             return fileName;
         } catch (IOException e) {
-            throw new TimeOutException("Could not save image: " + e.getMessage());
+            throw new TimeoutException("Could not save image: " + e.getMessage());
         }
     }
 }
