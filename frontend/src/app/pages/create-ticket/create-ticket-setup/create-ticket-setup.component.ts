@@ -72,7 +72,7 @@ export class CreateTicketSetupComponent implements OnInit {
   // Helper method to create a customer FormGroup
   createCustomerGroup(): FormGroup {
     return this.fb.group({
-      fullName: ['', Validators.required, Validators.pattern(/^[a-zA-Z\s]+$/)],
+      fullName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s]+$/)]],
       phone: ['', [Validators.required, Validators.pattern(/^(\+62)\d{9,13}$/)]]
     });
   }
