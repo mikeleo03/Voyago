@@ -62,23 +62,15 @@ export class TicketService {
     return this.http.get<TicketDTO>(`${this.apiUrl}/${id}`);
   }
 
-  createTicket(ticketSaveDTO: TicketDTO): Observable<TicketDTO> {
-    return this.http.post<TicketDTO>(this.apiUrl, ticketSaveDTO);
-  }
-
   updateTicketStatus(id: string, newStatus: string): Observable<TicketDTO> {
     return this.http.put<TicketDTO>(`${this.apiUrl}/${id}/status`, { status: newStatus });
-  }
-
-  rescheduleTicket(id: string, newStartDate: string, newEndDate: string): Observable<TicketDTO> {
-    return this.http.put<TicketDTO>(`${this.apiUrl}/${id}/reschedule`, { startDate: newStartDate, endDate: newEndDate });
   }
 
   exportTicketsToExcel(): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/excel`, { responseType: 'blob' });
   }
 
-  returnTourQuota(paymentId: string): Observable<void> {
+  reduceTourQuota(paymentId: string): Observable<void> {
     const params = new HttpParams().set('paymentId', paymentId);
     return this.http.put<void>(`${this.apiUrl}/return`, null, { params });
   }
