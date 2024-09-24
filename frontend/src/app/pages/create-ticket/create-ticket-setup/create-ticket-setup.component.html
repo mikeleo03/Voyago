@@ -38,9 +38,9 @@
                     />
                 </div>
                 <div class="flex flex-col space-y-1">
-                    <h2 class="text-2xl font-semibold">Tour Package Title</h2>
-                    <p class="text-gray-500 text-sm pb-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquet eget mauris vitae laoreet.</p>
-                    <p class="text-gray-500 text-sm">📍 Location</p>
+                    <h2 class="text-2xl font-semibold">{{ tourDetails?.title }}</h2>
+                    <p class="text-gray-500 text-sm pb-2">{{ tourDetails?.detail }}</p>
+                    <p class="text-gray-500 text-sm">📍 {{ tourDetails?.location }}</p>
                 </div>
             </div>
             <div>
@@ -65,7 +65,7 @@
                                     <label for="fullName">Full Name</label>
                                     <input type="text" formControlName="fullName" class="rounded-xl pl-4 mt-1 block w-full p-2 border border-gray-300" />
                                     <div *ngIf="customer.get('fullName')?.invalid && customer.get('fullName')?.touched" class="text-red-500">
-                                        Full Name is required.
+                                        Full Name is required and can only contain letters and spaces.
                                     </div>
                                 </div>
                                 <div class="w-full">
