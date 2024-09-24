@@ -14,11 +14,11 @@ export class TicketDetailAdminComponent {
   tourDetails = {
     description: 'This is a detailed description of the tour.',
   };
-  facilities = [
-    { name: 'Free WiFi' },
-    { name: 'Breakfast Included' },
-    { name: 'Swimming Pool Access' },
-    { name: '24/7 Customer Support' }]
+  details = [
+    { name: 'Person person' },
+    { name: 'Person person' },
+    { name: 'Person person' },
+    { name: 'Person person' }]
   paymentDate: string = '2024-09-01';
 
   tourImageUrl = '';

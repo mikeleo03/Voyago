@@ -10,16 +10,19 @@
 <div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mb-8 mx-auto w-10/12 relative grid grid-cols-3 gap-8">
     <!-- Left Column -->
     <div class="col-span-2 flex flex-col">
-        <div class="flex justify-between mb-4">
-            <h2 class="text-3xl font-semibold mb-4">Ticket Information</h2>
-        </div>
-        <div class="ticket-detail-item mb-4">
-            <p class="text-gray-600"><strong>Ticket ID:</strong> {{ ticketId }}</p>
-            <p class="text-gray-600"><strong>Username:</strong> {{ username }}</p>
+        <div class="mb-4 flex flex-row">
+            <div class="w-full item-detail mx-2 p-4 border border-gray-300 rounded-3xl">
+                <h3 class="font-semibold">Ticket ID</h3>
+                <p>{{ticketId}}</p>
+            </div>
+            <div class="w-full item-detail mx-2 p-4 border border-gray-300 rounded-3xl">
+                <h3 class="font-semibold">Username</h3>
+                <p>{{username}}</p>
+            </div>
         </div>
         
         <!-- Tour -->
-        <div class="tour-item flex items-start p-6 border border-gray-300 rounded-lg shadow-sm">
+        <div class="tour-item flex items-start p-6 border border-gray-300 rounded-2xl shadow-sm">
             <!-- Tour Image -->
             <div class="tour-image w-1/5">
               <img
@@ -32,7 +35,7 @@
             
             <!-- Tour Details -->
             <div class="tour-details w-2/5 pl-6">
-              <h3 class="text-2xl font-bold mb-2">{{ tour.title }}</h3>
+              <h3 class="text-2xl font-semibold mb-2">{{ tour.title }}</h3>
               <p class="text-gray-600 mb-2">{{ tour.detail }}</p>
               <p class="text-gray-400">📍 {{ tour.location }}</p>
             </div>
@@ -40,10 +43,10 @@
 
         <!-- Facilities Section -->
         <div class="mt-6 p-4 border rounded-lg shadow-sm">
-            <h3 class="text-2xl font-semibold mb-2">Facilities</h3>
-            <div class="facility-list">
-                <div *ngFor="let facility of facilities" class="facility-item">
-                    {{ facility.name }}
+            <h3 class="text-2xl font-semibold mb-2">Details</h3>
+            <div class="detail-list">
+                <div *ngFor="let detail of details" class="detail-item">
+                    {{ detail.name }}
                 </div>
             </div>
         </div>
@@ -51,7 +54,7 @@
 
     <!-- Right Column  -->
     <div class="flex flex-col items-end">
-        <p class="text-xl font-bold text-green-500">IDR 1,000,000</p>
+        <h2 class="text-3xl font-bold text-green-500 mb-8">IDR 1,000,000</h2>
         <img src="/assets/img/payment-image.jpg" alt="Payment Image" class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
         <p class="text-gray-600 mb-4"><strong>Payment Date:</strong> {{ paymentDate }}</p>
         <button class="bg-yellow-500 text-white px-12 py-2 rounded-3xl mt-auto" (click)="verifyPayment()">

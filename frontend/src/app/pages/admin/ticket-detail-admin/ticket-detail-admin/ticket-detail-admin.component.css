@@ -18,16 +18,23 @@
     padding-left: 24px;
 }
 
-.facility-list {
+.detail-list {
     border-top: 1px solid #ccc;
     padding-top: 10px;
 }
 
-.facility-item {
+.detail-item {
     padding: 10px 0;
     border-bottom: 1px solid #ccc;
 }
 
-.facility-item:last-child {
+.detail-item:last-child {
     border-bottom: none;
+}
+
+.item-detail{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center
 }
