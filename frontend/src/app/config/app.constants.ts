@@ -20,6 +20,7 @@ export const RouterConfig: Record<string, RouteLink> = {
     TOURS_ADMIN: { path: 'admin/tours', link: '/admin/tours', title: 'Tours', data: { header: true } },
     TOUR_DETAIL: { path: 'tour', link: '/tour', title: 'Tour Detail', data: { header: true } },
     TOUR_DETAIL_ADMIN: { path: 'admin/tour', link: '/admin/tour', title: 'Tour Detail', data: { header: true } },
+    TICKETS_ADMIN: { path: 'admin/tickets', link: '/admin/tickets', title: 'Tickets', data: { header: true } },
     CUSTOMERS_ADMIN: { path: 'admin/customers', link: '/admin/customers', title: 'Customers', data: { header: true } },
     NOT_FOUND: { path: '**', link: '', title: 'Page Not Found', data: { header: true } },
 };
