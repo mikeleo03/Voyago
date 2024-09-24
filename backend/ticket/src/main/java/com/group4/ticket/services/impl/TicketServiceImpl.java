@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import com.group4.ticket.client.PaymentClient;
 import com.group4.ticket.client.TourClient;
 import com.group4.ticket.data.model.Ticket;
 import com.group4.ticket.data.model.TicketDetail;
@@ -49,16 +50,18 @@ public class TicketServiceImpl implements TicketService {
     private final TicketMapper ticketMapper;
     private final TicketDetailMapper ticketDetailMapper;
     private final TourClient tourClient;
+    private final PaymentClient paymentClient;
     private static final String TICKET_NOT_FOUND = "Ticket not found with id: ";
     private static final String PRICE = "price";
 
     @Autowired
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketDetailRepository ticketDetailRepository, TicketMapper ticketMapper, TicketDetailMapper ticketDetailMapper, TourClient tourClient) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketDetailRepository ticketDetailRepository, TicketMapper ticketMapper, TicketDetailMapper ticketDetailMapper, TourClient tourClient, PaymentClient paymentClient) {
         this.ticketRepository = ticketRepository;
         this.ticketDetailRepository = ticketDetailRepository;
         this.ticketMapper = ticketMapper;
         this.ticketDetailMapper = ticketDetailMapper;
         this.tourClient = tourClient;
+        this.paymentClient = paymentClient;
     }
 
     @Override
@@ -118,8 +121,10 @@ public class TicketServiceImpl implements TicketService {
         Integer quantity = ticketSaveDTO.getTicketDetails().size();
         ticket.setPrice(price * quantity);
 
-        // Step 3: Generate paymentID and ticketID
-        ticket.setPaymentID(UUID.randomUUID().toString());
+        // Step 3: Generate payment and get the paymentID
+        Mono<String> paymentIDMono = paymentClient.createPayment(ticket.getPrice());
+        String paymentID = paymentIDMono.block();
+        ticket.setPaymentID(paymentID);
 
         // Step 4: Save the ticket entity (this will cascade and save the ticket details as well)
         logger.info("Saving ticket with TourID: {}", ticket.getTourID());
