@@ -7,6 +7,7 @@ import { TicketService } from '../../../../services/ticket1/ticket1.service';
 import { PaymentService } from '../../../../services/payment1/payment1.service';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-tickets-admin',
@@ -96,4 +97,16 @@ export class TicketsAdminComponent implements OnInit {
   goToTicketDetails(id: string): void {
     this.router.navigate(['/admin/ticket'], { queryParams: { id } });
   }  
+
+  exportToExcel() {
+    this.ticketService.exportTicketsToExcel().subscribe({
+      next: (blob) => {
+        const fileName = 'tickets.xlsx';
+        saveAs(blob, fileName);
+      },
+      error: (error) => {
+        console.error('Failed to export tickets:', error);
+      }
+    });
+  }
 }
