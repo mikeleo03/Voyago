@@ -86,4 +86,11 @@ export const routes: Routes = [
         title: RouterConfig['NOT_FOUND'].title,
         data: RouterConfig['NOT_FOUND'].data,
     },
+    {
+        path: RouterConfig['CREATE_TICKET'].path,
+        loadChildren: () =>
+            import('./pages/create-ticket/create-ticket.routes').then((m) => m.createTicketRoutes),
+        title: RouterConfig['CREATE_TICKET'].title,
+        data: RouterConfig['CREATE_TICKET'].data,
+    },
 ];
