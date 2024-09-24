@@ -122,3 +122,18 @@
         </div>  
     </div>
 </div>
+
+<!-- Success Popup -->
+<div 
+    *ngIf="successPopupVisible" 
+    class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center transition-opacity duration-300 ease-in-out"
+    [ngClass]="{'opacity-100': successPopupVisible, 'opacity-0': !successPopupVisible}"
+>
+    <div 
+        class="bg-white rounded-lg shadow-lg p-6 mb-4 transform transition-transform duration-500 ease-out translate-y-full" 
+        [ngClass]="{'translate-y-0': successPopupVisible, 'translate-y-full': !successPopupVisible}">
+        <h2 class="text-2xl font-semibold text-green-700 mb-2">Payment Successful!</h2>
+        <p class="text-gray-600">Your payment evidence has been submitted successfully!</p> 
+        <p class="text-gray-600">Please wait for the admin to review it.</p>
+    </div>
+</div>

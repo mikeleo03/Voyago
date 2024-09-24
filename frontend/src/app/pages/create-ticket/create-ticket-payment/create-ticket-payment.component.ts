@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService, PaymentService, TourService } from '../../../services';
+import confetti from 'canvas-confetti';
 
 @Component({
   selector: 'app-create-ticket-payment',
@@ -21,6 +22,8 @@ export class CreateTicketPaymentComponent implements OnInit, OnDestroy {
   tourDetails: any;
   paymentDetails: any;
   isFailed: boolean = false;
+  successPopupVisible: boolean = false;
+  popupAnimationDuration: number = 5000;
 
   selectedImageFile: File | null = null;
   selectedImageName: string = '';
@@ -107,6 +110,36 @@ export class CreateTicketPaymentComponent implements OnInit, OnDestroy {
     );
   }  
 
+  showSuccessPopup(): void {
+    this.successPopupVisible = true;
+    this.launchConfetti(); // Launch confetti when the popup is shown
+    setTimeout(() => {
+      this.successPopupVisible = false; // Hide after the configured duration
+      this.router.navigate(['/tours']);
+    }, this.popupAnimationDuration);
+  }
+
+  launchConfetti(): void {
+    const count = 250; // Number of confetti pieces
+    const defaults = {
+      origin: { y: 0.7 },
+    };
+
+    function fire(particleRatio: number, opts: any) {
+      confetti({
+        ...defaults,
+        ...opts,
+        particleCount: Math.floor(count * particleRatio),
+      });
+    }
+
+    fire(0.25, { spread: 26, startVelocity: 55 });
+    fire(0.2, { spread: 60 });
+    fire(0.35, { spread: 100, decay: 0.91, scalar: 1 });
+    fire(0.1, { spread: 120, decay: 0.8 });
+    fire(0.1, { spread: 120, startVelocity: 30, decay: 0.9 });
+  }
+
   ngOnDestroy(): void {
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval);
@@ -180,6 +213,7 @@ export class CreateTicketPaymentComponent implements OnInit, OnDestroy {
       this.paymentService.uploadPaymentEvidence(this.paymentId, imageToUpload).subscribe(() => {
         console.log('Evidence succesfully uploaded');
         this.isLoading = false;
+        this.showSuccessPopup();
       }, (error) => {
         console.error('Error updating payment:', error);
         this.isLoading = false;
