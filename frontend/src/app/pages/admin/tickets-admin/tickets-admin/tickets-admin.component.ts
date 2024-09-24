@@ -11,8 +11,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class TicketsAdminComponent {
   tickets = [
-    { id: 'a0f3d975-78bd-11ef-acde-00155ddb498a', name: 'User A', status: 'VERIFIED' },
-    { id: 'a0f3d975-78bd-11ef-acde-00155ddb498a', name: 'User B', status: 'UNVERIFIED' },
+    { id:'a0f27c4c-78bd-11ef-acde-00155ddb498a', date: new Date('2023-09-20'), name: 'User A', status: 'VERIFIED' },
+    { id: 'a0f27c4c-78bd-11ef-acde-00155ddb498a', date: new Date('2023-09-19'), name: 'User B', status: 'UNVERIFIED' },
   ];
 
   name: string = '';
@@ -20,6 +20,8 @@ export class TicketsAdminComponent {
   maxPrice?: number;
   sortPrice: string = '';
   sortStatus: string = '';
+  startDate: Date = new Date();
+  endDate: Date = new Date();
 
   searchName: string = '';
   filterStatus: string = '';

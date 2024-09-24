@@ -8,66 +8,71 @@
 
 <!-- Search Section -->
 <div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mx-auto w-10/12 relative">
-  <div class="flex flex-row justify-center w-full space-x-8 mx-2 mb-3">
-    <div class="flex w-full flex-col relative">
-        <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500"><i class="fa-solid fa-user"></i></span>
-        <p class="pb-1 text-gray-600">Username</p>
-        <input type="text" placeholder="Username" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="name" />
+    <!-- First Row: Username, Sort by Status, Start Date, End Date -->
+    <div class="flex flex-row justify-between w-full space-x-8 mx-2 mb-4 items-stretch"> <!-- Added items-stretch -->
+        <div class="flex w-1/4 flex-col relative">
+            <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500"><i class="fa-solid fa-user"></i></span>
+            <p class="pb-1 text-gray-600">Username</p>
+            <input type="text" placeholder="Username" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="name" />
+        </div>
+        <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+            <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">⬆⬇</span>
+            <p class="pb-1 text-gray-600">Sort by Status</p>
+            <select class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="sortStatus">
+                <option value="">None</option>
+                <option value="UNVERIFIED">UNVERIFIED</option>
+                <option value="VERIFIED">VERIFIED</option>
+                <option value="UNUSED">UNUSED</option>
+                <option value="USED">USED</option>
+                <option value="FAILED">FAILED</option>
+            </select>
+        </div>
+        <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+            <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500"><i class="fa-regular fa-calendar"></i></span>
+            <p class="pb-1 text-gray-600">Start Date</p>
+            <input type="date" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="startDate" />
+        </div>
+        <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+            <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500"><i class="fa-regular fa-calendar"></i></span>
+            <p class="pb-1 text-gray-600">End Date</p>
+            <input type="date" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="endDate" />
+        </div>
     </div>
-    <div class="flex w-full flex-col relative">
-        <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
-        <p class="pb-1 text-gray-600">Minimum Price</p>
-        <input type="number" placeholder="Minimum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="minPrice" />
+  
+    <!-- Second Row: Maximum Price, Minimum Price, Sort by Price, Search Button -->
+    <div class="flex flex-row justify-between w-full space-x-8 mx-2 mb-4 items-stretch"> <!-- Added items-stretch -->
+        <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+            <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
+            <p class="pb-1 text-gray-600">Maximum Price</p>
+            <input type="number" placeholder="Maximum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="maxPrice" />
+        </div>
+        <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+            <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
+            <p class="pb-1 text-gray-600">Minimum Price</p>
+            <input type="number" placeholder="Minimum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="minPrice" />
+        </div>
+        <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+            <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">⬆⬇</span>
+            <p class="pb-1 text-gray-600">Sort by Price</p>
+            <select class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="sortPrice">
+                <option value="">None</option>
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+        </div>
+        <!-- Search Button Container -->
+        <div class="flex w-1/4 flex-col relative self-end"> <!-- Optional self-end for alignment -->
+            <button class="bg-yellow-500 text-white p-2 px-8 rounded-3xl transition-transform transform ease-in-out hover:scale-105">Search</button>
+        </div>
     </div>
-    <div class="flex w-full flex-col relative">
-        <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
-        <p class="pb-1 text-gray-600">Maximum Price</p>
-        <input type="number" placeholder="Maximum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="maxPrice" />
-      </div>
-      
-    <!-- Sort Price Dropdown -->
-    <div class="flex w-full flex-col relative">
-      <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">⬆⬇</span>
-      <p class="pb-1 text-gray-600">Sort by Price</p>
-      <select class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="sortPrice">
-          <option value="">None</option>
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-      </select>
-    </div>
-
-    <!-- Sort Status Dropdown -->
-    <div class="flex w-full flex-col relative">
-        <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">⬆⬇</span>
-        <p class="pb-1 text-gray-600">Sort by Status</p>
-        <select class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="sortStatus">
-            <option value="">None</option>
-            <option value="UNVERIFIED">UNVERIFIED</option>
-            <option value="VERIFIED">VERIFIED</option>
-            <option value="UNUSED">UNUSED</option>
-            <option value="USED">USED</option>
-            <option value="FAILED">FAILED</option>
-        </select>
-      </div>
-
-      <div class="flex w-full flex-col relative">
-          <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105">Search</button>
-      </div>
-  </div>
 </div>
 
-<!-- Action Buttons -->
-<div class="flex justify-left space-x-4 mt-6 pl-36">
-    <label class="bg-yellow-500 text-white px-12 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer">
-      Import CSV
-      <input type="file" accept=".csv" class="hidden" />
-  </label>
-  </div>
+
 
 <!-- Ticket List Items -->
 <div class="ticket-list p-8">
     <div *ngFor="let ticket of filteredTickets" class="flex items-center p-3 border-b">
-      <div class="w-full px-4">{{ ticket.id }}</div>
+      <div class="w-full px-4">{{ ticket.date | date: 'longDate' }}</div>
       <div class="w-full ">{{ ticket.name }}</div>
       <div class="w-full">{{ ticket.status }}</div>
       <div class="w-1/6 text-center">
