@@ -3,6 +3,6 @@ import { CreateTicketSetupComponent } from './create-ticket-setup/create-ticket-
 import { CreateTicketPaymentComponent } from './create-ticket-payment/create-ticket-payment.component';
 
 export const createTicketRoutes: Routes = [
-    { path: 'setup', component: CreateTicketSetupComponent },
+    { path: '', component: CreateTicketSetupComponent },
     { path: 'payment', component: CreateTicketPaymentComponent },
 ];

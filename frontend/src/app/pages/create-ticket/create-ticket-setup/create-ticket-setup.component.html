@@ -1,1 +1,112 @@
-<p>create-ticket-setup works!</p>
+<div class="container mx-auto p-6 pb-12 px-16">
+    <!-- Progress Indicator -->
+    <div class="flex items-center justify-center my-4">
+        <div class="flex items-center space-x-4">
+            <!-- Step 1: Dates & Rooms -->
+            <div class="flex items-center">
+                <div class="text-center font-semibold py-2 px-4 bg-[#0A5185] text-white border-2 border-[#0A5185] rounded-lg">1</div>
+                <div class="ml-4 text-start font-semibold text-lg">Dates & Rooms</div>
+                <div class="border-t-2 border-gray-300 flex-grow w-12 ml-4"></div>
+            </div> 
+
+            <!-- Step 2: Payment -->
+            <div class="flex items-center">
+                <div class="text-center font-semibold py-2 px-4 bg-white border-2 border-gray-300 text-gray-400 rounded-lg">2</div>
+                <div class="ml-4 text-start font-semibold text-lg text-gray-400">Payment</div>
+                <div class="border-t-2 border-gray-300 flex-grow w-12 ml-4"></div>
+            </div>
+
+            <!-- Step 3: Confirmation -->
+            <div class="flex items-center">
+                <div class="text-center font-semibold py-2 px-4 bg-white border-2 border-gray-300 text-gray-400 rounded-lg">3</div>
+                <div class="ml-4 text-start font-semibold text-lg text-gray-400">Confirmation</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-8 rounded-lg h-full">
+        <!-- Tour Package Details -->
+        <div class="lg:col-span-2 bg-white rounded-xl shadow p-6 pb-10 px-8 border">
+            <div class="flex items-center space-x-4 mb-4 border rounded-lg p-5 bg-gray-100/[0.5]">
+                <div class="w-28 h-28 bg-gray-200 rounded-md"></div>
+                <div class="flex flex-col space-y-1">
+                    <h2 class="text-2xl font-semibold">Tour Package Title</h2>
+                    <p class="text-gray-500 text-sm pb-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquet eget mauris vitae laoreet.</p>
+                    <p class="text-gray-500 text-sm">📍 Location</p>
+                </div>
+            </div>
+            <div>
+                <h3 class="font-bold mb-2 text-lg">Good to Know</h3>
+                <p class="text-gray-500 mb-4">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquet eget mauris vitae laoreet.
+                </p>
+                <button class="text-blue-600">Read More</button>
+            </div>
+
+            <!-- Enter Details Form -->
+            <div class="bg-white mt-8">
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="text-start text-[#0A5185] font-semibold text-xl">Enter your Details</div>
+                    <div class="border-t-2 border-gray-300 flex-grow w-12"></div>
+                </div> 
+                <form [formGroup]="ticketForm">
+                    <div formArrayName="customers" class="w-full flex flex-col">
+                        <div *ngFor="let customer of customers.controls; let i = index" [formGroupName]="i" class="mb-4 w-full">
+                            <div class="flex space-x-6 w-full h-full">
+                                <div class="w-full">
+                                    <label for="fullName">Full Name</label>
+                                    <input type="text" formControlName="fullName" class="rounded-xl mt-1 block w-full p-2 border border-gray-300" />
+                                </div>
+                                <div class="w-full">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="text" formControlName="phone" class="rounded-xl mt-1 block w-full p-2 border border-gray-300" />
+                                </div>
+                                <div *ngIf="customers.length > 1" class="items-end flex w-1/6">
+                                    <button type="button" (click)="removeCustomer(i)" class="bg-red-500 font-bold rounded-xl text-white w-10 h-10">-</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  
+                    <!-- Add new customer button -->
+                    <button type="button" (click)="addCustomer()" class="bg-[#0A5185] text-white px-8 py-2 rounded-2xl">
+                        + Add Customer
+                    </button>
+
+                    <!-- Date Range -->
+                    <div class="flex w-full space-x-8 mt-6">
+                        <div class="w-1/2">
+                            <label for="startDate">Start Date</label>
+                            <input id="startDate" type="date" class="rounded-xl mt-1 block w-full p-2 border border-gray-300" />
+                        </div>
+                        <div class="w-1/2">
+                            <label for="endDate">End Date</label>
+                            <input id="endDate" type="date" class="rounded-xl mt-1 block w-full p-2 border border-gray-300" />
+                        </div>
+                    </div>
+                </form>                  
+            </div>
+        </div>
+        
+        <!-- Reservation Summary -->
+        <div class="bg-white rounded-xl h-full">
+            <div class="bg-white shadow p-6 border rounded-xl">
+                <h3 class="text-xl font-semibold mb-4">Reservation Summary</h3>
+                <div class="flex flex-col space-y-2 mb-8">
+                    <div class="flex justify-between text-gray-500">
+                        <div class="font-semibold">Tickets ordered</div>
+                        <div>2 tickets</div>
+                    </div>
+                    <div class="flex justify-between text-gray-500">
+                        <div class="font-semibold">Price Summary</div>
+                        <div>Rp 4.000,00</div>
+                    </div>
+                </div>
+                <button class="bg-[#0A5185] text-white px-8 py-2 rounded-2xl w-full" (click)="onSubmit()">
+                    Request to Book
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
