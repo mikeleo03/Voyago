@@ -11,8 +11,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class TicketsAdminComponent {
   tickets = [
-    { id: 1, name: 'User A', status: 'VERIFIED' },
-    { id: 2, name: 'User B', status: 'UNVERIFIED' },
+    { id: 'a0f3d975-78bd-11ef-acde-00155ddb498a', name: 'User A', status: 'VERIFIED' },
+    { id: 'a0f3d975-78bd-11ef-acde-00155ddb498a', name: 'User B', status: 'UNVERIFIED' },
   ];
 
   name: string = '';
@@ -46,6 +46,6 @@ export class TicketsAdminComponent {
     this.filterTickets();
   }
 
-  viewTicketDetails(ticketId: number) {
+  viewTicketDetails(ticketId: string) {
   }
 }
