@@ -100,4 +100,18 @@ public class TourClient {
                 .retrieve()
                 .bodyToMono(Void.class), tourID);
     }
+
+    // Method to fetch tour details using tourID
+    public Mono<Void> returnTourQuantityByPrice(String tourID, Integer price) {
+        WebClient webClient = getWebClientForTourService();
+
+        return handleError(webClient.put()
+                .uri(uriBuilder -> uriBuilder
+                    .path("/return")
+                    .queryParam("id", tourID)
+                    .queryParam("price", price)
+                    .build())
+                .retrieve()
+                .bodyToMono(Void.class), tourID);
+    }
 }

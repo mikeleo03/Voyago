@@ -119,6 +119,16 @@ public class TourServiceImpl implements TourService {
         return tourRepository.save(existingTour);
     }
 
+    public Tour addQuotaByPrice(String id, int price) {
+        Optional<Tour> tour = tourRepository.findById(id);
+        if (tour.isEmpty()){
+            throw new ResourceNotFoundException("Tour not found for this id : " + id);
+        }
+        Tour existingTour = tour.get();
+        existingTour.setQuota(existingTour.getQuota() + (price / existingTour.getPrices()));
+        return tourRepository.save(existingTour);
+    }
+
     public Tour updateTourStatus(String id) {
         Optional<Tour> tourOptional = tourRepository.findById(id);
         if (tourOptional.isEmpty()){
