@@ -20,6 +20,7 @@ export class CreateTicketPaymentComponent implements OnInit, OnDestroy {
   tourId: string = '';
   tourDetails: any;
   paymentDetails: any;
+  isFailed: boolean = false;
 
   selectedImageFile: File | null = null;
   selectedImageName: string = '';
@@ -88,6 +89,7 @@ export class CreateTicketPaymentComponent implements OnInit, OnDestroy {
         this.paymentDetails = details;
         this.totalPrice = details.nominal;
         this.backendTime = details.createdAt.toString(); // Ensure backendTime is populated
+        this.isFailed = details.status === "FAILED";
         
         this.isLoading = false;
   

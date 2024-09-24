@@ -105,8 +105,8 @@
                 <button 
                     type="button" 
                     class="bg-[#0A5185] w-full rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-6"
-                    [disabled]="paymentForm.invalid || isLoading" 
-                    [ngClass]="{ 'opacity-50 cursor-not-allowed': paymentForm.invalid || isLoading, 'hover:cursor-pointer': !paymentForm.invalid && !isLoading }"
+                    [disabled]="(paymentForm.invalid || isLoading || !selectedImageFile || isFailed)" 
+                    [ngClass]="{ 'opacity-50 cursor-not-allowed': paymentForm.invalid || isLoading || !selectedImageFile, 'hover:cursor-pointer': !paymentForm.invalid && !isLoading && selectedImageFile }"
                     (click)="onSubmit()"
                 >
                     <span *ngIf="!isLoading">Confirm payment</span>
