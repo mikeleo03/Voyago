@@ -61,9 +61,14 @@
             </select>
         </div>
         <!-- Search Button Container -->
-        <div class="flex w-1/4 flex-col relative self-end"> <!-- Optional self-end for alignment -->
-            <button class="bg-yellow-500 text-white p-2 px-8 rounded-3xl transition-transform transform ease-in-out hover:scale-105">Search</button>
-        </div>
+      <div class="flex w-1/4 flex-col relative self-end">
+        <button 
+          class="bg-yellow-500 text-white p-2 px-8 rounded-3xl transition-transform transform ease-in-out hover:scale-105" 
+          (click)="searchTickets()"
+        >
+          Search
+        </button>
+      </div>
     </div>
 </div>
 
@@ -71,9 +76,9 @@
 
 <!-- Ticket List Items -->
 <div class="ticket-list p-8">
-    <div *ngFor="let ticket of filteredTickets" class="flex items-center p-3 border-b">
-      <div class="w-full px-4">{{ ticket.date | date: 'longDate' }}</div>
-      <div class="w-full ">{{ ticket.name }}</div>
+    <div *ngFor="let ticket of tickets" class="flex items-center p-3 border-b">
+      <div class="w-full px-4">{{ ticket.startDate | date: 'longDate' }}</div>
+      <div class="w-full ">{{ ticket.username }}</div>
       <div class="w-full">{{ ticket.status }}</div>
       <div class="w-1/6 text-center">
         <button class="bg-yellow-500 text-white p-2 px-16 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105" (click)="viewTicketDetails(ticket.id)">Details</button> <!-- Added hover effect -->

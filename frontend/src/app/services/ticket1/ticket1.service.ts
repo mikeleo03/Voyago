@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environment/environment.prod';
-import { TicketDTO, TicketDetailDTO } from '../../models/ticket1.model';
+import { Ticket, TicketDTO, TicketDetailDTO } from '../../models/ticket1.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class TicketService {
     endDate?: string,
     page: number = 0,
     size: number = 10
-  ): Observable<{ tickets: TicketDTO[], currentPage: number, totalItems: number, totalPages: number }> {
+  ): Observable<{ tickets: Ticket[], currentPage: number, totalItems: number, totalPages: number }> {
     let params = new HttpParams();
     if (minPrice !== undefined) params = params.append('minPrice', minPrice.toString());
     if (maxPrice !== undefined) params = params.append('maxPrice', maxPrice.toString());
@@ -30,7 +30,7 @@ export class TicketService {
     params = params.append('page', page.toString());
     params = params.append('size', size.toString());
 
-    return this.http.get<{ tickets: TicketDTO[], currentPage: number, totalItems: number, totalPages: number }>(this.apiUrl, { params });
+    return this.http.get<{ tickets: Ticket[], currentPage: number, totalItems: number, totalPages: number }>(this.apiUrl, { params });
   }
 
   getAllTicketsByUserID(
