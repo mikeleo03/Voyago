@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Ticket, TicketDTO } from '../../../../models/ticket1.model';
+import { Ticket } from '../../../../models/ticket1.model';
+import { Payment } from '../../../../models/payment1.model';
 import { TicketService } from '../../../../services/ticket1/ticket1.service';
+import { PaymentService } from '../../../../services/payment1/payment1.service';
 
 @Component({
   selector: 'app-tickets-admin',
@@ -13,6 +15,7 @@ import { TicketService } from '../../../../services/ticket1/ticket1.service';
 })
 export class TicketsAdminComponent implements OnInit {
   tickets: Ticket[] = [];
+  ticketStatuses: { [key: string]: string } = {};
 
   name: string = '';
   minPrice?: number;
@@ -22,11 +25,13 @@ export class TicketsAdminComponent implements OnInit {
   startDate: string = '';
   endDate: string = '';
 
+  showStatus: string = '';
+
   currentPage = 1;
   itemsPerPage = 10;
   totalPages = 0;
 
-  constructor(private ticketService: TicketService) {}
+  constructor(private ticketService: TicketService, private paymentService: PaymentService) {}
 
   ngOnInit() {
     this.fetchTickets();
@@ -45,6 +50,20 @@ export class TicketsAdminComponent implements OnInit {
     ).subscribe(response => {
       this.tickets = response.tickets;
       this.totalPages = response.totalPages;
+      
+      this.tickets.forEach(ticket => {
+        if (ticket.status === 'USED' || ticket.status === 'FAILED') {
+          this.ticketStatuses[ticket.id] = ticket.status;
+        } else {
+          this.fetchPaymentStatus(ticket.id, ticket.paymentID);
+        }
+      });
+    });
+  }
+
+  fetchPaymentStatus(ticketId: string, paymentId: string) {
+    this.paymentService.getPaymentById(paymentId).subscribe((payment: Payment) => {
+      this.ticketStatuses[ticketId] = payment.status;
     });
   }
 

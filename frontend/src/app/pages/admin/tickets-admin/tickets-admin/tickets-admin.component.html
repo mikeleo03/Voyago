@@ -75,7 +75,7 @@
       <div class="w-full px-4">{{ ticket.startDate | date: 'longDate' }}</div>
       <div class="w-full ">{{ ticket.username }}</div>
       <div class="w-full ">{{ ticket.price | number}}</div>
-      <div class="w-full">{{ ticket.status }}</div>
+      <div class="w-full">{{ ticketStatuses[ticket.id] }}</div>
       <div class="w-1/6 text-center">
         <button class="bg-yellow-500 text-white p-2 px-16 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105" (click)="viewTicketDetails(ticket.id)">Details</button> <!-- Added hover effect -->
       </div>
