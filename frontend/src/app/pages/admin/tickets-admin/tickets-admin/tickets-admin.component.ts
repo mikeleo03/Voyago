@@ -37,6 +37,7 @@ export class TicketsAdminComponent implements OnInit {
       this.minPrice,
       this.maxPrice,
       this.sortPrice,
+      this.sortStatus,
       this.startDate,
       this.endDate,
       this.currentPage - 1,

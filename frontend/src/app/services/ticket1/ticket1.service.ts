@@ -16,6 +16,7 @@ export class TicketService {
     minPrice?: number,
     maxPrice?: number,
     sortPrice?: string,
+    sortStatus?: string,
     startDate?: string,
     endDate?: string,
     page: number = 0,
@@ -25,6 +26,7 @@ export class TicketService {
     if (minPrice !== undefined) params = params.append('minPrice', minPrice.toString());
     if (maxPrice !== undefined) params = params.append('maxPrice', maxPrice.toString());
     if (sortPrice) params = params.append('sortPrice', sortPrice);
+    if (sortStatus) params = params.append('sortStatus', sortStatus);
     if (startDate) params = params.append('startDate', startDate);
     if (endDate) params = params.append('endDate', endDate);
     params = params.append('page', page.toString());
@@ -36,20 +38,24 @@ export class TicketService {
   getAllTicketsByUserID(
     minPrice?: number,
     maxPrice?: number,
+    sortPrice?: string,
+    sortStatus?: string,
     startDate?: string,
     endDate?: string,
     page: number = 0,
     size: number = 10
-  ): Observable<{ tickets: TicketDTO[], currentPage: number, totalItems: number, totalPages: number }> {
+  ): Observable<{ tickets: Ticket[], currentPage: number, totalItems: number, totalPages: number }> {
     let params = new HttpParams();
     if (minPrice !== undefined) params = params.append('minPrice', minPrice.toString());
     if (maxPrice !== undefined) params = params.append('maxPrice', maxPrice.toString());
+    if (sortPrice) params = params.append('sortPrice', sortPrice);
+    if (sortStatus) params = params.append('sortStatus', sortStatus);
     if (startDate) params = params.append('startDate', startDate);
     if (endDate) params = params.append('endDate', endDate);
     params = params.append('page', page.toString());
     params = params.append('size', size.toString());
 
-    return this.http.get<{ tickets: TicketDTO[], currentPage: number, totalItems: number, totalPages: number }>(`${this.apiUrl}/list`, { params });
+    return this.http.get<{ tickets: Ticket[], currentPage: number, totalItems: number, totalPages: number }>(`${this.apiUrl}/list`, { params });
   }
 
   getTicketById(id: string): Observable<TicketDTO> {
