@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environment/environment';
+import { environment } from '../../../environment/environment.prod';
 import { Payment } from '../../models/payment1.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
@@ -15,7 +15,7 @@ export class PaymentService {
   constructor(private http: HttpClient) {}
 
   getPaymentById(paymentId: string): Observable<Payment> {
-    return this.http.get<Payment>(`http://localhost:8080/api/v1/payment/${paymentId}`).pipe(
+    return this.http.get<Payment>(`${this.apiUrl}/${paymentId}`).pipe(
         catchError((error: HttpErrorResponse) => {
             console.error('Error fetching payment data:', error);
             return throwError(() => new Error('Failed to fetch payment data.'));

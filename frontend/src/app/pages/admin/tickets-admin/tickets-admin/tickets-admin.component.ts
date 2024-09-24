@@ -5,6 +5,8 @@ import { Ticket } from '../../../../models/ticket1.model';
 import { Payment } from '../../../../models/payment1.model';
 import { TicketService } from '../../../../services/ticket1/ticket1.service';
 import { PaymentService } from '../../../../services/payment1/payment1.service';
+import { AuthService } from '../../../../services/auth/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-tickets-admin',
@@ -31,9 +33,21 @@ export class TicketsAdminComponent implements OnInit {
   itemsPerPage = 10;
   totalPages = 0;
 
-  constructor(private ticketService: TicketService, private paymentService: PaymentService) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private router: Router, 
+    private authService: AuthService,
+    private ticketService: TicketService,
+    private paymentService: PaymentService) {}
 
   ngOnInit() {
+    // this.route.queryParams.subscribe(() => {
+    //   if (this.authService.getRole() !== 'Admin') {
+    //     this.router.navigate(['/not-found']);
+    //     return;
+    //   }
+    //   this.fetchTickets();
+    // });
     this.fetchTickets();
   }
 
