@@ -5,9 +5,10 @@ import { Router } from '@angular/router';
 import { TicketService } from '../../../services/ticket/ticket.service';
 import { TourService } from '../../../services/tour/tour.service';
 import { PaymentService } from '../../../services/payment/payment.service';
+import { AuthService } from '../../../services/auth/auth.service';
 import { Ticket } from '../../../models/ticket.model';
 import { Tour } from '../../../models/tour.model';
-import { Payment } from '../../../models/payment.model';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-history',
@@ -41,7 +42,8 @@ export class HistoryComponent implements OnInit {
     private router: Router,
     private ticketService: TicketService,
     private tourService: TourService,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -125,5 +127,22 @@ export class HistoryComponent implements OnInit {
   goToTicketDetails(id: string): void {
     console.log("Details clicked.");
     this.router.navigate(['/ticket'], { queryParams: { id } });
+  }
+
+  exportToExcel() {
+    if (this.tickets.length === 0) {
+        console.warn('No tickets available for export.');
+        return;
+    }
+
+    this.ticketService.exportTicketsToExcel(this.tickets).subscribe({
+      next: (blob) => {
+        const fileName = 'tickets_report.xlsx';
+        saveAs(blob, fileName);
+      },
+      error: (error) => {
+        console.error('Failed to export tickets:', error);
+      }
+    });
   }
 }
