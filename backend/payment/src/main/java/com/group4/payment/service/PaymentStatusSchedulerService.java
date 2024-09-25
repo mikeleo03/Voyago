@@ -18,9 +18,9 @@ public class PaymentStatusSchedulerService {
 
     @Scheduled(fixedRate = 1000)
     public void updateUnverifiedPayments() {
-        LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusMinutes(2);
+        LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusMinutes(5);
 
-        List<Payment> unverifiedPayments = paymentRepository.findByCreatedAtBeforeAndStatus(thirtyMinutesAgo, "UNVERIFIED");
+        List<Payment> unverifiedPayments = paymentRepository.findByPictureIsNullAndCreatedAtBeforeAndStatus(thirtyMinutesAgo, "UNVERIFIED");
 
         for (Payment payment : unverifiedPayments) {
             payment.setStatus("FAILED");

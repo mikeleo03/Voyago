@@ -1,0 +1,65 @@
+<!-- Hero Section -->
+<div class="relative bg-cover bg-center h-[60vh] rounded-b-[3rem] flex items-center justify-center mt-[-5rem]"
+     style="background-image: url('/assets/img/main-bg.png'); background-size: cover;">
+    <div class="absolute inset-0 bg-black bg-opacity-20 rounded-b-[3rem]"></div>
+    <div class="text-center text-white z-10 mb-20">
+        <h1 class="text-5xl font-bold">Ticket Detail</h1>
+    </div>
+</div>
+
+<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mb-8 mx-auto w-10/12 relative grid grid-cols-3 gap-8">
+    <!-- Left Column -->
+    <div class="col-span-2 flex flex-col">
+        <div class="mb-4 flex flex-row">
+            <div class="w-full item-detail mx-2 p-4 border border-gray-300 rounded-3xl">
+                <h3 class="font-semibold">Ticket ID</h3>
+                <p>{{ticketId}}</p>
+            </div>
+            <div class="w-full item-detail mx-2 p-4 border border-gray-300 rounded-3xl">
+                <h3 class="font-semibold">Username</h3>
+                <p>{{ticket?.username}}</p>
+            </div>
+        </div>
+        
+        <!-- Tour -->
+        <div class="tour-item flex items-start p-6 border border-gray-300 rounded-2xl shadow-sm">
+            <!-- Tour Image -->
+            <div class="tour-image w-1/5">
+              <img
+                [src]="tourImageUrl"
+                alt="Tour image"
+                class="w-full h-auto rounded-lg shadow"
+                draggable="false"
+              />
+            </div>
+            
+            <!-- Tour Details -->
+            <div class="tour-details w-2/5 pl-6">
+              <h3 class="text-2xl font-semibold mb-2">{{ tour?.title }}</h3>
+              <p class="text-gray-600 mb-2">{{ tour?.detail }}</p>
+              <p class="text-gray-400">📍 {{ tour?.location }}</p>
+            </div>
+        </div>
+
+        <!-- Facilities Section -->
+        <div class="mt-6 p-4 border rounded-lg shadow-sm">
+            <h3 class="text-2xl font-semibold mb-2">Details</h3>
+            <div class="detail-list">
+                <div *ngFor="let detail of ticket?.ticketDetail" class="detail-item">
+                    {{ detail.name }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column  -->
+    <div class="flex flex-col items-end">
+        <h2 class="text-3xl font-bold text-green-500 mb-8">IDR {{ticket?.price | number}}</h2>
+        <img src="/assets/img/payment-image.jpg" alt="Payment Image" class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
+        <p class="text-gray-600 mb-4"><strong>Payment Date:</strong> {{ payment?.paymentDate | date: 'longDate' }}</p>
+
+        <button *ngIf="showButton" class="bg-yellow-500 text-white px-12 py-2 rounded-3xl mt-auto" (click)="actionButton()">
+            {{ buttonLabel }}
+        </button>
+    </div>
+</div>

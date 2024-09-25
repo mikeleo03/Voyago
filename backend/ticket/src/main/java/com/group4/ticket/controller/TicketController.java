@@ -112,7 +112,7 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.OK).body(rescheduledTicket);
     }
 
-    @GetMapping("/excel")
+    @PostMapping("/excel")
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public void exportTicketToExcel(@RequestBody Map<String, List<Ticket>> requestBody, HttpServletResponse response) throws IOException {
         List<Ticket> listOfTickets = requestBody.get(TICKETS);

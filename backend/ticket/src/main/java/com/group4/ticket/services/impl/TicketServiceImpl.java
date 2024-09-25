@@ -15,6 +15,7 @@ import com.group4.ticket.data.model.TicketDetailKey;
 import com.group4.ticket.data.repository.TicketDetailRepository;
 import com.group4.ticket.data.repository.TicketRepository;
 import com.group4.ticket.dto.TicketDTO;
+import com.group4.ticket.dto.TicketDetailDTO;
 import com.group4.ticket.dto.TicketDetailSaveDTO;
 import com.group4.ticket.dto.TicketSaveDTO;
 import com.group4.ticket.exceptions.ResourceNotFoundException;
@@ -99,9 +100,22 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public TicketDTO getTicketById(String id) {
-        Optional<Ticket> ticket = ticketRepository.findById(id);
-        if (ticket.isPresent()) {
-            return ticketMapper.toTicketDTO(ticket.get());
+        Optional<Ticket> ticketOptional = ticketRepository.findById(id);
+        if (ticketOptional.isPresent()) {
+            Ticket ticket = ticketOptional.get();
+
+            Set<TicketDetail> ticketDetails = ticketDetailRepository.findByTicket(ticket);
+
+            Set<TicketDetailDTO> ticketDetailDTOs = new HashSet<>();
+            for (TicketDetail ticketDetail : ticketDetails) {
+                TicketDetailDTO ticketDetailDTO = ticketDetailMapper.toTicketDetailDTO(ticketDetail);
+                ticketDetailDTOs.add(ticketDetailDTO);
+            }
+
+            TicketDTO ticketDTO = ticketMapper.toTicketDTO(ticket);
+            ticketDTO.setTicketDetails(ticketDetailDTOs);
+
+            return ticketDTO;
         } else {
             throw new ResourceNotFoundException(TICKET_NOT_FOUND + id);
         }

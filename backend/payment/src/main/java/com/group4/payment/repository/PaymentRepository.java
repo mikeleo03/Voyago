@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, String> {
-    List<Payment> findByCreatedAtBeforeAndStatus(LocalDateTime createdAt, String status);
+    List<Payment> findByPictureIsNullAndCreatedAtBeforeAndStatus(LocalDateTime createdAt, String status);
 }

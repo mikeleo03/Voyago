@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketDetailDTO {
+    private String id;
     private String name;
     private String phone;
 }

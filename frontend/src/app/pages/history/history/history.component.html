@@ -1,0 +1,113 @@
+<!-- Hero Section -->
+<div class="relative bg-cover bg-center h-[60vh] rounded-b-[3rem] flex items-center justify-center mt-[-5rem]" style="background-image: url('/assets/img/tour-bg.jpg'); background-size: cover;">
+  <div class="absolute inset-0 bg-black bg-opacity-40 rounded-b-[3rem]"></div>
+  <div class="text-center text-white z-10 mb-20">
+      <h1 class="text-5xl font-bold">Ticket List</h1>
+  </div>
+</div>
+
+<!-- Search Section -->
+<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mx-auto w-10/12 relative">
+  <!-- First Row: Username, Sort by Status, Start Date, End Date -->
+  <div class="flex flex-row justify-start w-full space-x-8 mx-2 mb-4 items-stretch"> <!-- Added items-stretch -->
+      <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">⬆⬇</span>
+          <p class="pb-1 text-gray-600">Sort by Status</p>
+          <select class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="sortStatus">
+              <option value="">None</option>
+              <option value="UNVERIFIED">UNVERIFIED</option>
+              <option value="VERIFIED">VERIFIED</option>
+              <option value="UNUSED">UNUSED</option>
+              <option value="USED">USED</option>
+              <option value="FAILED">FAILED</option>
+          </select>
+      </div>
+      <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500"><i class="fa-regular fa-calendar"></i></span>
+          <p class="pb-1 text-gray-600">Start Date</p>
+          <input type="date" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="startDate" />
+      </div>
+      <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500"><i class="fa-regular fa-calendar"></i></span>
+          <p class="pb-1 text-gray-600">End Date</p>
+          <input type="date" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="endDate" />
+      </div>
+  </div>
+
+  <!-- Second Row: Maximum Price, Minimum Price, Sort by Price, Search Button -->
+  <div class="flex flex-row justify-between w-full space-x-8 mx-2 mb-4 items-stretch"> <!-- Added items-stretch -->
+      <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
+          <p class="pb-1 text-gray-600">Maximum Price</p>
+          <input type="number" placeholder="Maximum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="maxPrice" />
+      </div>
+      <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
+          <p class="pb-1 text-gray-600">Minimum Price</p>
+          <input type="number" placeholder="Minimum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="minPrice" />
+      </div>
+      <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">⬆⬇</span>
+          <p class="pb-1 text-gray-600">Sort by Price</p>
+          <select class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="sortPrice">
+              <option value="">None</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+          </select>
+      </div>
+      <!-- Search Button Container -->
+    <div class="flex w-1/4 flex-col relative self-end">
+      <button 
+        class="bg-yellow-500 text-white p-2 px-8 rounded-3xl transition-transform transform ease-in-out hover:scale-105" 
+        (click)="searchTickets()"
+      >
+        Search
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Tour List -->
+<div class="ticket-list p-8">
+  <div *ngFor="let tour of tours" class="ticket-item flex items-start p-6 border-b border-gray-300">
+    <!-- Tour Image -->
+    <div class="tour-image w-1/5">
+      <img
+        [src]="tourImageUrls[tour.id] ? tourImageUrls[tour.id] : '/assets/img/empty-img.jpg'"
+        alt="Tour image"
+        class="w-full h-auto rounded-lg shadow"
+        draggable="false"
+      />
+    </div>
+    
+    <!-- Tour Details -->
+    <div class="tour-details w-2/5 pl-6">
+      <h2 class="text-2xl font-bold mb-2">{{ tour.title }}</h2>
+      <p class="text-gray-600 mb-2">{{ tour.detail }}</p>
+      <p class="text-gray-400">📍 {{ tour.location }}</p>
+    </div>
+    
+    <!-- Status -->
+    <div class="tour-quota w-1/5 flex items-center justify-center">
+      <p class="text-lg font-medium">{{ status }} available</p>
+    </div>
+    
+    <!-- Tour Price and Details Button -->
+    <div class="tour-price w-1/5 flex flex-col items-center justify-center">
+      <p class="text-xl font-semibold text-green-500 mb-2">IDR {{ tour.prices | number }}</p>
+      <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105">Details</button> <!-- Added hover effect -->
+    </div>
+
+  </div>
+</div>
+
+<!-- Pagination Controls -->
+<div class="pagination flex justify-center items-center space-x-2 mt-6 mb-6">
+  <button class="bg-yellow-500 text-white px-4 py-2 rounded-full" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+  <span *ngFor="let page of [].constructor(totalPages); let i = index">
+    <button class="px-4 py-2 rounded-full" [ngClass]="{ 'bg-yellow-500 text-white': currentPage === i + 1, 'bg-gray-200': currentPage !== i + 1 }" (click)="changePage(i + 1)">
+      {{ i + 1 }}
+    </button>
+  </span>
+  <button class="bg-yellow-500 text-white px-4 py-2 rounded-full" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+</div>

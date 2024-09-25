@@ -1,0 +1,40 @@
+.tour-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 16px;
+    border : 1px solid #ddd;
+}
+  
+.tour-image img {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+  
+  
+.tour-details {
+    padding-left: 24px;
+}
+
+.detail-list {
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+.detail-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.item-detail{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center
+}
