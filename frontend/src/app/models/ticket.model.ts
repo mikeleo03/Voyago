@@ -5,8 +5,8 @@ export interface Ticket {
     tourID: string;
     paymentID: string;
     status: string;
-    startDate: Date;
-    endDate: Date;
+    startDate: number[];
+    endDate: number[];
     price: number;
     isRescheduled: boolean;
     isReviewed: boolean;

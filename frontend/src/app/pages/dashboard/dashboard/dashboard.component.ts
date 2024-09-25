@@ -6,6 +6,9 @@ import { AuthService } from '../../../services/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { UserUpdateDTO } from '../../../models/user.model';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Ticket } from '../../../models/ticket.model';
+import { TicketService, TourService } from '../../../services';
+import { Tour } from '../../../models/tour.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,6 +30,9 @@ export class DashboardComponent {
   userName: string = '';
   userEmail: string = '';
   userPhone: string = '';
+  tickets: Ticket[] = [];
+  tours: any[] = [];
+  tourImageUrls: { [key: string]: string } = {};
 
   @Input() historyItems: any[] = [
     {
@@ -52,8 +58,63 @@ export class DashboardComponent {
     private userService: UserService,
     private authService: AuthService,
     private toastr: ToastrService,
+    private ticketService: TicketService,
+    private tourService: TourService,
     private router: Router
   ) {}
+
+  formatDate(dateArray: number[]): string {
+    const [year, month, day] = dateArray;
+  
+    // Create a new Date object from the array
+    const date = new Date(year, month - 1, day); // month is zero-indexed in JavaScript
+  
+    // Define options for formatting
+    const options: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+  
+    // Format the date
+    return date.toLocaleDateString('en-US', options);
+  }
+
+  searchTickets(page: number = 1, size: number = 3): void {
+    this.ticketService.getAllTicketsByUserID(
+      undefined, // minPrice
+      undefined, // maxPrice
+      undefined, // sortPrice
+      undefined, // sortStatus
+      undefined, // startDate
+      undefined, // endDate
+      page,      // page number
+      size       // size per page
+    ).subscribe(
+      (result) => {
+        this.tickets = result.tickets;
+        this.tours = [];
+  
+        this.tickets.forEach(ticket => {
+          this.tourService.getTourById(ticket.tourID).subscribe(tour => {
+            // Add startDate and endDate from the ticket to the tour object
+            const tourWithDates = { ...tour, startDate: this.formatDate(ticket.startDate), endDate: this.formatDate(ticket.endDate) };
+
+            // Push the modified tour object with startDate and endDate
+            this.tours.push(tourWithDates); 
+  
+            this.tourService.getTourImage(tour.id).subscribe(blob => {
+              const imageUrl = window.URL.createObjectURL(blob);
+              this.tourImageUrls[tour.id] = imageUrl;
+            });
+          });
+        });
+      },
+      (error) => {
+        console.error('Error fetching tickets:', error);
+      }
+    );
+  }
 
   ngOnInit() {
     this.role = this.authService.getRole();
@@ -94,6 +155,8 @@ export class DashboardComponent {
         this.router.navigate(['/login']);
       }
     });
+
+    this.searchTickets();
   }
 
   openEditModal(): void {
