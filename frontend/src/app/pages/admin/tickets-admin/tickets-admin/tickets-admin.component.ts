@@ -113,6 +113,5 @@ export class TicketsAdminComponent implements OnInit {
         console.error('Failed to export tickets:', error);
       }
     });
-}
-
+  }
 }
