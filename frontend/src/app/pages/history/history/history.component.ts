@@ -41,8 +41,7 @@ export class HistoryComponent implements OnInit {
     private authService: AuthService,
     private ticketService: TicketService,
     private tourService: TourService,
-    private paymentService: PaymentService,
-    private authService: AuthService
+    private paymentService: PaymentService
   ) {}
 
   ngOnInit(): void {
