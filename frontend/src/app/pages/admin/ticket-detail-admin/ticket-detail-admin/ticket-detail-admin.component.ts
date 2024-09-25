@@ -59,6 +59,13 @@ export class TicketDetailAdminComponent implements OnInit {
   loadPaymentDetails(paymentId: string) {
     this.paymentService.getPaymentById(paymentId).subscribe((payment: Payment) => {
       this.payment = payment;
+      this.paymentService.getPaymentImage(paymentId).subscribe(imageBlob => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.paymentImageUrl = reader.result as string;
+        };
+        reader.readAsDataURL(imageBlob);
+      });
       this.updateButtonLabel();
     });
 

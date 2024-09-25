@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TicketService } from '../../../services/ticket/ticket.service';
 import { TourService } from '../../../services/tour/tour.service';
-import { AuthService } from '../../../services/auth/auth.service';
+import { PaymentService } from '../../../services/payment/payment.service';
 import { Ticket } from '../../../models/ticket.model';
 import { Tour } from '../../../models/tour.model';
+import { Payment } from '../../../models/payment.model';
 
 @Component({
   selector: 'app-history',
@@ -17,6 +18,10 @@ import { Tour } from '../../../models/tour.model';
 })
 export class HistoryComponent implements OnInit {
   tickets: Ticket[] = [];
+  tourOfTicket: { [key: string]: Tour } = {};
+  ticketImageUrls: { [key: string]: string } = {};
+  displayStatus: { [key: string]: string } = {};
+
   tours: Tour[] = [];
   tourImageUrls: { [key: string]: string } = {};
   currentPage: number = 1;
@@ -36,7 +41,7 @@ export class HistoryComponent implements OnInit {
     private router: Router,
     private ticketService: TicketService,
     private tourService: TourService,
-    private authService: AuthService
+    private paymentService: PaymentService
   ) {}
 
   ngOnInit(): void {
@@ -65,15 +70,10 @@ export class HistoryComponent implements OnInit {
         this.tours = [];
   
         this.tickets.forEach(ticket => {
-          this.tourService.getTourById(ticket.tourID).subscribe(tour => {
-            this.tours.push(tour); 
-  
-            this.tourService.getTourImage(tour.id).subscribe(blob => {
-              const imageUrl = window.URL.createObjectURL(blob);
-              this.tourImageUrls[tour.id] = imageUrl;
-            });
-          });
+          this.fetchTour(ticket);
+          this.fetchStatus(ticket);
         });
+        console.log("Display status: ", this.displayStatus);
       },
       (error) => {
         console.error('Error fetching tickets:', error);
@@ -81,6 +81,29 @@ export class HistoryComponent implements OnInit {
     );
   }
   
+  fetchTour(ticket: Ticket){
+    this.tourService.getTourById(ticket.tourID).subscribe(tour => {
+      this.tourOfTicket[ticket.id] = tour;
+      this.tourService.getTourImage(tour.id).subscribe(blob => {
+        const url = window.URL.createObjectURL(blob);
+        this.tourImageUrls[tour.id] = url;
+      });
+    });
+  }
+
+  fetchStatus(ticket: Ticket) {
+    this.paymentService.getPaymentById(ticket.paymentID).subscribe(payment => {
+      if (payment.status === 'UNVERIFIED') {
+        this.displayStatus[ticket.id] = 'UNVERIFIED';
+      } else if (payment.status === 'VERIFIED' && ticket.status === 'UNUSED') {
+        this.displayStatus[ticket.id] = 'VERIFIED';
+      } else if (payment.status === 'FAILED') {
+        this.displayStatus[ticket.id] = 'FAILED';
+      } else if (ticket.status === 'USED') {
+        this.displayStatus[ticket.id] = 'USED';
+      }
+    });
+  }
 
   changePage(page: number) {
     if (page > 0 && page <= this.totalPages) {
@@ -100,42 +123,7 @@ export class HistoryComponent implements OnInit {
   }
 
   goToTicketDetails(id: string): void {
+    console.log("Details clicked.");
     this.router.navigate(['/ticket'], { queryParams: { id } });
   }
-
-  loadTickets(): void {
-    this.tickets = [];
-    this.tours = [];
-
-    this.ticketService.getAllTicketsByUserID().subscribe({
-        next: (data) => {
-            this.tickets = data.tickets;
-            let tourLoadCount = 0;
-
-            this.tickets.forEach((ticket) => {
-                this.tourService.getTourById(ticket.tourID).subscribe({
-                    next: (tour) => {
-                        this.tours.push(tour);
-
-                        this.tourService.getTourImage(tour.id).subscribe(blob => {
-                            const imageUrl = window.URL.createObjectURL(blob);
-                            this.tourImageUrls[tour.id] = imageUrl;
-
-                            tourLoadCount++;
-                            if (tourLoadCount === this.tickets.length) {
-                                console.log('All tours loaded successfully');
-                            }
-                        });
-                    },
-                    error: (err) => {
-                        console.error(`Error loading tour data for tourId ${ticket.tourID}`, err);
-                    }
-                });
-            });
-        },
-        error: (err) => {
-            console.error('Error loading tickets', err);
-        }
-    });
-}
 }
