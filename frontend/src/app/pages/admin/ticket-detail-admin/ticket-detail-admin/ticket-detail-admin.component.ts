@@ -22,6 +22,7 @@ export class TicketDetailAdminComponent implements OnInit {
   payment: Payment | null = null;
   tour: Tour | null = null;
   tourImageUrl: string = '';
+  paymentImageUrl: string = '';
   buttonLabel: string = '';
   showButton: boolean = true;
 
@@ -57,6 +58,13 @@ export class TicketDetailAdminComponent implements OnInit {
   loadPaymentDetails(paymentId: string) {
     this.paymentService.getPaymentById(paymentId).subscribe((payment: Payment) => {
       this.payment = payment;
+      this.paymentService.getPaymentImage(paymentId).subscribe(imageBlob => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.paymentImageUrl = reader.result as string;
+        };
+        reader.readAsDataURL(imageBlob);
+      });
       this.updateButtonLabel();
     });
   }
