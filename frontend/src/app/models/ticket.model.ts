@@ -36,7 +36,7 @@ export interface TicketDTO {
     price: number;
     isRescheduled: boolean;
     isReviewed: boolean;
-    ticketDetail: TicketDetailDTO[];
+    ticketDetails: TicketDetailDTO[];
 }
 
 export interface TicketDetailDTO {
