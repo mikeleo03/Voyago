@@ -4,8 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TicketService } from '../../../services/ticket/ticket.service';
 import { TourService } from '../../../services/tour/tour.service';
+import { PaymentService } from '../../../services/payment/payment.service';
 import { Ticket } from '../../../models/ticket.model';
 import { Tour } from '../../../models/tour.model';
+import { Payment } from '../../../models/payment.model';
 
 @Component({
   selector: 'app-history',
@@ -18,6 +20,7 @@ export class HistoryComponent implements OnInit {
   tickets: Ticket[] = [];
   tourOfTicket: { [key: string]: Tour } = {};
   ticketImageUrls: { [key: string]: string } = {};
+  displayStatus: { [key: string]: string } = {};
 
   tours: Tour[] = [];
   tourImageUrls: { [key: string]: string } = {};
@@ -38,6 +41,7 @@ export class HistoryComponent implements OnInit {
     private router: Router,
     private ticketService: TicketService,
     private tourService: TourService,
+    private paymentService: PaymentService
   ) {}
 
   ngOnInit(): void {
@@ -62,7 +66,9 @@ export class HistoryComponent implements OnInit {
   
         this.tickets.forEach(ticket => {
           this.fetchTour(ticket);
+          this.fetchStatus(ticket);
         });
+        console.log("Display status: ", this.displayStatus);
       },
       (error) => {
         console.error('Error fetching tickets:', error);
@@ -77,6 +83,20 @@ export class HistoryComponent implements OnInit {
         const url = window.URL.createObjectURL(blob);
         this.tourImageUrls[tour.id] = url;
       });
+    });
+  }
+
+  fetchStatus(ticket: Ticket) {
+    this.paymentService.getPaymentById(ticket.paymentID).subscribe(payment => {
+      if (payment.status === 'UNVERIFIED') {
+        this.displayStatus[ticket.id] = 'UNVERIFIED';
+      } else if (payment.status === 'VERIFIED' && ticket.status === 'UNUSED') {
+        this.displayStatus[ticket.id] = 'VERIFIED';
+      } else if (payment.status === 'FAILED') {
+        this.displayStatus[ticket.id] = 'FAILED';
+      } else if (ticket.status === 'USED') {
+        this.displayStatus[ticket.id] = 'USED';
+      }
     });
   }
 
