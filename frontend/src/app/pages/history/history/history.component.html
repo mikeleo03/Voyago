@@ -67,13 +67,13 @@
   </div>
 </div>
 
-<!-- Tour List -->
+<!-- Ticket List -->
 <div class="ticket-list p-8">
-  <div *ngFor="let tour of tours" class="ticket-item flex items-start p-6 border-b border-gray-300">
-    <!-- Tour Image -->
+  <div *ngFor="let ticket of tickets" class="ticket-item flex items-start p-6 border-b border-gray-300">
+    <!-- Ticket Image -->
     <div class="tour-image w-1/5">
       <img
-        [src]="tourImageUrls[tour.id] ? tourImageUrls[tour.id] : '/assets/img/empty-img.jpg'"
+        [src]="tourImageUrls[tourOfTicket[ticket.id].id] ? tourImageUrls[tourOfTicket[ticket.id].id] : '/assets/img/empty-img.jpg'"
         alt="Tour image"
         class="w-full h-auto rounded-lg shadow"
         draggable="false"
@@ -82,20 +82,20 @@
     
     <!-- Tour Details -->
     <div class="tour-details w-2/5 pl-6">
-      <h2 class="text-2xl font-bold mb-2">{{ tour.title }}</h2>
-      <p class="text-gray-600 mb-2">{{ tour.detail }}</p>
-      <p class="text-gray-400">📍 {{ tour.location }}</p>
+      <h2 class="text-2xl font-bold mb-2">{{ tourOfTicket[ticket.id].title }}</h2>
+      <p class="text-gray-600 mb-2">{{ tourOfTicket[ticket.id].detail }}</p>
+      <p class="text-gray-400">📍 {{ tourOfTicket[ticket.id].location }}</p>
     </div>
     
     <!-- Status -->
     <div class="tour-quota w-1/5 flex items-center justify-center">
-      <p class="text-lg font-medium">{{ status }} available</p>
+      <p class="text-lg font-medium">{{ ticket.status }}</p>
     </div>
     
     <!-- Tour Price and Details Button -->
     <div class="tour-price w-1/5 flex flex-col items-center justify-center">
-      <p class="text-xl font-semibold text-green-500 mb-2">IDR {{ tour.prices | number }}</p>
-      <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105">Details</button> <!-- Added hover effect -->
+      <p class="text-xl font-semibold text-green-500 mb-2">IDR {{ tourOfTicket[ticket.id].prices | number }}</p>
+      <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105" (click)="goToTicketDetails(ticket.id)">Details</button> <!-- Added hover effect -->
     </div>
 
   </div>

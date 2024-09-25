@@ -101,6 +101,13 @@ export const routes: Routes = [
         data: RouterConfig['TICKETS_ADMIN'].data,
     },
     {
+        path: RouterConfig['TICKET_DETAIL'].path,
+        loadChildren: () =>
+            import('./pages/ticket-detail/ticket-detail.routes').then((m) => m.ticketDetailRoutes),
+        title: RouterConfig['TICKET_DETAIL'].title,
+        data: RouterConfig['TICKET_DETAIL'].data,
+    },
+    {
         path: RouterConfig['TICKET_DETAIL_ADMIN'].path,
         loadChildren: () =>
             import('./pages/admin/ticket-detail-admin/ticket-detail-admin.routes').then((m) => m.ticketDetailAdminRoutes),
