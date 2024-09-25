@@ -55,7 +55,7 @@
     <!-- Right Column  -->
     <div class="flex flex-col items-end">
         <h2 class="text-3xl font-bold text-green-500 mb-8">IDR {{ticket?.price | number}}</h2>
-        <img [src]="paymentImageUrl ? paymentImageUrl : '/assets/img/empty-img.jpg'" alt="Payment" class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
+        <img [src]="paymentImageUrl ? paymentImageUrl : '/assets/img/empty-img.jpg'" alt="Payment" draggable="false" class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
         <p class="text-gray-600 mb-4"><strong>Payment Date:</strong> {{ payment?.paymentDate | date: 'longDate' }}</p>
 
         <button 
