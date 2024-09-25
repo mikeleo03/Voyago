@@ -19,6 +19,7 @@ export class ToursAdminComponent implements OnInit {
   currentPage: number = 1;
   totalPages: number = 1;
   limit: number = 10;
+  isLoading: boolean = false;
 
   isModalOpen = false;
   newTour: TourSave = {
@@ -134,6 +135,7 @@ export class ToursAdminComponent implements OnInit {
   saveTour() {
     const imageToUpload = this.selectedImage || undefined;
     this.isSubmitted = true;
+    this.isLoading = true;
     
     this.tourService.createTour(this.newTour, imageToUpload).subscribe(
       () => {
@@ -141,10 +143,12 @@ export class ToursAdminComponent implements OnInit {
         this.resetNewTour();
         this.isModalOpen = false;
         this.toastrService.success('Tour added successfully!');
+        this.isLoading = false;
       },
       (error) => {
         console.error('Error saving tour:', error);
         this.toastrService.warning('Error saving tour:', error);
+        this.isLoading = false;
       }
     );
 }
