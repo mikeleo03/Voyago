@@ -35,8 +35,6 @@ export class HistoryComponent implements OnInit {
   status: string = '';
   startDate?: string;
   endDate?: string;
-  sortPrice: string = '';
-  sortStatus: string = '';
 
   constructor(
     private router: Router,
@@ -56,21 +54,20 @@ export class HistoryComponent implements OnInit {
   }
 
   searchTickets(page: number = this.currentPage): void {
+    const backendPage = page - 1;  // Adjusting for 0-based index
     this.ticketService.getAllTicketsByUserID(
       this.minPrice,
       this.maxPrice,
-      this.sortPrice,
-      this.sortStatus,
       this.startDate,
       this.endDate,
-      page,
+      backendPage,
       this.limit
     ).subscribe(
       (result) => {
         this.tickets = result.tickets;
         this.totalPages = result.totalPages;
         this.tours = [];
-  
+
         this.tickets.forEach(ticket => {
           this.fetchTour(ticket);
           this.fetchStatus(ticket);
@@ -120,7 +117,6 @@ export class HistoryComponent implements OnInit {
     this.status = '';
     this.startDate = undefined;
     this.endDate = undefined;
-    this.sortPrice = '';
     this.searchTickets();
   }
 

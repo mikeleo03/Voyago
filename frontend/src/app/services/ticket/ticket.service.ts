@@ -43,8 +43,6 @@ export class TicketService {
   getAllTicketsByUserID(
     minPrice?: number,
     maxPrice?: number,
-    sortPrice?: string,
-    sortStatus?: string,
     startDate?: string,
     endDate?: string,
     page: number = 0,
@@ -53,8 +51,6 @@ export class TicketService {
     let params = new HttpParams();
     if (minPrice !== undefined) params = params.append('minPrice', minPrice.toString());
     if (maxPrice !== undefined) params = params.append('maxPrice', maxPrice.toString());
-    if (sortPrice) params = params.append('sortPrice', sortPrice);
-    if (sortStatus) params = params.append('sortStatus', sortStatus);
     if (startDate) params = params.append('startDate', startDate);
     if (endDate) params = params.append('endDate', endDate);
     params = params.append('page', page.toString());

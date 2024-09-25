@@ -65,8 +65,6 @@ export class DashboardComponent {
     this.ticketService.getAllTicketsByUserID(
       undefined, // minPrice
       undefined, // maxPrice
-      undefined, // sortPrice
-      undefined, // sortStatus
       undefined, // startDate
       undefined, // endDate
       page,      // page number
