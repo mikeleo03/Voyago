@@ -8,6 +8,7 @@ import { PaymentService } from '../../../services/payment/payment.service';
 import { Ticket } from '../../../models/ticket.model';
 import { Tour } from '../../../models/tour.model';
 import { Payment } from '../../../models/payment.model';
+import { AuthService } from '../../../services';
 
 @Component({
   selector: 'app-history',
@@ -39,6 +40,7 @@ export class HistoryComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private authService: AuthService,
     private ticketService: TicketService,
     private tourService: TourService,
     private paymentService: PaymentService
