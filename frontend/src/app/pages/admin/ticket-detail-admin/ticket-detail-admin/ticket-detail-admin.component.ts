@@ -25,6 +25,7 @@ export class TicketDetailAdminComponent implements OnInit {
   paymentImageUrl: string = '';
   buttonLabel: string = '';
   showButton: boolean = true;
+  isLoading: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -67,6 +68,14 @@ export class TicketDetailAdminComponent implements OnInit {
       });
       this.updateButtonLabel();
     });
+
+    this.paymentService.getPaymentImage(paymentId).subscribe(imageBlob => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.paymentImageUrl = reader.result as string;
+      };
+      reader.readAsDataURL(imageBlob);
+    });
   }
 
   loadTourDetails(tourId: string) {
@@ -97,16 +106,20 @@ export class TicketDetailAdminComponent implements OnInit {
 
   actionButton() {
     if (this.payment) {
+      this.isLoading = true;
       if (this.payment?.status === 'UNVERIFIED') {
         this.paymentService.changeVerifyStatus(this.payment.id, 'VERIFIED').subscribe(() => {
           this.loadTicketDetails();
         });
+        this.isLoading = false;
       } else if (this.ticket?.status === 'UNUSED') {
         this.ticketService.updateTicketStatus(this.ticketId, 'USED').subscribe(() => {
           this.loadTicketDetails();
         });
+        this.isLoading = false;
       } else {
         this.showButton = false;
+        this.isLoading = false;
       }
     }
   }

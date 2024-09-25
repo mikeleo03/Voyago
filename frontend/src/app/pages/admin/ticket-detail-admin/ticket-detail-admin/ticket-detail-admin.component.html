@@ -7,7 +7,7 @@
     </div>
 </div>
 
-<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mb-8 mx-auto w-10/12 relative grid grid-cols-3 gap-8">
+<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mb-12 mx-auto w-10/12 relative grid grid-cols-3 gap-8">
     <!-- Left Column -->
     <div class="col-span-2 flex flex-col">
         <div class="mb-4 flex flex-row">
@@ -26,7 +26,7 @@
             <!-- Tour Image -->
             <div class="tour-image w-1/5">
               <img
-                [src]="tourImageUrl"
+                [src]="tourImageUrl ? tourImageUrl : '/assets/img/empty-img.jpg'"
                 alt="Tour image"
                 class="w-full h-auto rounded-lg shadow"
                 draggable="false"
@@ -34,7 +34,7 @@
             </div>
             
             <!-- Tour Details -->
-            <div class="tour-details w-2/5 pl-6">
+            <div class="flex justify-center flex-col tour-details w-4/5 pl-6">
               <h3 class="text-2xl font-semibold mb-2">{{ tour?.title }}</h3>
               <p class="text-gray-600 mb-2">{{ tour?.detail }}</p>
               <p class="text-gray-400">📍 {{ tour?.location }}</p>
@@ -55,11 +55,24 @@
     <!-- Right Column  -->
     <div class="flex flex-col items-end">
         <h2 class="text-3xl font-bold text-green-500 mb-8">IDR {{ticket?.price | number}}</h2>
-        <img src="/assets/img/payment-image.jpg" alt="Payment Image" class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
+        <img [src]="paymentImageUrl ? paymentImageUrl : '/assets/img/empty-img.jpg'" alt="Payment" draggable="false" class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
         <p class="text-gray-600 mb-4"><strong>Payment Date:</strong> {{ payment?.paymentDate | date: 'longDate' }}</p>
 
-        <button *ngIf="showButton" class="bg-yellow-500 text-white px-12 py-2 rounded-3xl mt-auto" (click)="actionButton()">
-            {{ buttonLabel }}
+        <button 
+            *ngIf="showButton" 
+            class="bg-yellow-500 rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-12"
+            [disabled]="isLoading" 
+            [ngClass]="{ 'opacity-50 cursor-not-allowed': isLoading, 'hover:cursor-pointer': !isLoading }" 
+            (click)="actionButton()"
+        >
+            <span *ngIf="!isLoading">{{ buttonLabel }}</span>
+            <span *ngIf="isLoading">
+                <svg class="inline mr-2 w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+            </span>
         </button>
     </div>
 </div>

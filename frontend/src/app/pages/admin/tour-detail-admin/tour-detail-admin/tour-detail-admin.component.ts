@@ -134,15 +134,19 @@ export class TourDetailAdminComponent implements OnInit {
   saveTour(): void {
     if (this.tourId) {
       this.isSubmitted = true;
+      this.loading = true;
       const imageToUpload = this.selectedImageFile || undefined;
       this.tourService.updateTour(this.tourId as string, this.newTour, imageToUpload).subscribe(() => {
         this.isModalOpen = false;
         this.getTourDetails(this.tourId as string);
+        this.loading = false;
       }, (error) => {
         console.error('Error updating tour:', error);
+        this.loading = false;
       });
     } else {
       console.error('Tour ID is null, cannot update tour.');
+      this.loading = false;
     }
   }
 

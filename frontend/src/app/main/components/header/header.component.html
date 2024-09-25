@@ -12,9 +12,13 @@
     <!-- Center side (Navigation Links) -->
     <div class="hidden md:flex space-x-20">
         <a (click)="navigateToTours()" class="text-white text-lg hover:underline cursor-pointer">Tours</a>
-        <a (click)="navigateToHistory()" class="text-white text-lg hover:underline cursor-pointer">History</a>
         <!-- Conditionally render "Customer" or "Contact" -->
-        <a *ngIf="role === 'Admin'; else contactLink" (click)="navigateToCustomers()" class="text-white text-lg hover:underline cursor-pointer">Customer</a>
+        <a *ngIf="role === 'Admin'; else historyLink" (click)="navigateToTickets()" class="text-white text-lg hover:underline cursor-pointer">Tickets</a>
+        <ng-template #historyLink>
+            <a (click)="navigateToHistory()" class="text-white text-lg hover:underline cursor-pointer">History</a>
+        </ng-template>
+        <!-- Conditionally render "Customer" or "Contact" -->
+        <a *ngIf="role === 'Admin'; else contactLink" (click)="navigateToCustomers()" class="text-white text-lg hover:underline cursor-pointer">Customers</a>
         <ng-template #contactLink>
             <a href="/" class="text-white text-lg hover:underline">Contact</a>
         </ng-template>

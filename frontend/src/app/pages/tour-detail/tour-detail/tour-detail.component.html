@@ -34,7 +34,7 @@
         <div class="flex flex-col items-end mt-10 space-y-4">
             <p class="text-lg font-semibold">Seats Available: {{ tourDetails?.quota }}</p>
             <p class="text-xl font-bold text-green-500">IDR {{ tourDetails?.prices | number }}</p>
-            <button class="bg-yellow-500 text-white px-12 py-2 rounded-3xl" (click)="bookTour()">
+            <button class="bg-yellow-500 transition-transform transform ease-in-out hover:scale-105 cursor-pointer font-semibold text-white px-12 py-2 rounded-3xl" (click)="bookTour()">
                 Book Now
             </button>
         </div>

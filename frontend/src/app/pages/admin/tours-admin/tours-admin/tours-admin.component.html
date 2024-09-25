@@ -117,7 +117,7 @@
           <h3 class="text-xl font-semibold mb-2">Facilities</h3>
           <div class="flex items-center mb-2">
             <input type="text" [(ngModel)]="newFacility" placeholder="Add Facility" class="border p-2 rounded w-3/4" />
-            <button class="bg-green-500 text-white ml-4 px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="addFacility()">
+            <button class="bg-green-500 text-white ml-4 px-6 py-2 rounded-xl font-semibold transition-transform transform ease-in-out hover:scale-105 cursor-pointer" (click)="addFacility()">
               Add
             </button>
           </div>
@@ -134,7 +134,7 @@
     </div>
 
     <div class="flex items-center mt-6">
-      <label class="bg-yellow-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer flex items-center">
+      <label class="bg-yellow-500 text-white px-4 py-2 rounded-xl font-semibold transition-transform transform ease-in-out hover:scale-105 cursor-pointer flex items-center">
           Add image
           <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" required />
       </label>
@@ -142,13 +142,23 @@
       
       <div class="flex justify-end space-x-4">
           <!-- Save button with form validation -->
-          <button [disabled]="!isFormValid()" 
-                  class="bg-blue-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" 
-                  (click)="saveTour()">
-              Save
+          <button 
+              type="button" 
+              class="bg-[#0A5185] w-full rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-6"
+              [disabled]="!isFormValid() || isLoading" 
+              [ngClass]="{ 'opacity-50 cursor-not-allowed': !isFormValid() || isLoading, 'hover:cursor-pointer': !!isFormValid() && !isLoading }"
+              (click)="saveTour()"
+          >
+              <span *ngIf="!isLoading">Create Tour</span>
+              <span *ngIf="isLoading">
+                  <svg class="inline mr-2 w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating...
+              </span>
           </button>
-          <button class="bg-red-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" 
-                  (click)="isModalOpen = false">
+          <button type="button" class="bg-red-500 text-white px-4 py-2 rounded-xl font-semibold transition-transform duration-300 transform hover:scale-105" (click)="isModalOpen = false">
               Cancel
           </button>
       </div>

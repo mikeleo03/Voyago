@@ -6,6 +6,9 @@ import { AuthService } from '../../../services/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { UserUpdateDTO } from '../../../models/user.model';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Ticket } from '../../../models/ticket.model';
+import { TicketService, TourService } from '../../../services';
+import { Tour } from '../../../models/tour.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,6 +21,7 @@ export class DashboardComponent {
   isModalOpen: boolean = false;
   dashboardForm!: FormGroup;
   isLoading: boolean = false;
+  role: string = "";
 
   selectedImageFile: File | null = null;
   selectedImageName: string = '/assets/img/default.png';
@@ -26,35 +30,75 @@ export class DashboardComponent {
   userName: string = '';
   userEmail: string = '';
   userPhone: string = '';
-
-  @Input() historyItems: any[] = [
-    {
-      title: 'Lorem Ipsum 1',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquet eget mauris vitae laoreet. Ut odio nisi, elementum vitae gravida nec, fermentum scelerisque arcu.',
-      date: 'September 12th, 2024',
-      price: 'Rp 2.000.000,00',
-      imageUrl: '/assets/img/tour1.png'
-    },
-    {
-      title: 'Lorem Ipsum 2',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquet eget mauris vitae laoreet. Ut odio nisi, elementum vitae gravida nec, fermentum scelerisque arcu.',
-      date: 'September 12th, 2024',
-      price: 'Rp 2.000.000,00',
-      imageUrl: '/assets/img/tour2.png'
-    }
-  ];
+  tickets: Ticket[] = [];
+  tours: any[] = [];
+  tourImageUrls: { [key: string]: string } = {};
   
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
     private authService: AuthService,
     private toastr: ToastrService,
+    private ticketService: TicketService,
+    private tourService: TourService,
     private router: Router
   ) {}
 
+  formatDate(dateArray: number[]): string {
+    const [year, month, day] = dateArray;
+  
+    // Create a new Date object from the array
+    const date = new Date(year, month - 1, day); // month is zero-indexed in JavaScript
+  
+    // Define options for formatting
+    const options: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+  
+    // Format the date
+    return date.toLocaleDateString('en-US', options);
+  }
+
+  searchTickets(page: number = 1, size: number = 3): void {
+    this.ticketService.getAllTicketsByUserID(
+      undefined, // minPrice
+      undefined, // maxPrice
+      undefined, // sortPrice
+      undefined, // sortStatus
+      undefined, // startDate
+      undefined, // endDate
+      page,      // page number
+      size       // size per page
+    ).subscribe(
+      (result) => {
+        this.tickets = result.tickets;
+        this.tours = [];
+  
+        this.tickets.forEach(ticket => {
+          this.tourService.getTourById(ticket.tourID).subscribe(tour => {
+            // Add startDate and endDate from the ticket to the tour object
+            const tourWithDates = { ...tour, startDate: this.formatDate(ticket.startDate), endDate: this.formatDate(ticket.endDate) };
+
+            // Push the modified tour object with startDate and endDate
+            this.tours.push(tourWithDates); 
+  
+            this.tourService.getTourImage(tour.id).subscribe(blob => {
+              const imageUrl = window.URL.createObjectURL(blob);
+              this.tourImageUrls[tour.id] = imageUrl;
+            });
+          });
+        });
+      },
+      (error) => {
+        console.error('Error fetching tickets:', error);
+      }
+    );
+  }
+
   ngOnInit() {
+    this.role = this.authService.getRole();
     // Initialize the form
     this.dashboardForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -92,6 +136,8 @@ export class DashboardComponent {
         this.router.navigate(['/login']);
       }
     });
+
+    this.searchTickets();
   }
 
   openEditModal(): void {

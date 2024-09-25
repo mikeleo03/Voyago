@@ -8,7 +8,7 @@
 </div>
 
 <!-- Tour Detail Section -->
-<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mb-8 mx-auto w-10/12 relative grid grid-cols-3 gap-8">
+<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mb-16 mx-auto w-10/12 relative grid grid-cols-3 gap-8">
     <!-- Left Side: Description and Facilities -->
     <div class="col-span-2 flex flex-col">
         <h2 class="text-3xl font-semibold mb-4">Description</h2>
@@ -34,7 +34,7 @@
         <div class="flex flex-col items-end mt-10 space-y-4">
             <p class="text-lg font-semibold">Seats Available: {{ tourDetails?.quota }}</p>
             <p class="text-xl font-bold text-green-500">IDR {{ tourDetails?.prices | number }}</p>
-            <button class="bg-yellow-500 text-white px-12 py-2 rounded-3xl" (click)="openEditModal()">
+            <button class="bg-yellow-500 transition-transform transform ease-in-out hover:scale-105 cursor-pointer font-semibold text-white px-12 py-2 rounded-3xl" (click)="openEditModal()">
                 Edit
             </button>
         </div>
@@ -92,7 +92,7 @@
                     <div class="flex items-center mb-2">
                         <input type="text" [(ngModel)]="newFacility" placeholder="Add Facility"
                                class="border p-2 rounded w-3/4" />
-                        <button class="bg-green-500 text-white ml-4 px-4 py-2 rounded-3xl" (click)="addFacility()">
+                        <button class="bg-green-500 text-white ml-4 px-6 py-2 rounded-xl font-semibold transition-transform transform ease-in-out hover:scale-105 cursor-pointer" (click)="addFacility()">
                             Add
                         </button>
                     </div>
@@ -113,21 +113,29 @@
 
         <!-- Save and Cancel Buttons -->
         <div class="flex items-center mt-6">
-            <label class="bg-yellow-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer flex items-center">
+            <label class="bg-yellow-500 text-white px-4 py-2 rounded-xl font-semibold transition-transform transform ease-in-out hover:scale-105 cursor-pointer flex items-center">
                 Add image
                 <input type="file" (change)="onImageSelected($event)" accept="image/*" class="hidden" required />
             </label>
             <span class="text-gray-600 ml-4 flex-grow">{{ selectedImageName }}</span>
             <div class="flex justify-end space-x-4">
-                <!-- Save Button -->
-                <button [disabled]="!isFormValid()" 
-                        class="bg-blue-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:bg-blue-700 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" 
-                        (click)="saveTour()">
-                    Save
+                <button 
+                    type="button" 
+                    class="bg-[#0A5185] w-full rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-6"
+                    [disabled]="loading" 
+                    [ngClass]="{ 'opacity-50 cursor-not-allowed': loading, 'hover:cursor-pointer': !loading }"
+                    (click)="saveTour()"
+                >
+                    <span *ngIf="!loading">Update</span>
+                    <span *ngIf="loading">
+                        <svg class="inline mr-2 w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Updating...
+                    </span>
                 </button>
-                <!-- Cancel Button -->
-                <button class="bg-red-500 text-white px-4 py-2 rounded-3xl transition-transform transform ease-in-out hover:bg-red-700 hover:scale-105" 
-                        (click)="isModalOpen = false">
+                <button type="button" class="bg-red-500 text-white px-4 py-2 rounded-xl font-semibold transition-transform duration-300 transform hover:scale-105" (click)="isModalOpen = false">
                     Cancel
                 </button>
             </div>
