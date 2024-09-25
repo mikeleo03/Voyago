@@ -63,11 +63,11 @@ export class LoginComponent {
             this.toastrService.error(error.error.error, 'Validation Error');
           } else {
             // Handle unexpected format of 400 errors
-            this.toastrService.error('Bad Request: Please check your inputs.');
+            this.toastrService.error("Please check your username or password.", 'Bad Request');
           }
         } else if (error.status === 401) {
           // Handle 401 Unauthorized errors
-          this.toastrService.error('Unauthorized: Invalid username or password.');
+          this.toastrService.error("Please check your username or password.", 'Bad Request');
         } else {
           // Handle any other unexpected errors
           this.toastrService.error("Please check your username or password.", 'Bad Request');
