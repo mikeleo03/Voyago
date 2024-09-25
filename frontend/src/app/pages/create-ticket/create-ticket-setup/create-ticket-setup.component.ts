@@ -96,8 +96,11 @@ export class CreateTicketSetupComponent implements OnInit {
 
   // Calculate total price based on the number of customers
   get totalPrice(): number {
-    return this.customers.length * this.ticketPrice;
+    return this.numberOfDays > 0 
+        ? this.customers.length * this.ticketPrice * this.numberOfDays
+        : 0;
   }
+
 
   // Custom validator for the date fields (must be today or in the future)
   dateValidator(control: AbstractControl): ValidationErrors | null {
@@ -109,6 +112,21 @@ export class CreateTicketSetupComponent implements OnInit {
       return { invalidDate: true };
     }
     return null;
+  }
+
+  // Helper method to calculate the number of days between startDate and endDate
+  get numberOfDays(): number {
+    const startDate = this.ticketForm.get('startDate')?.value;
+    const endDate = this.ticketForm.get('endDate')?.value;
+
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const timeDifference = end.getTime() - start.getTime();
+      const dayDifference = timeDifference / (1000 * 3600 * 24); // Convert time difference to days
+      return dayDifference > 0 ? dayDifference : 0;
+    }
+    return 0; // If dates are not valid, return 0
   }
 
   // Custom validator for ensuring endDate is greater than startDate

@@ -115,6 +115,12 @@
                         <div class="font-semibold">Tickets ordered</div>
                         <div>{{ customers.length }} tickets</div> <!-- Bind tickets ordered to the number of customers -->
                     </div>
+
+                    <!-- Dynamically calculate the number of days -->
+                    <div class="flex justify-between text-gray-500">
+                        <div class="font-semibold">Number of Days</div>
+                        <div>{{ numberOfDays }} days</div> <!-- Use numberOfDays to display the correct value -->
+                    </div>
                     
                     <!-- Price Summary -->
                     <div class="flex justify-between text-gray-500">

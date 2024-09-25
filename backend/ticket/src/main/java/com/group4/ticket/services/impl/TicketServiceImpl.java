@@ -1,6 +1,7 @@
 package com.group4.ticket.services.impl;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -129,42 +130,54 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket = ticketMapper.toTicket(ticketSaveDTO);
         logger.info("Ticket: {}", ticket);
 
-        // Step 2: Set the ticket price based on the tour
-        Mono<Integer> tourPriceMono = tourClient.getTourPriceById(ticket.getTourID());
-        Integer price = tourPriceMono.block();
-        Integer quantity = ticketSaveDTO.getTicketDetails().size();
-        ticket.setPrice(price * quantity);
+        // Step 2: Calculate the number of days (ensure dates are valid)
+        LocalDate startDate = ticketSaveDTO.getStartDate();
+        LocalDate endDate = ticketSaveDTO.getEndDate();
+        long numberOfDays = 0;
 
-        // Step 3: Generate payment and get the paymentID
+        if (startDate != null && endDate != null && !endDate.isBefore(startDate)) {
+            numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
+        }
+
+        if (numberOfDays <= 0) {
+            logger.warn("Invalid dates provided, setting ticket price to 0");
+            ticket.setPrice(0);
+        } else {
+            // Step 3: Set the ticket price based on the tour
+            Mono<Integer> tourPriceMono = tourClient.getTourPriceById(ticket.getTourID());
+            Integer pricePerDay = tourPriceMono.block();
+            Integer quantity = ticketSaveDTO.getTicketDetails().size();
+            
+            // Multiply by the number of days and the number of tickets (quantity)
+            ticket.setPrice(pricePerDay * quantity * (int) numberOfDays);
+        }
+
+        // Step 4: Generate payment and get the paymentID
         Mono<String> paymentIDMono = paymentClient.createPayment(ticket.getPrice());
         String paymentID = paymentIDMono.block();
         ticket.setPaymentID(paymentID);
 
-        // Step 4: Save the ticket entity (this will cascade and save the ticket details as well)
+        // Step 5: Save the ticket entity (this will cascade and save the ticket details as well)
         logger.info("Saving ticket with TourID: {}", ticket.getTourID());
         Ticket savedTicket = ticketRepository.save(ticket);  // Ensure cascade is enabled
-
         logger.info("Ticket created successfully with ID: {}", savedTicket.getId());
 
         Set<TicketDetail> ticketDetails = new HashSet<>();
-        
-        // Step 5: Set the ticket reference for each TicketDetail and save
-        for (TicketDetailSaveDTO ticketDetailSaveDTO : ticketSaveDTO.getTicketDetails()) {
-            // Start from the key
-            TicketDetailKey key = new TicketDetailKey(UUID.randomUUID().toString(), savedTicket.getId());
 
+        // Step 6: Set the ticket reference for each TicketDetail and save
+        for (TicketDetailSaveDTO ticketDetailSaveDTO : ticketSaveDTO.getTicketDetails()) {
+            TicketDetailKey key = new TicketDetailKey(UUID.randomUUID().toString(), savedTicket.getId());
             TicketDetail ticketDetail = ticketDetailMapper.toTicketDetail(ticketDetailSaveDTO);
             ticketDetail.setId(key); // Set the key to each detail
             ticketDetail.setTicket(savedTicket); // Assign the saved ticket to each detail
-            
+
             ticketDetails.add(ticketDetail); // Add the detail to the list
         }
 
-        // Step 6: Save the ticket details (this is usually done automatically if cascading is set correctly)
-        // If cascading is NOT set in the TicketDetail, uncomment this line:
+        // Step 7: Save the ticket details (this is usually done automatically if cascading is set correctly)
         ticketDetailRepository.saveAll(ticketDetails);
 
-        // Step 7 : Update the tour quantity
+        // Step 8: Update the tour quantity
         tourClient.updateTourQuantityById(savedTicket.getTourID(), savedTicket.getTicketDetails().size()).block();
 
         // Return the mapped TicketDTO
