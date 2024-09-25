@@ -18,6 +18,7 @@ export class DashboardComponent {
   isModalOpen: boolean = false;
   dashboardForm!: FormGroup;
   isLoading: boolean = false;
+  role: string = "";
 
   selectedImageFile: File | null = null;
   selectedImageName: string = '/assets/img/default.png';
@@ -55,6 +56,7 @@ export class DashboardComponent {
   ) {}
 
   ngOnInit() {
+    this.role = this.authService.getRole();
     // Initialize the form
     this.dashboardForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],

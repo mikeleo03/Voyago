@@ -13,7 +13,7 @@
     <div class="hidden md:flex space-x-20">
         <a (click)="navigateToTours()" class="text-white text-lg hover:underline cursor-pointer">Tours</a>
         <!-- Conditionally render "Customer" or "Contact" -->
-        <a *ngIf="role === 'Admin'; else contactLink" (click)="navigateToTickets()" class="text-white text-lg hover:underline cursor-pointer">Tickets</a>
+        <a *ngIf="role === 'Admin'; else historyLink" (click)="navigateToTickets()" class="text-white text-lg hover:underline cursor-pointer">Tickets</a>
         <ng-template #historyLink>
             <a (click)="navigateToHistory()" class="text-white text-lg hover:underline cursor-pointer">History</a>
         </ng-template>
