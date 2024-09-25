@@ -33,25 +33,6 @@ export class DashboardComponent {
   tickets: Ticket[] = [];
   tours: any[] = [];
   tourImageUrls: { [key: string]: string } = {};
-
-  @Input() historyItems: any[] = [
-    {
-      title: 'Lorem Ipsum 1',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquet eget mauris vitae laoreet. Ut odio nisi, elementum vitae gravida nec, fermentum scelerisque arcu.',
-      date: 'September 12th, 2024',
-      price: 'Rp 2.000.000,00',
-      imageUrl: '/assets/img/tour1.png'
-    },
-    {
-      title: 'Lorem Ipsum 2',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquet eget mauris vitae laoreet. Ut odio nisi, elementum vitae gravida nec, fermentum scelerisque arcu.',
-      date: 'September 12th, 2024',
-      price: 'Rp 2.000.000,00',
-      imageUrl: '/assets/img/tour2.png'
-    }
-  ];
   
   constructor(
     private fb: FormBuilder,

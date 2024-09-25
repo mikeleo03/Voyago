@@ -40,6 +40,11 @@ export class HistoryComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const currentUsername = this.authService.getCurrentUsername();
+    if (!currentUsername) {
+      this.router.navigate(['/login']);
+    };
+
     this.searchTickets();
   }
 
