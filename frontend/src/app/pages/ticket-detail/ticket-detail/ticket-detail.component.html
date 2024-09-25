@@ -22,7 +22,7 @@
             <!-- Tour Image -->
             <div class="tour-image w-1/5">
               <img
-                [src]="tourImageUrl"
+                [src]="tourImageUrl ? tourImageUrl : '/assets/img/empty-img.jpg'"
                 alt="Tour image"
                 class="w-full h-auto rounded-lg shadow"
                 draggable="false"
@@ -30,7 +30,7 @@
             </div>
             
             <!-- Tour Details -->
-            <div class="tour-details w-2/5 pl-6">
+            <div class="tour-details w-full pl-6">
               <h3 class="text-2xl font-semibold mb-2">{{ tour?.title }}</h3>
               <p class="text-gray-600 mb-2">{{ tour?.detail }}</p>
               <p class="text-gray-400">📍 {{ tour?.location }}</p>
@@ -52,15 +52,9 @@
     <div class="flex flex-col items-end">
         <h2 class="text-3xl font-bold text-green-500 mb-8">IDR {{ticket?.price | number}}</h2>
 
-        <ng-container *ngIf="payment?.status === 'COMPLETED'; else paymentNotCompleted">
-            <img [src]="payment?.picture" alt="Payment Image" class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
+        <ng-container *ngIf="paymentImageUrl">
+            <img [src]="paymentImageUrl" alt="Payment Image" class="rounded-lg shadow mb-4 w-[300px] h-[240px] object-cover" />
             <p class="text-gray-600 mb-4"><strong>Payment Date:</strong> {{ payment?.paymentDate | date: 'longDate' }}</p>
         </ng-container>
-
-        <ng-template #paymentNotCompleted>
-            <button *ngIf="payment?.status === 'PENDING'" class="bg-yellow-500 text-white px-12 py-2 rounded-3xl mt-auto" (click)="addProofOfPayment()">
-                Add Proof of Payment
-            </button>
-        </ng-template>
     </div>
 </div>

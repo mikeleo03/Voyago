@@ -21,6 +21,7 @@ export class TicketDetailComponent implements OnInit {
   payment: Payment | null = null;
   tour: Tour | null = null;
   tourImageUrl: string = '';
+  paymentImageUrl: string = '';
   buttonLabel: string = '';
   showButton: boolean = true;
   selectedFile: File | null = null;
@@ -52,6 +53,14 @@ export class TicketDetailComponent implements OnInit {
     this.paymentService.getPaymentById(paymentId).subscribe((payment: Payment) => {
       this.payment = payment;
     });
+
+    this.paymentService.getPaymentImage(paymentId).subscribe(imageBlob => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.paymentImageUrl = reader.result as string;
+      };
+      reader.readAsDataURL(imageBlob);
+    });
   }
 
   loadTourDetails(tourId: string) {
@@ -66,29 +75,5 @@ export class TicketDetailComponent implements OnInit {
       };
       reader.readAsDataURL(imageBlob);
     });
-  }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-    }
-  }
-
-  addProofOfPayment(): void {
-    if (this.selectedFile) {
-      this.paymentService.uploadPaymentEvidence(this.ticketId!, this.selectedFile).subscribe({
-        next: (response: Payment) => {
-          console.log('Payment evidence uploaded successfully', response);
-          this.loadPaymentDetails(this.ticketId!);
-          this.selectedFile = null;
-        },
-        error: (err) => {
-          console.error('Error uploading payment evidence', err);
-        }
-      });
-    } else {
-      console.warn('No file selected for upload');
-    }
   }
 }
