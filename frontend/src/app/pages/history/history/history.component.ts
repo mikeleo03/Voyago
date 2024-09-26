@@ -28,6 +28,7 @@ export class HistoryComponent implements OnInit {
   currentPage: number = 1;
   totalPages: number = 1;
   limit: number = 10;
+  totalItems = 0;
 
   // Search criteria
   minPrice?: number;
@@ -66,6 +67,7 @@ export class HistoryComponent implements OnInit {
       (result) => {
         this.tickets = result.tickets;
         this.totalPages = result.totalPages;
+        this.totalItems = result.totalItems;
         this.tours = [];
 
         this.tickets.forEach(ticket => {
@@ -131,14 +133,23 @@ export class HistoryComponent implements OnInit {
         return;
     }
 
-    this.ticketService.exportTicketsToExcel(this.tickets).subscribe({
-      next: (blob) => {
-        const fileName = 'tickets_report.xlsx';
-        saveAs(blob, fileName);
-      },
-      error: (error) => {
-        console.error('Failed to export tickets:', error);
-      }
+    this.ticketService.getAllTicketsByUserID(
+      this.minPrice,
+      this.maxPrice,
+      this.startDate,
+      this.endDate,
+      0,
+      this.totalItems
+    ).subscribe(response => {
+      this.ticketService.exportTicketsToExcel(response.tickets).subscribe({
+        next: (blob) => {
+          const fileName = 'tickets_report.xlsx';
+          saveAs(blob, fileName);
+        },
+        error: (error) => {
+          console.error('Failed to export tickets:', error);
+        }
+      });
     });
   }
 }

@@ -33,6 +33,7 @@ export class TicketsAdminComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 10;
   totalPages = 0;
+  totalItems = 0;
 
   constructor(
     private route: ActivatedRoute, 
@@ -65,6 +66,7 @@ export class TicketsAdminComponent implements OnInit {
     ).subscribe(response => {
       this.tickets = response.tickets;
       this.totalPages = response.totalPages;
+      this.totalItems = response.totalItems;
       
       this.tickets.forEach(ticket => {
         if (ticket.status === 'USED' || ticket.status === 'FAILED') {
@@ -104,14 +106,25 @@ export class TicketsAdminComponent implements OnInit {
         return;
     }
 
-    this.ticketService.exportTicketsToExcel(this.tickets).subscribe({
-      next: (blob) => {
-        const fileName = 'tickets_report.xlsx';
-        saveAs(blob, fileName);
-      },
-      error: (error) => {
-        console.error('Failed to export tickets:', error);
-      }
+    this.ticketService.getAllTickets(
+      this.minPrice,
+      this.maxPrice,
+      this.sortPrice,
+      this.sortStatus,
+      this.startDate,
+      this.endDate,
+      0,
+      this.totalItems
+    ).subscribe(response => {
+      this.ticketService.exportTicketsToExcel(response.tickets).subscribe({
+        next: (blob) => {
+          const fileName = 'tickets_report.xlsx';
+          saveAs(blob, fileName);
+        },
+        error: (error) => {
+          console.error('Failed to export tickets:', error);
+        }
+      });
     });
   }
 }
