@@ -52,10 +52,9 @@ public class UserServiceImpl implements UserService {
     private final AuthClient authClient;
 
     private static final String USER_NOT_FOUND = "User not found";
+    private static final String UPLOAD_DIR = "src/main/resources/static/assets/";
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
-
-    private final String uploadDir = "src/main/resources/static/assets/";
 
     @Autowired
     public UserServiceImpl(UserMapper userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder, AuthClient authClient) {
@@ -228,7 +227,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String saveImage(MultipartFile file) {
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path path = Paths.get(uploadDir + fileName);
+        Path path = Paths.get(UPLOAD_DIR + fileName);
         try {
             Files.write(path, file.getBytes());
             return fileName;

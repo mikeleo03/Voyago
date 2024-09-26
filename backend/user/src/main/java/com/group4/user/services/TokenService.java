@@ -38,7 +38,7 @@ public class TokenService {
                 return list.stream()
                         .filter(String.class::isInstance)
                         .map(String.class::cast)
-                        .collect(Collectors.toList());
+                        .toList();
             }
             return new ArrayList<>(); // If roles are not found
         });
