@@ -25,7 +25,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TourServiceImpl implements TourService {
     public final TourRepository tourRepository;
-    private final static String UPLOAD_DIR = "src/main/resources/static/assets/";
+    private static final String UPLOAD_DIR = "src/main/resources/static/assets/";
 
     public Page<Tour> getAllTours(String title, Integer minPrice, Integer maxPrice, String location, String sortPrice, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.ASC, "prices");
