@@ -24,11 +24,10 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class TokenService {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    @Value("${jwt.secret}") String secret;
 
     // Generate the secret key from the configured secret value
-    private SecretKey getSecretKey() {
+    SecretKey getSecretKey() {
         byte[] secretBytes = Base64.getDecoder().decode(secret);
         return Keys.hmacShaKeyFor(secretBytes);
     }
@@ -48,11 +47,12 @@ public class TokenService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                   .setSigningKey(getSecretKey())
-                   .build()
-                   .parseClaimsJws(token)
-                   .getBody();
-    }
+                .setSigningKey(getSecretKey())
+                .setAllowedClockSkewSeconds(5) // Allow 5 seconds of clock skew
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }    
     
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
