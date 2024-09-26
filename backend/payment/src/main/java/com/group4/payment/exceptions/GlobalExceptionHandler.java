@@ -125,6 +125,34 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handles {@link JwtDecodingException} by creating a response entity containing an error message.
+     *
+     * @param e the {@link JwtDecodingException} to handle
+     * @return a {@link ResponseEntity} containing a map with an error message
+     */
+    @ExceptionHandler(JwtDecodingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleJwtDecodingException(JwtDecodingException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put(ERROR, e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handles {@link DuplicateStatusException} by creating a response entity containing an error message.
+     *
+     * @param e the {@link DuplicateStatusException} to handle
+     * @return a {@link ResponseEntity} containing a map with an error message
+     */
+    @ExceptionHandler(JwtDecodingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleDuplicateStatusException(DuplicateStatusException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put(ERROR, e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * Handles {@link TimeoutException} by creating a response entity containing an error message.
      *
      * @param e the {@link TimeoutException} to handle

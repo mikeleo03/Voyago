@@ -116,4 +116,30 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Insufficient quantity", response.getBody().get("error"));
     }
+
+    @Test
+    void testJwtDecodingException() {
+        // Arrange
+        JwtDecodingException ex = new JwtDecodingException("Jwt decoding");
+
+        // Act
+        ResponseEntity<Map<String, String>> response = exceptionHandler.handleJwtDecodingException(ex);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Jwt decoding", response.getBody().get("error"));
+    }
+
+    @Test
+    void testHandleDuplicateStatusException() {
+        // Arrange
+        DuplicateStatusException ex = new DuplicateStatusException("Duplicate status");
+
+        // Act
+        ResponseEntity<Map<String, String>> response = exceptionHandler.handleDuplicateStatusException(ex);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Duplicate status", response.getBody().get("error"));
+    }
 }
