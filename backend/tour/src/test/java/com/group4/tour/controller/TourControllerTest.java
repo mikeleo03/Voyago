@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-public class TourControllerTest {
+class TourControllerTest {
     private MockMvc mockMvc;
 
     @Mock

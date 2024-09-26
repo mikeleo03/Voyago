@@ -32,6 +32,24 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void testImageSaveFailedException(){
+        ImageSaveFailed ex = new ImageSaveFailed("Image save failed");
+
+        WebRequest request = mock(WebRequest.class);
+        when(request.getDescription(false)).thenReturn("Some details about the request");
+
+        // Act
+        ResponseEntity<?> response = exceptionHandler.handleImageSaveFailed(ex, request);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        GlobalExceptionHandler.ErrorResponse errorResponse = (GlobalExceptionHandler.ErrorResponse) response.getBody();
+        assertEquals(404, errorResponse.getStatusCode());
+        assertEquals("Image save failed", errorResponse.getMessage());
+        assertEquals("Some details about the request", errorResponse.getDetails());
+    }
+
+    @Test
     void testHandleGlobalException() {
         // Arrange
         Exception ex = new Exception("Generic error");
