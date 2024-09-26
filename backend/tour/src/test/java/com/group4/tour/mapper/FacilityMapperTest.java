@@ -21,9 +21,10 @@ class FacilityMapperTest {
 
         FacilityDTO facilityDTO = facilityMapper.toFacilityDTO(facility);
 
-        assertThat(facilityDTO).isNotNull();
-        assertThat(facilityDTO.getName()).isEqualTo("Swimming Pool");
-        assertThat(facilityDTO.getTourId()).isNull();
+        assertThat(facilityDTO)
+                .isNotNull()
+                .extracting(FacilityDTO::getName, FacilityDTO::getTourId)
+                .containsExactly("Swimming Pool", null);
     }
 
     @Test
@@ -34,10 +35,10 @@ class FacilityMapperTest {
 
         FacilityWithIdDTO facilityWithIdDTO = facilityMapper.toFacilityWithIdDTO(facility);
 
-        assertThat(facilityWithIdDTO).isNotNull();
-        assertThat(facilityWithIdDTO.getId()).isEqualTo("facility-id-1");
-        assertThat(facilityWithIdDTO.getName()).isEqualTo("Swimming Pool");
-        assertThat(facilityWithIdDTO.getTourId()).isNull();
+        assertThat(facilityWithIdDTO)
+                .isNotNull()
+                .extracting(FacilityWithIdDTO::getId, FacilityWithIdDTO::getName, FacilityWithIdDTO::getTourId)
+                .containsExactly("facility-id-1", "Swimming Pool", null);
     }
 
     @Test
@@ -48,10 +49,10 @@ class FacilityMapperTest {
 
         Facility facility = facilityMapper.toFacility(facilityDTO);
 
-        assertThat(facility).isNotNull();
-        assertThat(facility.getName()).isEqualTo("Swimming Pool");
-        assertThat(facility.getTour()).isNotNull();
-        assertThat(facility.getTour().getId()).isEqualTo("tour-id-1");
+        assertThat(facility)
+                .isNotNull()
+                .extracting(Facility::getName, f -> f.getTour().getId())
+                .containsExactly("Swimming Pool", "tour-id-1");
     }
 
 
@@ -65,9 +66,13 @@ class FacilityMapperTest {
 
         List<FacilityWithIdDTO> facilityWithIdDTOList = facilityMapper.toFacilityWithIdDTOList(facilities);
 
-        assertThat(facilityWithIdDTOList).isNotNull();
-        assertThat(facilityWithIdDTOList).hasSize(1);
-        assertThat(facilityWithIdDTOList.get(0).getId()).isEqualTo("facility-id-1");
-        assertThat(facilityWithIdDTOList.get(0).getName()).isEqualTo("Swimming Pool");
+        assertThat(facilityWithIdDTOList)
+                .isNotNull()
+                .hasSize(1)
+                .first()
+                .satisfies(dto -> {
+                    assertThat(dto.getId()).isEqualTo("facility-id-1");
+                    assertThat(dto.getName()).isEqualTo("Swimming Pool");
+                });
     }
 }

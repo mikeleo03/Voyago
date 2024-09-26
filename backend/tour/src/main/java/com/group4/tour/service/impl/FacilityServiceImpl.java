@@ -5,6 +5,7 @@ import com.group4.tour.data.model.Tour;
 import com.group4.tour.data.repository.FacilityRepository;
 import com.group4.tour.data.repository.TourRepository;
 import com.group4.tour.dto.FacilityDTO;
+import com.group4.tour.exception.ResourceNotFoundException;
 import com.group4.tour.mapper.FacilityMapper;
 import com.group4.tour.service.FacilityService;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,7 @@ public class FacilityServiceImpl implements FacilityService {
     public Facility createFacility(FacilityDTO facilityDTO) {
         Facility facility = facilityMapper.toFacility(facilityDTO);
         Tour tour = tourRepository.findById(facilityDTO.getTourId())
-                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + facilityDTO.getTourId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Tour not found with id: " + facilityDTO.getTourId()));
         facility.setTour(tour);
         return facilityRepository.save(facility);
     }
@@ -39,7 +40,7 @@ public class FacilityServiceImpl implements FacilityService {
             Facility savedFacility = facilityRepository.save(updatedFacility);
             return facilityMapper.toFacilityDTO(savedFacility);
         }
-        throw new RuntimeException("Facility not found with id: " + id);
+        throw new ResourceNotFoundException("Facility not found with id: " + id);
     }
 
     @Override

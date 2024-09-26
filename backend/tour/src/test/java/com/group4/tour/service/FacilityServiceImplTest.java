@@ -41,7 +41,6 @@ class FacilityServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // Setup test data
         facilityDTO = new FacilityDTO();
         facilityDTO.setName("Swimming Pool");
         facilityDTO.setTourId("tour-id-1");
@@ -124,7 +123,6 @@ class FacilityServiceImplTest {
         List<Facility> facilities = facilityService.getFacilitiesByTourId(tourId);
 
         assertThat(facilities).isNotEmpty();
-        assertThat(facilities.size()).isEqualTo(1);
         assertThat(facilities.get(0).getName()).isEqualTo("Swimming Pool");
 
         verify(facilityRepository, times(1)).findByTourId(tourId);

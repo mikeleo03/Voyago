@@ -30,7 +30,6 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -218,7 +217,7 @@ public class TourControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
 
-        verify(tourService, times(1)).addQuotaByPrice(eq(tourId), eq(price));
+        verify(tourService, times(1)).addQuotaByPrice(tourId, price);
     }
 
 

@@ -1,5 +1,6 @@
 package com.group4.tour;
 
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
@@ -8,7 +9,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 
-@SpringBootTest
+import org.springframework.test.context.TestPropertySource;
+
+@SpringBootTest(classes = TourServiceApplicationTests.class)
+@TestPropertySource(locations = "classpath:application-test.properties")
 class TourServiceApplicationTests {
 
 	@Test

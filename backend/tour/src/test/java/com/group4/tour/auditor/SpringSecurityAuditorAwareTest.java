@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SpringSecurityAuditorAwareTest {
+class SpringSecurityAuditorAwareTest {
     private SpringSecurityAuditorAware auditorAware;
 
     @BeforeEach
@@ -21,7 +21,7 @@ public class SpringSecurityAuditorAwareTest {
     }
 
     @Test
-    public void testGetCurrentAuditor_WhenAuthenticated() {
+    void testGetCurrentAuditor_WhenAuthenticated() {
         SecurityContext securityContext = mock(SecurityContext.class);
         Authentication authentication = mock(Authentication.class);
         SecurityContextHolder.setContext(securityContext);
@@ -34,7 +34,7 @@ public class SpringSecurityAuditorAwareTest {
     }
 
     @Test
-    public void testGetCurrentAuditor_WhenNotAuthenticated() {
+    void testGetCurrentAuditor_WhenNotAuthenticated() {
         SecurityContext securityContext = mock(SecurityContext.class);
         Authentication authentication = mock(Authentication.class);
         SecurityContextHolder.setContext(securityContext);
@@ -46,12 +46,26 @@ public class SpringSecurityAuditorAwareTest {
     }
 
     @Test
-    public void testGetCurrentAuditor_WhenNoAuthentication() {
+    void testGetCurrentAuditor_WhenNoAuthentication() {
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(null);
 
         Optional<String> auditor = auditorAware.getCurrentAuditor();
         assertEquals(Optional.of("System"), auditor);
+    }
+
+    @Test
+    void testGetCurrentAuditor_WhenPrincipalIsNotString() {
+        SecurityContext securityContext = mock(SecurityContext.class);
+        Authentication authentication = mock(Authentication.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        // Mock a principal that is not a String (e.g., an instance of a different class)
+        when(authentication.getPrincipal()).thenReturn(new Object());
+
+        Optional<String> auditor = auditorAware.getCurrentAuditor();
+        assertEquals(Optional.of("Unknown"), auditor);
     }
 }
