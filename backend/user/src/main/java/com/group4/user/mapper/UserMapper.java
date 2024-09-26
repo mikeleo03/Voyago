@@ -38,5 +38,7 @@ public interface UserMapper {
     User toUser(UserSaveDTO userSaveDTO);
 
     // UserSaveDTO - SignupRequest
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", ignore = true)
     SignupRequest toSignupRequest(UserSaveDTO userSaveDTO);
 }
