@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -163,6 +165,14 @@ class TourServiceImplTest {
     }
 
     @Test
+    void testReduceQuotaNotFound() {
+        when(tourRepository.findById("1")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> tourService.reduceQuota("1", 2));
+        verify(tourRepository, times(1)).findById("1");
+    }
+
+    @Test
     void testUpdateTourStatusToInactive() {
         Tour tour = new Tour();
         tour.setId("1");
@@ -208,4 +218,43 @@ class TourServiceImplTest {
 
         verify(tourRepository, never()).saveAll(anyList());
     }
+
+    @Test
+    void testSaveImageSuccess() throws IOException {
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.getOriginalFilename()).thenReturn("test.jpg");
+        when(mockFile.getBytes()).thenReturn("image content".getBytes());
+
+        String fileName = tourService.saveImage(mockFile);
+
+        assertThat(fileName).contains("test.jpg");
+    }
+
+    @Test
+    void testGetTourImageNameByIdNotFound() {
+        when(tourRepository.findById("1")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> tourService.getTourImageNameById("1"));
+    }
+
+    @Test
+    void testImportToursFromCsvValidFormat() {
+        mockMultipartFile = mock(MultipartFile.class);
+
+        when(mockMultipartFile.getContentType()).thenReturn("text/csv");
+
+        try (MockedStatic<CSVUtil> csvUtilMockedStatic = mockStatic(CSVUtil.class)) {
+            csvUtilMockedStatic.when(() -> CSVUtil.isCSVFormat(mockMultipartFile)).thenReturn(true);
+
+            List<Tour> mockTours = List.of(new Tour("1", "Beach Tour", "Beach Vacation", 100, 1000, "Bali", null, "ACTIVE", null, null));
+            csvUtilMockedStatic.when(() -> CSVUtil.csvToTours(mockMultipartFile)).thenReturn(mockTours);
+
+            String result = tourService.importToursFromCsv(mockMultipartFile);
+
+            assertThat(result).contains("CSV import successful");
+            verify(tourRepository, times(1)).saveAll(mockTours);
+        }
+    }
+
+
 }
