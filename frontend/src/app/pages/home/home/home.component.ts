@@ -43,10 +43,10 @@ export class HomeComponent {
 
   // Define dummy data for the tour packages, which can be replaced with backend data later
   tours = [
-    { title: 'Lorem Ipsum', days: 3, rating: 4.8, imageUrl: '/assets/img/tour1.png' },
-    { title: 'Lorem Ipsum', days: 3, rating: 4.8, imageUrl: '/assets/img/tour2.png' },
-    { title: 'Lorem Ipsum', days: 3, rating: 4.8, imageUrl: '/assets/img/tour3.png' },
-    { title: 'Lorem Ipsum', days: 3, rating: 4.8, imageUrl: '/assets/img/tour4.png' }
+    { title: 'Papua New Guinea', days: 3, rating: 4.8, imageUrl: '/assets/img/tour1.png' },
+    { title: 'Eiffel Tower', days: 3, rating: 4.8, imageUrl: '/assets/img/tour2.png' },
+    { title: 'Ropeway Gangtok', days: 3, rating: 4.8, imageUrl: '/assets/img/tour3.png' },
+    { title: 'Neemrana Fort-Palace', days: 3, rating: 4.8, imageUrl: '/assets/img/tour4.png' }
   ];
 
   // Define dummy data for why book icons and reasons
