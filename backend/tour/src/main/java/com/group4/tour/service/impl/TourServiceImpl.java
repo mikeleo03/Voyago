@@ -2,6 +2,7 @@ package com.group4.tour.service.impl;
 
 import com.group4.tour.data.model.Tour;
 import com.group4.tour.data.repository.TourRepository;
+import com.group4.tour.exception.ImageSaveFailed;
 import com.group4.tour.exception.ResourceNotFoundException;
 import com.group4.tour.service.TourService;
 import com.group4.tour.utils.CSVUtil;
@@ -24,7 +25,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TourServiceImpl implements TourService {
     public final TourRepository tourRepository;
-    private final String uploadDir = "src/main/resources/static/assets/";
+    private static final String UPLOAD_DIR = "src/main/resources/static/assets/";
 
     public Page<Tour> getAllTours(String title, Integer minPrice, Integer maxPrice, String location, String sortPrice, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.ASC, "prices");
@@ -69,12 +70,12 @@ public class TourServiceImpl implements TourService {
 
     public String saveImage(MultipartFile file) {
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path path = Paths.get(uploadDir + fileName);
+        Path path = Paths.get(UPLOAD_DIR + fileName);
         try {
             Files.write(path, file.getBytes());
             return fileName;
         } catch (IOException e) {
-            throw new RuntimeException("Could not save image: " + e.getMessage());
+            throw new ImageSaveFailed("Could not save image: " + e.getMessage());
         }
     }
 

@@ -45,7 +45,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             // Convert roles to granted authorities (prefixing with "ROLE_")
             List<SimpleGrantedAuthority> authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role)) // Prefix roles with "ROLE_"
-                .collect(Collectors.toList());
+                .toList();
 
             // Set authentication in the context
             UsernamePasswordAuthenticationToken authentication = 

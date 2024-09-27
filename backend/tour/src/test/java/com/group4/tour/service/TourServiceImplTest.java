@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,11 +18,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -42,6 +45,36 @@ class TourServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testGetAllTours() {
+        List<Tour> mockTours = new ArrayList<>();
+        mockTours.add(new Tour("1", "Tour 1", "Detail 1", 10, 100, "Location 1", null, "ACTIVE", null, null));
+        mockTours.add(new Tour("2", "Tour 2", "Detail 2", 20, 200, "Location 2", null, "ACTIVE", null, null));
+
+        Page<Tour> mockPage = new PageImpl<>(mockTours);
+
+        when(tourRepository.findAll(any(Pageable.class))).thenReturn(mockPage);
+
+        Page<Tour> toursPage = tourService.getAllTours(null, null, null, null, null, 0, 10);
+
+        assertNotNull(toursPage);
+        assertEquals(2, toursPage.getContent().size());
+        verify(tourRepository, times(1)).findAll(any(Pageable.class));
+    }
+
+
+    @Test
+    void testGetTourImageNameById() {
+        String tourId = "1";
+        Tour existingTour = new Tour(tourId, "Tour 1", "Detail 1", 10, 100, "Location 1", "image.png", "ACTIVE", null, null);
+        when(tourRepository.findById(tourId)).thenReturn(Optional.of(existingTour));
+
+        String imageName = tourService.getTourImageNameById(tourId);
+
+        assertEquals("image.png", imageName);
+        verify(tourRepository, times(1)).findById(tourId);
     }
 
     @Test
@@ -77,6 +110,44 @@ class TourServiceImplTest {
         assertThat(result.getContent().get(0).getPrices()).isEqualTo(100);
         verify(tourRepository, times(1)).findByPricesBetween(50, 150, pageable);
     }
+
+    @Test
+    void testGetAllToursByLocation() {
+        Tour tour = new Tour();
+        tour.setLocation("Bali");
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "prices"));
+        Page<Tour> tourPage = new PageImpl<>(List.of(tour));
+
+        when(tourRepository.findByLocationContaining("Bali", pageable)).thenReturn(tourPage);
+
+        Page<Tour> result = tourService.getAllTours(null, null, null, "Bali", null, 0, 10);
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getLocation()).isEqualTo("Bali");
+        verify(tourRepository, times(1)).findByLocationContaining("Bali", pageable);
+    }
+
+    @Test
+    void testGetAllToursWithSortPriceDesc() {
+        Tour tour1 = new Tour();
+        tour1.setPrices(200);
+
+        Tour tour2 = new Tour();
+        tour2.setPrices(100);
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "prices"));
+        Page<Tour> tourPage = new PageImpl<>(List.of(tour1, tour2));
+
+        when(tourRepository.findAll(pageable)).thenReturn(tourPage);
+
+        Page<Tour> result = tourService.getAllTours(null, null, null, null, "desc", 0, 10);
+
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getContent().get(0).getPrices()).isEqualTo(200);
+        verify(tourRepository, times(1)).findAll(pageable);
+    }
+
 
     @Test
     void testGetTourByIdSuccess() {
@@ -163,6 +234,14 @@ class TourServiceImplTest {
     }
 
     @Test
+    void testReduceQuotaNotFound() {
+        when(tourRepository.findById("1")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> tourService.reduceQuota("1", 2));
+        verify(tourRepository, times(1)).findById("1");
+    }
+
+    @Test
     void testUpdateTourStatusToInactive() {
         Tour tour = new Tour();
         tour.setId("1");
@@ -208,4 +287,43 @@ class TourServiceImplTest {
 
         verify(tourRepository, never()).saveAll(anyList());
     }
+
+    @Test
+    void testSaveImageSuccess() throws IOException {
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.getOriginalFilename()).thenReturn("test.jpg");
+        when(mockFile.getBytes()).thenReturn("image content".getBytes());
+
+        String fileName = tourService.saveImage(mockFile);
+
+        assertThat(fileName).contains("test.jpg");
+    }
+
+    @Test
+    void testGetTourImageNameByIdNotFound() {
+        when(tourRepository.findById("1")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> tourService.getTourImageNameById("1"));
+    }
+
+    @Test
+    void testImportToursFromCsvValidFormat() {
+        mockMultipartFile = mock(MultipartFile.class);
+
+        when(mockMultipartFile.getContentType()).thenReturn("text/csv");
+
+        try (MockedStatic<CSVUtil> csvUtilMockedStatic = mockStatic(CSVUtil.class)) {
+            csvUtilMockedStatic.when(() -> CSVUtil.isCSVFormat(mockMultipartFile)).thenReturn(true);
+
+            List<Tour> mockTours = List.of(new Tour("1", "Beach Tour", "Beach Vacation", 100, 1000, "Bali", null, "ACTIVE", null, null));
+            csvUtilMockedStatic.when(() -> CSVUtil.csvToTours(mockMultipartFile)).thenReturn(mockTours);
+
+            String result = tourService.importToursFromCsv(mockMultipartFile);
+
+            assertThat(result).contains("CSV import successful");
+            verify(tourRepository, times(1)).saveAll(mockTours);
+        }
+    }
+
+
 }

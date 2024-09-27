@@ -1,16 +1,10 @@
 package com.group4.authentication.services;
 
-import com.group4.authentication.data.model.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
@@ -20,14 +14,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.group4.authentication.data.model.User;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
 @Service
 public class TokenService {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    @Value("${jwt.secret}") String secret;
 
     // Generate the secret key from the configured secret value
-    private SecretKey getSecretKey() {
+    SecretKey getSecretKey() {
         byte[] secretBytes = Base64.getDecoder().decode(secret);
         return Keys.hmacShaKeyFor(secretBytes);
     }
@@ -47,11 +47,12 @@ public class TokenService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                   .setSigningKey(getSecretKey())
-                   .build()
-                   .parseClaimsJws(token)
-                   .getBody();
-    }
+                .setSigningKey(getSecretKey())
+                .setAllowedClockSkewSeconds(5) // Allow 5 seconds of clock skew
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }    
     
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
@@ -62,7 +63,7 @@ public class TokenService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList())); // Collect roles as a list
+                .toList()); // Collect roles as a list
         return createToken(claims, userDetails.getUsername());
     }
 
