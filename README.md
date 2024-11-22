@@ -64,12 +64,12 @@ Having defined the access rights for each user role, we proceed to analyze the f
 
 After defining all those things, we can define a business flow based on each role.
 
-<a href="https://raw.githubusercontent.com/Glutara/.github/main/assets/UCD.png">
+<a href="https://raw.githubusercontent.com/mikeleo03/Voyago/main/img/Business1.png">
 <img src="./img/Business1.png" target="_blank" />
 </a>
 <br />
 
-<a href="https://raw.githubusercontent.com/Glutara/.github/main/assets/UCD.png">
+<a href="https://raw.githubusercontent.com/mikeleo03/Voyago/main/img/Business2.png">
 <img src="./img/Business2.png" target="_blank" />
 </a>
 <br />
@@ -134,3 +134,21 @@ This diagram presents a Distributed Database Architecture Design that focuses on
 
 The architecture is divided into four main microservices: **User Service**, **Ticket Service**, **Tour Service**, and **Payment Service**, each with its own database schema. For more detail, please read the SRS in [this document](bit.ly/VoyagoSRS)
 
+### [Design] Design System and Low-Fidelity Mockup Page
+
+![DS](./img/DS.png)
+
+![Mockup](./img/Mockup.png)
+
+### Testing and Future Plan
+
+![ST](./img/ST.png)
+
+![Unit](./img/Unit.png)
+
+![Unit](./img/Future.png)
+
+## 🙋🏻‍♂️ Contributors
+<a href = "https://github.com/mikeleo03/Voyago/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo=mikeleo03/Voyago"/>
+</a>
