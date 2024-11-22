@@ -1,0 +1,120 @@
+<!-- Hero Section -->
+<div class="relative bg-cover bg-center h-[60vh] rounded-b-[3rem] flex items-center justify-center mt-[-5rem]" style="background-image: url('/assets/img/history-bg.jpg'); background-size: cover;">
+  <div class="absolute inset-0 bg-black bg-opacity-40 rounded-b-[3rem]"></div>
+  <div class="text-center text-white z-10 mb-20">
+      <h1 class="text-5xl font-bold">History</h1>
+  </div>
+</div>
+
+<!-- Search Section -->
+<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mx-auto w-10/12 relative">
+  <!-- First Row: Username, Sort by Status, Start Date, End Date -->
+  <div class="flex flex-row justify-start w-full space-x-8 mx-2 mb-4 items-stretch"> <!-- Added items-stretch -->
+      <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500"><i class="fa-regular fa-calendar"></i></span>
+          <p class="pb-1 text-gray-600">Start Date</p>
+          <input type="date" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="startDate" />
+      </div>
+      <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500"><i class="fa-regular fa-calendar"></i></span>
+          <p class="pb-1 text-gray-600">End Date</p>
+          <input type="date" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="endDate" />
+      </div>
+      <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+        <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
+        <p class="pb-1 text-gray-600">Maximum Price</p>
+        <input type="number" placeholder="Maximum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="maxPrice" />
+      </div>
+      <div class="flex w-1/4 flex-col relative"> <!-- Adjusted to match column width -->
+        <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
+        <p class="pb-1 text-gray-600">Minimum Price</p>
+        <input type="number" placeholder="Minimum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="minPrice" />
+      </div>
+      <!-- Search Button Container -->
+      <div class="flex w-1/4 flex-col relative self-end">
+        <button 
+          class="bg-yellow-500 text-white p-2 px-8 rounded-3xl transition-transform transform ease-in-out hover:scale-105" 
+          (click)="searchTickets()"
+        >
+          Search
+        </button>
+      </div>
+  </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="flex justify-left space-x-4 mt-16 pl-36">
+  <button class="bg-yellow-500 text-white px-12 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer" (click)="exportToExcel()">
+    Export Excel
+  </button>
+</div>
+
+<!-- Ticket List -->
+<div class="ticket-list p-8">
+  <div *ngFor="let ticket of tickets" class="ticket-item flex items-start p-6 border-b border-gray-300">
+    <!-- Ticket Image -->
+    <div class="tour-image w-1/5">
+      <img
+        [src]="tourImageUrls[tourOfTicket[ticket.id].id] ? tourImageUrls[tourOfTicket[ticket.id].id] : '/assets/img/empty-img.jpg'"
+        alt="Tour image"
+        class="w-full h-auto rounded-lg shadow"
+        draggable="false"
+      />
+    </div>
+    
+    <!-- Tour Details -->
+    <div class="tour-details w-2/5 pl-6">
+      <h2 class="text-2xl font-bold mb-2">{{ tourOfTicket[ticket.id].title }}</h2>
+      <p class="text-gray-600 mb-2">{{ tourOfTicket[ticket.id].detail }}</p>
+      <p class="text-gray-400">📍 {{ tourOfTicket[ticket.id].location }}</p>
+    </div>
+    
+    <!-- Status -->
+    <div class="tour-quota w-1/5 flex items-center justify-center">
+      <p class="text-lg font-medium">{{ displayStatus[ticket.id] }}</p>
+    </div>
+    
+    <!-- Tour Price and Details Button -->
+    <div class="tour-price w-1/5 flex flex-col items-center justify-center">
+      <p class="text-xl font-semibold text-green-500 mb-2">IDR {{ tourOfTicket[ticket.id].prices | number }}</p>
+      <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105" (click)="goToTicketDetails(ticket.id)">Details</button> <!-- Added hover effect -->
+    </div>
+
+  </div>
+</div>
+
+ <!-- Pagination Controls -->
+ <div class="pagination flex justify-center items-center space-x-2 mt-6 mb-6">
+  <!-- Previous Button -->
+  <button 
+    class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
+    (click)="changePage(currentPage - 1)" 
+    [disabled]="currentPage === 1"
+    [ngClass]="{'opacity-50': currentPage === 1, 'hover:bg-yellow-600': currentPage !== 1}"
+  >
+    Previous
+  </button>
+
+  <!-- Page Numbers -->
+  <span *ngFor="let page of [].constructor(totalPages); let i = index">
+    <button 
+      class="px-4 py-2 rounded-full text-center w-10 h-10 transition-transform transform ease-in-out hover:scale-105"
+      [ngClass]="{
+        'bg-yellow-500 text-white': currentPage === i + 1, 
+        'bg-gray-200 text-gray-700 hover:bg-gray-300': currentPage !== i + 1
+      }"
+      (click)="changePage(i + 1)">
+      {{ i + 1 }}
+    </button>
+  </span>
+
+  <!-- Next Button -->
+  <button 
+    class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
+    (click)="changePage(currentPage + 1)" 
+    [disabled]="currentPage === totalPages"
+    [ngClass]="{'opacity-50': currentPage === totalPages, 'hover:bg-yellow-600': currentPage !== totalPages}"
+  >
+    Next
+  </button>
+</div>

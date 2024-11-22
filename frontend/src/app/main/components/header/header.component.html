@@ -1,0 +1,85 @@
+<!-- Navigation Bar -->
+<div [ngClass]="{'bg-black/[0.85] backdrop-blur-sm': isScrolled, 'bg-transparent': !isScrolled}" 
+     class="flex items-center justify-between px-16 py-4 sticky top-0 z-50 text-white transition-all duration-300">
+
+    <!-- Left side (Logo) -->
+    <div class="flex items-center">
+        <a href="/" class="flex items-center space-x-2 text-white font-bold text-lg hover:scale-105 transition-transform duration-300">
+            <img src="/assets/icons/logo-nav.png" alt="Voyago Logo" class="h-8" draggable="false">
+        </a>
+    </div>
+  
+    <!-- Center side (Navigation Links) -->
+    <div class="hidden md:flex space-x-20">
+        <a (click)="navigateToTours()" class="text-white text-lg hover:underline cursor-pointer">Tours</a>
+        <!-- Conditionally render "Customer" or "Contact" -->
+        <a *ngIf="role === 'Admin'; else historyLink" (click)="navigateToTickets()" class="text-white text-lg hover:underline cursor-pointer">Tickets</a>
+        <ng-template #historyLink>
+            <a (click)="navigateToHistory()" class="text-white text-lg hover:underline cursor-pointer">History</a>
+        </ng-template>
+        <!-- Conditionally render "Customer" or "Contact" -->
+        <a *ngIf="role === 'Admin'; else contactLink" (click)="navigateToCustomers()" class="text-white text-lg hover:underline cursor-pointer">Customers</a>
+        <ng-template #contactLink>
+            <a href="/" class="text-white text-lg hover:underline">Contact</a>
+        </ng-template>
+    </div>
+  
+    <!-- Right side (Login & Register or Profile Dropdown) -->
+    <div class="flex items-center space-x-12">
+        <!-- If user is not logged in -->
+        <div *ngIf="!isLoggedIn()" class="flex items-center space-x-12">
+            <a href="/login" class="text-white text-lg hover:underline">Login</a>
+            <a href="/register" class="bg-yellow-500 text-white px-10 py-1.5 rounded-full transition-transform transform ease-in-out hover:scale-105">Register</a>
+        </div>
+
+        <!-- If user is logged in -->
+        <div *ngIf="isLoggedIn()" class="relative" (mouseenter)="showLogout = true" (mouseleave)="showLogout = false">
+            <button class="flex space-x-3 p-3 py-1 rounded-xl text-white items-center">
+                <hlm-avatar>
+                    <img [src]="userImageUrl" alt='profile' draggable="false" hlmAvatarImage />
+                    <span class='text-white bg-destructive' hlmAvatarFallback>{{ username }}</span>
+                </hlm-avatar>
+                <div class="flex flex-col text-start md:block hidden">
+                    <div class="text-white text-base font-semibold">{{ username }}</div>
+                    <div class="text-slate-300 text-xs">{{ role }}</div>
+                </div>
+            </button>
+            
+            <!-- Dropdown menu -->
+            <div *ngIf="showLogout" class="absolute bg-[#0A5185] rounded-lg text-white right-0 py-2 w-48"
+                (mouseenter)="showLogout = true" (mouseleave)="showLogout = false">
+                <a (click)="navigateToProfile()" class="block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-black/[.2] cursor-pointer">Profile</a>
+                <button (click)="handleLogout()"
+                    class="block w-full text-left px-4 py-2 rounded-lg text-sm hover:bg-red-900/[.4]">Logout</button>
+            </div>
+        </div>
+    </div>
+  
+    <!-- Hamburger Menu for Mobile -->
+    <div class="md:hidden">
+        <button (click)="isOpen = !isOpen" class="focus:outline-none p-2 rounded-lg hover:bg-black/20 transition-colors duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" class="h-6 w-6 text-white">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M3 12h18M3 18h18" *ngIf="!isOpen" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" *ngIf="isOpen" />
+            </svg>
+        </button>
+    </div>
+</div>
+  
+<!-- Mobile Menu Content -->
+<div [ngClass]="{'block': isOpen, 'hidden': !isOpen}" class="md:hidden flex flex-col space-y-4 p-6 pt-20 text-white bg-black/80 backdrop-blur-sm absolute inset-0 z-40 transition-transform">
+    <a href="/tours" class="text-lg hover:underline">Tours</a>
+    <a href="/history" class="text-lg hover:underline">History</a>
+    <a href="/contact" class="text-lg hover:underline">Contact</a>
+    
+    <!-- Conditionally display login/register or profile/logout in mobile menu -->
+    <div *ngIf="!isLoggedIn()">
+        <a href="/login" class="text-lg hover:underline">Login</a>
+        <a href="/register" class="text-lg bg-yellow-500 text-black p-2 rounded-full hover:bg-yellow-600 transition-colors">Register</a>
+    </div>
+    
+    <div *ngIf="isLoggedIn()">
+        <a href="/profile" class="text-lg hover:underline">Profile</a>
+        <a (click)="handleLogout()" class="text-lg hover:underline cursor-pointer">Logout</a>
+    </div>
+</div>

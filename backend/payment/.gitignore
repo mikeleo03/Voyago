@@ -1,0 +1,46 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# Ignore actual private and public keys in certs/ directory
+private-key.pem
+public-key.pem
+
+env.properties
+\src\main\resources\static\assets\*.{jpg,jpeg,png,gif,bmp,webp}
+/src/main/resources/static/assets/*.[jJ][pP][gG]
+/src/main/resources/static/assets/*.[jJ][pP][eE][gG]
+/src/main/resources/static/assets/*.[pP][nN][gG]
+/src/main/resources/static/assets/*.[gG][iI][fF]
+/src/main/resources/static/assets/*.[bB][mM][pP]
+/src/main/resources/static/assets/*.[wW][eE][bB][pP]

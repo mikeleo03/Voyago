@@ -1,0 +1,62 @@
+server:
+  port: 8080  # Gateway server port
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: authentication-service
+          uri: lb://authentication-service
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - name: ApiKey
+            - name: JwtAuth
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - name: ApiKey
+            - name: JwtAuth
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v1/payment/**
+          filters:
+            - name: ApiKey
+            - name: JwtAuth
+        - id: ticket-service
+          uri: lb://ticket-service
+          predicates:
+            - Path=/api/v1/ticket/**
+          filters:
+            - name: ApiKey
+            - name: JwtAuth
+        - id: tour-service
+          uri: lb://tour-service
+          predicates:
+            - Path=/api/v1/tour/**
+          filters:
+            - name: ApiKey
+            - name: JwtAuth
+        - id: facility-service
+          uri: lb://tour-service
+          predicates:
+            - Path=/api/v1/facility/**
+          filters:
+            - name: ApiKey
+            - name: JwtAuth
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v1/payment/**
+          filters:
+            - name: ApiKey
+            - name: JwtAuth
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

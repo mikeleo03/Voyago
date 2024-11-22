@@ -1,0 +1,239 @@
+<!-- Hero Section -->
+<div class="relative bg-cover bg-center h-[60vh] rounded-b-[3rem] flex items-center justify-center mt-[-5rem]" style="background-image: url('/assets/img/tour-bg.jpg'); background-size: cover;">
+    <div class="absolute inset-0 bg-black bg-opacity-40 rounded-b-[3rem]"></div>
+    <div class="text-center text-white z-10 mb-20">
+        <h1 class="text-5xl font-bold">Tours List</h1>
+    </div>
+</div>
+
+<!-- Search Section -->
+<div class="p-10 bg-white shadow-lg rounded-[2rem] -mt-36 mx-auto w-10/12 relative">
+  <div class="flex flex-wrap gap-4 justify-between mx-2">
+      <div class="align-start justify-start flex flex-col text-start">
+          <p class="text-lg mb-1 text-gray-400">Your Location</p>
+          <h2 class="text-2xl font-semibold">Bandung, Indonesia</h2>
+      </div>
+  </div>
+  <hr class="my-6 border-gray-300" />
+  <div class="flex flex-row justify-center w-full space-x-8 mx-2 mb-3">
+      <!-- Icons for inputs -->
+      <div class="flex w-full flex-col relative">
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">📍</span>
+          <p class="pb-1 text-gray-600">Location</p>
+          <input type="text" placeholder="Location" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="location" />
+      </div>
+      <div class="flex w-full flex-col relative">
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
+          <p class="pb-1 text-gray-600">Minimum Price</p>
+          <input type="number" placeholder="Minimum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="minPrice" />
+      </div>
+      <div class="flex w-full flex-col relative">
+          <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">💲</span>
+          <p class="pb-1 text-gray-600">Maximum Price</p>
+          <input type="number" placeholder="Maximum Price" class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="maxPrice" />
+        </div>
+        
+      <!-- Sort Price Dropdown -->
+      <div class="flex w-full flex-col relative">
+        <span class="absolute left-4 top-1/2 pt-0.5 transform text-gray-500">⬆⬇</span>
+        <p class="pb-1 text-gray-600">Sort by Price</p>
+        <select class="border p-2 rounded-3xl w-full pl-12" [(ngModel)]="sortPrice">
+            <option value="">None</option>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+      </div>
+
+      <div class="flex w-full flex-col items-end justify-end">
+          <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105" (click)="searchTours()">Search</button>
+      </div>
+
+  </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="flex justify-left space-x-4 mt-6 pl-36">
+  <button class="bg-blue-500 text-white px-12 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105" (click)="openModal()">
+      Add Tour
+  </button>
+  <label class="bg-yellow-500 text-white px-12 py-2 rounded-3xl transition-transform transform ease-in-out hover:scale-105 cursor-pointer">
+    Import CSV
+    <input type="file" (change)="onFileSelected($event)" accept=".csv" class="hidden" />
+</label>
+</div>
+
+<!-- Modal -->
+<div *ngIf="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 w-11/12 md:w-3/4 max-h-full overflow-y-auto">
+    <h2 class="text-2xl font-bold mb-4">New Tour</h2>
+    <div class="flex space-x-4">
+      <!-- First Column -->
+      <div class="flex flex-col w-1/2">
+        <!-- Title Field -->
+        <div class="mb-4">
+          <label class="block text-gray-600 mb-1">Title <span class="text-red-500">*</span></label>
+          <input type="text" [(ngModel)]="newTour.title" placeholder="Tour Title" 
+            class="border p-2 rounded w-full"
+            [ngClass]="{'border-red-500': !newTour.title && isSubmitted}" />
+        </div>
+
+        <!-- Location Field -->
+        <div class="mb-4">
+          <label class="block text-gray-600 mb-1">Location <span class="text-red-500">*</span></label>
+          <input type="text" [(ngModel)]="newTour.location" placeholder="Location"
+            class="border p-2 rounded w-full"
+            [ngClass]="{'border-red-500': !newTour.location && isSubmitted}" />
+        </div>
+
+        <!-- Price Field -->
+        <div class="mb-4">
+          <label class="block text-gray-600 mb-1">Price <span class="text-red-500">*</span></label>
+          <input type="number" [(ngModel)]="newTour.prices" placeholder="Price"
+            class="border p-2 rounded w-full"
+            [ngClass]="{'border-red-500': (!newTour.prices || newTour.prices <= 0) && isSubmitted}" />
+        </div>
+
+        <!-- Quota Field -->
+        <div class="mb-4">
+          <label class="block text-gray-600 mb-1">Quota <span class="text-red-500">*</span></label>
+          <input type="number" [(ngModel)]="newTour.quota" placeholder="Available Seats"
+            class="border p-2 rounded w-full"
+            [ngClass]="{'border-red-500': (!newTour.quota || newTour.quota <= 0) && isSubmitted}" />
+        </div>
+      </div>
+
+      <!-- Second Column -->
+      <div class="flex flex-col w-1/2">
+        <!-- Detail Field -->
+        <div class="mb-4">
+          <label class="block text-gray-600 mb-1">Detail <span class="text-red-500">*</span></label>
+          <textarea [(ngModel)]="newTour.detail" placeholder="Tour Details" 
+            class="border p-2 rounded w-full h-24"
+            [ngClass]="{'border-red-500': !newTour.detail && isSubmitted}"></textarea>
+        </div>
+
+        <!-- Facilities Section -->
+        <div class="mb-4">
+          <h3 class="text-xl font-semibold mb-2">Facilities</h3>
+          <div class="flex items-center mb-2">
+            <input type="text" [(ngModel)]="newFacility" placeholder="Add Facility" class="border p-2 rounded w-3/4" />
+            <button class="bg-green-500 text-white ml-4 px-6 py-2 rounded-xl font-semibold transition-transform transform ease-in-out hover:scale-105 cursor-pointer" (click)="addFacility()">
+              Add
+            </button>
+          </div>
+          <div [ngClass]="{'border border-gray-300 rounded p-2': facilities.length > 0}" class="facility-list max-h-48 overflow-y-auto">
+            <div *ngFor="let facility of facilities" class="flex justify-between items-center py-2 border-b border-gray-300">
+              <span>{{ facility }}</span>
+              <button class="text-red-500 hover:text-red-700 transition duration-200 transform hover:scale-110" (click)="removeFacility(facility)">
+                <i class="fa-solid fa-xmark text-xl"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center mt-6">
+      <label class="bg-yellow-500 text-white px-4 py-2 rounded-xl font-semibold transition-transform transform ease-in-out hover:scale-105 cursor-pointer flex items-center">
+          Add image
+          <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" required />
+      </label>
+      <span class="text-gray-600 ml-4 flex-grow">{{ selectedImageName }}</span>
+      
+      <div class="flex justify-end space-x-4">
+          <!-- Save button with form validation -->
+          <button 
+              type="button" 
+              class="bg-[#0A5185] w-full rounded-xl transition-transform duration-300 transform hover:scale-105 text-white font-semibold py-2 px-6"
+              [disabled]="!isFormValid() || isLoading" 
+              [ngClass]="{ 'opacity-50 cursor-not-allowed': !isFormValid() || isLoading, 'hover:cursor-pointer': !!isFormValid() && !isLoading }"
+              (click)="saveTour()"
+          >
+              <span *ngIf="!isLoading">Create Tour</span>
+              <span *ngIf="isLoading">
+                  <svg class="inline mr-2 w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating...
+              </span>
+          </button>
+          <button type="button" class="bg-red-500 text-white px-4 py-2 rounded-xl font-semibold transition-transform duration-300 transform hover:scale-105" (click)="isModalOpen = false">
+              Cancel
+          </button>
+      </div>
+  </div>  
+  </div>
+</div>
+
+
+<!-- Tour List -->
+<div class="tour-list p-8">
+    <div *ngFor="let tour of tours" class="tour-item flex items-start p-6 border-b border-gray-300">
+      
+      <!-- Tour Image -->
+      <div class="tour-image w-1/5">
+        <img
+          [src]="tourImageUrls[tour.id] ? tourImageUrls[tour.id] : '/assets/img/empty-img.jpg'"
+          alt="Tour image"
+          class="w-full h-auto rounded-lg shadow"
+          draggable="false"
+        />
+      </div>
+      
+      <!-- Tour Details -->
+      <div class="tour-details w-2/5 pl-6">
+        <h2 class="text-2xl font-bold mb-2">{{ tour.title }}</h2>
+        <p class="text-gray-600 mb-2">{{ tour.detail }}</p>
+        <p class="text-gray-400">📍 {{ tour.location }}</p>
+      </div>
+      
+      <!-- Tour Quota -->
+      <div class="tour-quota w-1/5 flex items-center justify-center">
+        <p class="text-lg font-medium">{{ tour.quota }} available</p>
+      </div>
+      
+      <!-- Tour Price and Details Button -->
+      <div class="tour-price w-1/5 flex flex-col items-center justify-center">
+        <p class="text-xl font-semibold text-green-500 mb-2">IDR {{ tour.prices | number }}</p>
+        <button class="bg-yellow-500 text-white p-2 rounded-3xl w-full transition-transform transform ease-in-out hover:scale-105" (click)="goToTourDetails(tour.id)">Details</button> <!-- Added hover effect -->
+      </div>
+  
+    </div>
+</div>
+
+<!-- Pagination Controls -->
+<div class="pagination flex justify-center items-center space-x-2 mt-6 mb-6">
+  <!-- Previous Button -->
+  <button 
+    class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
+    (click)="changePage(currentPage - 1)" 
+    [disabled]="currentPage === 1"
+    [ngClass]="{'opacity-50': currentPage === 1, 'hover:bg-yellow-600': currentPage !== 1}"
+  >
+    Previous
+  </button>
+
+  <!-- Page Numbers -->
+  <span *ngFor="let page of [].constructor(totalPages); let i = index">
+    <button 
+      class="px-4 py-2 rounded-full text-center w-10 h-10 transition-transform transform ease-in-out hover:scale-105"
+      [ngClass]="{
+        'bg-yellow-500 text-white': currentPage === i + 1, 
+        'bg-gray-200 text-gray-700 hover:bg-gray-300': currentPage !== i + 1
+      }"
+      (click)="changePage(i + 1)">
+      {{ i + 1 }}
+    </button>
+  </span>
+
+  <!-- Next Button -->
+  <button 
+    class="bg-yellow-500 text-white px-4 py-2 rounded-full transition-transform transform hover:scale-105" 
+    (click)="changePage(currentPage + 1)" 
+    [disabled]="currentPage === totalPages"
+    [ngClass]="{'opacity-50': currentPage === totalPages, 'hover:bg-yellow-600': currentPage !== totalPages}"
+  >
+    Next
+  </button>
+</div>
